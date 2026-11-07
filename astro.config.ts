@@ -3,12 +3,15 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
+import { SITE_URL } from './src/data/site';
 
 // Everything is prerendered; only the routes that export `prerender = false`
 // (the Blue chat endpoint) become Vercel functions.
 export default defineConfig({
-  site: 'https://www.sebastianluna.dev',
+  site: SITE_URL,
   output: 'static',
+  // No trailing slash anywhere (design-spec §9.3, RT-14): canonicals and alternates match.
+  trailingSlash: 'never',
   adapter: vercel({ maxDuration: 30 }),
   // Astro 7 defaults to 'jsx', which strips the whitespace between inline siblings.
   compressHTML: true,
