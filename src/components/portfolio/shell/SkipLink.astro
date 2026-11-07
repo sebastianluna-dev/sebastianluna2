@@ -1,0 +1,39 @@
+---
+// First Tab stop of every page: jumps to <main id="main">, visible only with focus (design-spec §7.2).
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { common } = getMessages(locale);
+---
+
+<a class="skip-link" href="#main">
+  {common.skipToContent}
+</a>
+
+<style>
+  @layer pf {
+    .skip-link {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: var(--pf-z-skip-link);
+      padding: 10px 14px;
+      border-radius: var(--pf-radius-pill);
+      background: var(--pf-nav-active-bg);
+      color: var(--pf-nav-active-text);
+      font: 500 var(--pf-type-nav-size) / var(--pf-type-nav-lh) var(--pf-font-sans);
+      letter-spacing: var(--pf-type-nav-ls);
+      translate: 0 calc(-100% - 24px);
+
+      &:focus-visible {
+        translate: 0 0;
+        outline-offset: 3px;
+      }
+    }
+  }
+</style>

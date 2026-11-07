@@ -1,0 +1,505 @@
+---
+/**
+ * Global pill nav (design-spec §4 shell, §3.1, §6.1, §7.3, §8; SH-01…SH-08).
+ *
+ * The SSR paints the whole chrome: real links (Email is a `mailto:`), the active
+ * background inside the current link, both scrims and an empty toast region, so
+ * nothing depends on JS (design-spec §8.2). `pill-nav.client.ts` then adds the
+ * springs (active and hover backgrounds, nav width), the copy-to-clipboard toast,
+ * the smooth scroll to #works and the phone chrome that hides on scroll.
+ *
+ * Persisted across navigations of the same language (RT-03, RT-05); a language
+ * switch brings a new nav with its own links.
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { CONTACT_EMAILS, mailtoHref } from '@/data/profile';
+import { localizePath } from '@/lib/i18n-paths';
+import { activeNavKey, ariaCurrentFor, WORKS_HASH, type NavKey } from '@/lib/pill-nav';
+
+interface Props {
+  locale: Locale;
+  /** Current pathname, for aria-current. */
+  pathname: string;
+}
+
+const { locale, pathname } = Astro.props;
+const { nav } = getMessages(locale);
+const email = CONTACT_EMAILS[locale];
+const active = activeNavKey(pathname);
+
+const items: Array<{ key: NavKey; href: string; label: string }> = [
+  { key: 'home', href: localizePath('/', locale), label: nav.home },
+  { key: 'works', href: localizePath(`/${WORKS_HASH}`, locale), label: nav.works },
+  { key: 'email', href: mailtoHref(locale), label: nav.email },
+];
+
+const metalId = `pill-nav-metal-${locale}`;
+const clipId = `pill-nav-clip-${locale}`;
+---
+
+<div
+  class="pill-nav"
+  data-pill-nav
+  data-email={email}
+  data-toast-copied={nav.emailCopied}
+  data-toast-fallback={nav.emailWriteTo}
+  transition:persist={`pill-nav-${locale}`}
+>
+  <div class="pill-nav__scrim pill-nav__scrim_edge_top" aria-hidden="true"></div>
+  <div class="pill-nav__scrim pill-nav__scrim_edge_bottom" aria-hidden="true"></div>
+
+  <div class="pill-nav__bar">
+    <div class="pill-nav__chrome" transition:name="pf-nav" transition:animate="none">
+      <nav class="pill-nav__nav" aria-label={nav.label}>
+        <ul class="pill-nav__list">
+          {items.map(({ key, href, label }) => (
+            <li class="pill-nav__item">
+              <a
+                class:list={['pill-nav__link', key === 'email' && 'pill-nav__link_kind_email']}
+                href={href}
+                data-nav-key={key}
+                aria-current={key === active ? ariaCurrentFor(href) : undefined}
+              >
+                {key === active && <span class="pill-nav__active" aria-hidden="true" />}
+                <span class="pill-nav__label">{label}</span>
+                {key === 'email' && (
+                  <span class="pill-nav__icon" aria-hidden="true">
+                    {/* Own metallic envelope (SH-05); the band slides while hovered (SH-06). */}
+                    <svg width="15" height="15" viewBox="0 0 24 24" focusable="false">
+                      <defs>
+                        <linearGradient id={metalId} x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0" stop-color="#fbfdff" />
+                          <stop offset=".24" stop-color="#97a2b1" />
+                          <stop offset=".44" stop-color="#eef3fa" />
+                          <stop offset=".5" stop-color="#fff" />
+                          <stop offset=".58" stop-color="#586375" />
+                          <stop offset=".8" stop-color="#cdd6e2" />
+                          <stop offset="1" stop-color="#7a8799" />
+                        </linearGradient>
+                        <clipPath id={clipId}>
+                          <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
+                        </clipPath>
+                      </defs>
+                      <rect
+                        x="2.5"
+                        y="5"
+                        width="19"
+                        height="14"
+                        rx="2.5"
+                        fill={`url(#${metalId})`}
+                        stroke="#5e6a7b"
+                      />
+                      <g clip-path={`url(#${clipId})`}>
+                        <path
+                          class="pill-nav__bands"
+                          d="M6 1h5l9 23h-5z"
+                          fill="#fff"
+                          opacity=".32"
+                        />
+                      </g>
+                      <path
+                        d="M3.5 7.5 12 13l8.5-5.5"
+                        fill="none"
+                        stroke="#4e5a6b"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path d="M5 6h14" fill="none" stroke="#fff" stroke-opacity=".75" />
+                    </svg>
+                  </span>
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  {/* SH-07: live region in the banner (D-03); the toast inside is filled by the script. */}
+  <div class="pill-nav__status" role="status" aria-live="polite">
+    <div class="pill-nav__toast" data-state="hidden">
+      <span class="pill-nav__toast-icon" hidden>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" focusable="false">
+          <path
+            d="M3.25 8.25 6.5 11.25 12.75 4.5"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></path>
+        </svg>
+      </span>
+      <span class="pill-nav__toast-text"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { startPillNav } from './pill-nav.client';
+
+  startPillNav();
+</script>
+
+<style>
+  @layer pf {
+    .pill-nav {
+      /* SH-04: press. */
+      --pill-nav-press: scale var(--pf-dur-press) ease-out;
+      /* SH-05 enter (hover / focus-visible) and leave of "Email". */
+      --pill-nav-email-pad-ms: var(--pf-nav-email-pad-duration);
+      --pill-nav-email-label-in-ms: var(--pf-nav-email-label-in-duration);
+      --pill-nav-email-label-out-ms: var(--pf-nav-email-label-out-duration);
+      --pill-nav-email-icon-in: var(--pf-nav-email-icon-in-durations);
+      --pill-nav-email-icon-out: var(--pf-nav-email-icon-out-durations);
+      --pill-nav-email-fade-out-ease: var(--pf-nav-email-fade-out-ease);
+      /* SH-06: metallic bands. */
+      --pill-nav-bands-ms: var(--pf-nav-bands-duration);
+      --pill-nav-bands-travel: var(--pf-nav-bands-travel);
+      /* SH-07: toast. */
+      --pill-nav-toast-in-ms: var(--pf-nav-toast-in-duration);
+      --pill-nav-toast-out-ms: var(--pf-nav-toast-out-duration);
+      /* SH-08: phone chrome. */
+      --pill-nav-hide-move-ms: var(--pf-nav-hide-move-duration);
+      --pill-nav-hide-fade-ms: var(--pf-nav-hide-fade-duration);
+      /* Focus ring of the pill links (design-spec §7.1). */
+      --pill-nav-focus-offset: var(--pf-nav-focus-offset);
+
+      /* Scrims (interacciones.md §2): over the page, under the nav. */
+      .pill-nav__scrim {
+        position: fixed;
+        inset-inline: 0;
+        z-index: var(--pf-z-nav-scrim);
+        height: 104px;
+        pointer-events: none;
+        opacity: 0.9;
+      }
+
+      .pill-nav__scrim_edge_top {
+        top: 0;
+        background: linear-gradient(to bottom, var(--pf-bg) 0%, transparent 100%);
+        backdrop-filter: blur(10px);
+        mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 100%);
+      }
+
+      .pill-nav__scrim_edge_bottom {
+        display: none;
+        bottom: 0;
+        height: 128px;
+        background: linear-gradient(to top, var(--pf-bg) 0%, transparent 100%);
+        mask-image: linear-gradient(to top, #000 0%, #000 34%, transparent 100%);
+        transition: opacity var(--pill-nav-hide-fade-ms) ease;
+      }
+
+      /* Centred in the visible area: Blue's push is added to the centring (decision 16, BL-05). */
+      .pill-nav__bar {
+        position: fixed;
+        top: var(--pf-nav-top);
+        left: 0;
+        right: var(--pf-blue-offset, 0px);
+        z-index: var(--pf-z-nav);
+        display: flex;
+        justify-content: center;
+        pointer-events: none;
+      }
+
+      .pill-nav__chrome {
+        display: flex;
+        max-width: 100%;
+        pointer-events: auto;
+        will-change: transform, opacity;
+      }
+
+      .pill-nav__nav {
+        position: relative;
+        display: flex;
+        box-sizing: border-box;
+        width: max-content;
+        max-width: 100%;
+        padding: var(--pf-nav-pad);
+        border-radius: var(--pf-radius-pill);
+        background: var(--pf-surface);
+        user-select: none;
+      }
+
+      .pill-nav__list {
+        display: flex;
+        flex: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .pill-nav__link {
+        position: relative;
+        isolation: isolate;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        min-height: 32px;
+        padding: 6px 14px;
+        border-radius: var(--pf-radius-pill);
+        color: var(--pf-text);
+        font-family: var(--pf-font-sans);
+        font-size: var(--pf-type-nav-size);
+        font-weight: 500;
+        line-height: var(--pf-type-nav-lh);
+        letter-spacing: var(--pf-type-nav-ls);
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: var(--pill-nav-press);
+
+        &[aria-current] {
+          color: var(--pf-nav-active-text);
+        }
+
+        /* SH-04 */
+        &:active {
+          scale: var(--pf-press-scale);
+        }
+
+        /* Over the neighbour's active background (design-spec §7.3). */
+        &:focus-visible {
+          z-index: 1;
+          outline-offset: var(--pill-nav-focus-offset);
+        }
+      }
+
+      /* SH-01 / SH-02: the script slides them between links with springs (and may create them). */
+      :global(.pill-nav__active),
+      :global(.pill-nav__hover) {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        border-radius: var(--pf-radius-pill);
+        pointer-events: none;
+      }
+
+      /* Above the sliding backgrounds, inside the isolated link (also what axe can follow). */
+      .pill-nav__label {
+        position: relative;
+        z-index: 1;
+      }
+
+      :global(.pill-nav__active) {
+        background: var(--pf-nav-active-bg);
+      }
+
+      :global(.pill-nav__hover) {
+        background: var(--pf-nav-hover-bg);
+      }
+
+      /* SH-05: the pill widens, the label steps left and the envelope comes in. */
+      .pill-nav__link_kind_email {
+        transition:
+          var(--pill-nav-press),
+          padding-right var(--pill-nav-email-pad-ms) var(--pf-ease-out-expo);
+
+        .pill-nav__label {
+          transition: transform var(--pill-nav-email-label-out-ms) var(--pf-ease-material);
+        }
+
+        &:hover,
+        &:focus-visible {
+          padding-right: 30px;
+
+          .pill-nav__label {
+            transform: translateX(-7px);
+            transition: transform var(--pill-nav-email-label-in-ms) var(--pf-ease-out-expo);
+          }
+
+          .pill-nav__icon {
+            opacity: 1;
+            transform: translateX(0) scale(1) rotate(-12deg);
+            filter: blur(0);
+            transition-duration: var(--pill-nav-email-icon-in);
+            transition-timing-function: var(--pf-ease-out-expo);
+          }
+
+          /* SH-06: runs while hovered or focused, pauses where it is on leave. */
+          .pill-nav__bands {
+            animation-play-state: running;
+          }
+        }
+      }
+
+      .pill-nav__icon {
+        position: absolute;
+        z-index: 1;
+        right: 9px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        opacity: 0;
+        transform: translateX(-7px) scale(0.78) rotate(-24deg);
+        filter: blur(2px);
+        pointer-events: none;
+        transition-property: opacity, transform, filter;
+        transition-duration: var(--pill-nav-email-icon-out);
+        transition-timing-function:
+          var(--pill-nav-email-fade-out-ease), var(--pf-ease-material), ease;
+
+        svg {
+          overflow: visible;
+        }
+      }
+
+      /* SH-06: the sheen rests at the left end and sweeps to the right end and back. */
+      .pill-nav__bands {
+        translate: calc(-1 * var(--pill-nav-bands-travel)) 0;
+        animation: pill-nav-sweep var(--pill-nav-bands-ms) ease-in-out infinite alternate paused;
+      }
+
+      /* SH-07 */
+      .pill-nav__toast {
+        position: fixed;
+        top: var(--pf-nav-toast-top);
+        left: 50%;
+        z-index: var(--pf-z-toast);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-sizing: border-box;
+        max-width: calc(100vw - 32px);
+        padding: 10px 14px;
+        border-radius: var(--pf-radius-pill);
+        background: var(--pf-nav-active-bg);
+        color: var(--pf-nav-active-text);
+        box-shadow: var(--pf-shadow-toast);
+        font-family: var(--pf-font-sans);
+        font-size: var(--pf-type-toast-size);
+        font-weight: 500;
+        line-height: var(--pf-type-toast-lh);
+        letter-spacing: var(--pf-type-toast-ls);
+        white-space: nowrap;
+        pointer-events: none;
+        visibility: hidden;
+        opacity: 0;
+        translate: -50% 12px;
+        filter: blur(4px);
+
+        &[data-state='open'] {
+          visibility: visible;
+          opacity: 1;
+          translate: -50% 0;
+          filter: blur(0);
+          transition-property: opacity, translate, filter;
+          transition-duration: var(--pill-nav-toast-in-ms);
+          transition-timing-function: var(--pf-ease-standard);
+        }
+
+        &[data-state='closing'] {
+          visibility: visible;
+          translate: -50% -12px;
+          transition-property: opacity, translate, filter;
+          transition-duration: var(--pill-nav-toast-out-ms);
+          transition-timing-function: ease-out;
+        }
+      }
+
+      .pill-nav__toast-icon {
+        display: inline-flex;
+        flex: none;
+
+        &[hidden] {
+          display: none;
+        }
+      }
+
+      .pill-nav__toast-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      @media (max-width: 809.98px) {
+        .pill-nav__scrim {
+          backdrop-filter: none;
+        }
+
+        .pill-nav__scrim_edge_top {
+          height: 80px;
+        }
+
+        .pill-nav__scrim_edge_bottom {
+          display: block;
+        }
+
+        .pill-nav__bar {
+          top: auto;
+          bottom: var(--pf-nav-bottom);
+        }
+
+        /* SH-08 */
+        .pill-nav__chrome {
+          transition:
+            transform var(--pill-nav-hide-move-ms) var(--pf-ease-out-expo),
+            opacity var(--pill-nav-hide-fade-ms) ease;
+        }
+
+        .pill-nav__link {
+          min-height: 44px;
+          padding: 12px 14px;
+        }
+
+        .pill-nav__toast {
+          top: auto;
+          bottom: var(--pf-nav-toast-bottom-phone);
+        }
+      }
+
+      /* SH-08: set by the script on phones only. */
+      &[data-chrome-hidden] {
+        .pill-nav__chrome {
+          opacity: 0;
+          transform: translate3d(0, calc(100% + 56px), 0);
+          pointer-events: none;
+        }
+
+        .pill-nav__scrim_edge_bottom {
+          opacity: 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .pill-nav__chrome,
+        .pill-nav__scrim_edge_bottom,
+        .pill-nav__link,
+        .pill-nav__link_kind_email,
+        .pill-nav__label,
+        .pill-nav__icon,
+        .pill-nav__link_kind_email:is(:hover, :focus-visible)
+          :is(.pill-nav__label, .pill-nav__icon) {
+          transition: none;
+        }
+
+        .pill-nav__link:active {
+          scale: 1;
+        }
+
+        .pill-nav__bands {
+          animation: none;
+        }
+
+        /* Opacity only. */
+        .pill-nav__toast,
+        .pill-nav__toast[data-state] {
+          translate: -50% 0;
+          filter: none;
+          transition-property: opacity;
+        }
+      }
+    }
+  }
+
+  @keyframes pill-nav-sweep {
+    to {
+      translate: var(--pill-nav-bands-travel) 0;
+    }
+  }
+</style>
