@@ -1,0 +1,122 @@
+---
+/**
+ * "© year" (design-spec §8.2; componentes-js §9): rendered on the server with its final width (the
+ * reference mounts it with JS and grows from 0 × 0). `footer-portrait.client.ts` only corrects the
+ * year if the page outlives the build year.
+ *
+ * Also owns SH-18, the underline of the footer's text links: a 1 px `::after` 4 px in from each
+ * side and 8 px above the bottom that wipes in from the left on hover. Links opt in with
+ * `data-footer-text-link`, so the Aqua social buttons stay out (the reference's exclusion never
+ * matched, estados.md §1.6).
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { footer } = getMessages(locale);
+const year = new Date().getFullYear();
+const [before = '', after = ''] = footer.copyright.split('{year}');
+---
+
+<p class="copyright">
+  <small class="copyright__text">
+    {before}
+    <span data-copyright-year>{year}</span>
+    {after}
+  </small>
+</p>
+
+<style>
+  @layer pf {
+    .copyright {
+      position: relative;
+      flex: none;
+      max-width: 100%;
+      margin: 0;
+      color: var(--pf-text-secondary);
+      font: 400 var(--pf-type-footer-size) / var(--pf-type-footer-lh) var(--pf-font-sans);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .copyright__text {
+      font-size: inherit;
+    }
+
+    /* ---------- SH-18: text links of the footer ---------- */
+
+    /* Zero-specificity scope so each link can still set its own colour. */
+    :global(:where(.site-footer) [data-footer-text-link]) {
+      --footer-link-duration: var(--pf-dur-link);
+      --footer-link-reduced-duration: var(--pf-dur-link-reduced);
+      --footer-link-active-opacity: var(--pf-link-active-opacity);
+
+      position: relative;
+      color: var(--pf-text);
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :global(.site-footer [data-footer-text-link])::after {
+      content: '';
+      position: absolute;
+      inset-inline: 4px;
+      inset-block-end: 8px;
+      height: 1px;
+      background: currentColor;
+      pointer-events: none;
+      transform: scaleX(0);
+      transform-origin: left center;
+      opacity: 0;
+    }
+
+    :global(.site-footer [data-footer-text-link]:focus-visible) {
+      outline: var(--pf-focus-width) solid currentColor;
+      outline-offset: 3px;
+      border-radius: var(--pf-radius-xs);
+    }
+
+    :global(.site-footer [data-footer-text-link]:focus-visible)::after {
+      transform: scaleX(1);
+      opacity: 1;
+      transition: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      :global(.site-footer [data-footer-text-link])::after {
+        transition:
+          transform var(--footer-link-duration) var(--pf-ease-enter),
+          opacity var(--footer-link-duration) var(--pf-ease-enter);
+      }
+
+      :global(.site-footer [data-footer-text-link]:hover)::after {
+        transform: scaleX(1);
+        opacity: 1;
+      }
+
+      :global(.site-footer [data-footer-text-link]:focus-visible)::after {
+        transition: none;
+      }
+    }
+
+    :global(.site-footer [data-footer-text-link]:active)::after {
+      opacity: var(--footer-link-active-opacity);
+    }
+
+    /* Reduced motion: the line is already drawn and only its opacity fades. */
+    @media (prefers-reduced-motion: reduce) and (hover: hover) and (pointer: fine) {
+      :global(.site-footer [data-footer-text-link])::after {
+        transform: scaleX(1);
+        transition: opacity var(--footer-link-reduced-duration) var(--pf-ease-enter);
+      }
+
+      :global(.site-footer [data-footer-text-link]:focus-visible)::after {
+        transition: none;
+      }
+    }
+  }
+</style>

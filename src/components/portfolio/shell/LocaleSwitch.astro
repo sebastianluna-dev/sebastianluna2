@@ -1,0 +1,87 @@
+---
+/**
+ * Language switch (design-spec §4 shell; not in the reference). It sits in the copyright strip,
+ * where the reference has its "Privacy" text link, with the same metrics (Geist 14, padding 8 4,
+ * 44 × 44 minimum target) and the SH-18 underline. Both languages are listed, each name written
+ * in its own language; the current one is `aria-current="page"` and dimmed, the other carries
+ * `hreflang` and `lang` and points to the same page in that language.
+ */
+import { HREFLANG, HTML_LANG, LOCALES, type Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { switchLocalePath } from '@/lib/i18n-paths';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { footer } = getMessages(locale);
+const pathname = Astro.url.pathname;
+---
+
+<nav class="locale-switch" aria-label={footer.locale.label}>
+  <ul class="locale-switch__list">
+    {LOCALES.map((target) => {
+      const current = target === locale;
+      return (
+        <li class="locale-switch__item">
+          <a
+            class="locale-switch__link"
+            href={switchLocalePath(pathname, target)}
+            hreflang={HREFLANG[target]}
+            lang={HTML_LANG[target]}
+            aria-current={current ? 'page' : undefined}
+            data-footer-text-link
+          >
+            {footer.locale[target]}
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</nav>
+
+<style>
+  @layer pf {
+    .locale-switch {
+      flex: none;
+    }
+
+    .locale-switch__list {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .locale-switch__item {
+      display: flex;
+      align-items: center;
+
+      /* A hairline between the two names. */
+      & + &::before {
+        content: '';
+        width: 1px;
+        height: 12px;
+        background: var(--pf-text-secondary);
+        opacity: 0.5;
+      }
+    }
+
+    .locale-switch__link {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 8px 4px;
+      margin-inline: 4px;
+      font: 400 var(--pf-type-footer-size) / 1.4 var(--pf-font-sans);
+      white-space: pre;
+
+      &[aria-current='page'] {
+        color: var(--pf-text-secondary);
+      }
+    }
+  }
+</style>

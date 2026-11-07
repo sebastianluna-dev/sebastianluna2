@@ -1,0 +1,532 @@
+---
+/**
+ * Footer portrait scene (SH-09…SH-17; design-spec §2.2, §3.1, §8; home.md "Footer"; sin-js.md §3).
+ *
+ * A Figma-like selection frame with the giant name fitted to the width, a head that peeks over the
+ * divider and two hands gripping its edge. Every size is CSS on the scene's container width W
+ * (`cqw`), with the reference formulas:
+ *
+ * - F = clamp(8, .018W, 24) side inset of the frame; name = (W − 2F − 20) / K (SH-13, no JS);
+ * - frame height = 1.04·name + 8 (16 below 600), its top at 24, the divider under it (b);
+ * - h = (W < 600 ? min(.84W, 330) : min(max(W, W < 1000 ? 1100 : 1300) / 3, 760))·1.2;
+ *   head .5h wide at b − .86 of its height, hands .615h wide at b − .55 of theirs, ±.09h apart.
+ *
+ * The markup is the scene's END state: that is what shows without JS and with reduced motion
+ * (decisiones.md 28). The state before the scene lives under `html.js [data-footer-scene=pending]`
+ * and `footer-portrait.client.ts` plays it (WAAPI), the hands (SH-15) included.
+ *
+ * The head is the top of Sebastian's portrait, cropped at build time. The hands are an own SVG
+ * drawing until there is a photo of his hands (provisional content).
+ */
+import { Image } from 'astro:assets';
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { PROFILE } from '@/data/profile';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { common, footer } = getMessages(locale);
+
+/** SH-10: the frame is drawn as 8 half edges, each growing from its corner. */
+const EDGES = [
+  ['top', 'start'],
+  ['top', 'end'],
+  ['bottom', 'start'],
+  ['bottom', 'end'],
+  ['left', 'start'],
+  ['left', 'end'],
+  ['right', 'start'],
+  ['right', 'end'],
+] as const;
+
+/**
+ * Head crop: the top 900 × 410 of the 900 × 1200 portrait, hair to nose. It is laid out at 90 % of
+ * the head box (the reference head ratio, 1979 / 794), so the hair starts at its top and the eyes sit
+ * about 73 % down, just above the divider, as in the reference. `sizes` follows .45h.
+ */
+const HEAD_CROP = { width: 900, height: 410 } as const;
+const HEAD_WIDTHS = [240, 320, 480, 640, 900];
+const HEAD_SIZES =
+  '(min-width: 2280px) 411px, (min-width: 1300px) 18vw, (min-width: 1000px) 234px, (min-width: 600px) 198px, min(45.4vw, 179px)';
+---
+
+<div class="footer-portrait" data-footer-portrait>
+  <div class="footer-portrait__canvas">
+    <div class="footer-portrait__divider" aria-hidden="true"></div>
+
+    <div class="footer-portrait__frame" data-footer-part="frame">
+      {EDGES.map(([side, end]) => (
+        <span
+          class:list={[
+            'footer-portrait__edge',
+            `footer-portrait__edge_side_${side}`,
+            `footer-portrait__edge_end_${end}`,
+          ]}
+          data-footer-part="edge"
+          aria-hidden="true"
+        />
+      ))}
+      <span class="footer-portrait__label" data-footer-part="label" aria-hidden="true">
+        <span class="footer-portrait__diamond"></span>
+        {footer.frameLabel}
+      </span>
+      <div class="footer-portrait__reveal" data-footer-part="reveal">
+        <p class="footer-portrait__name" data-footer-part="name">
+          {footer.name}
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-portrait__head-mask">
+      <div class="footer-portrait__head-duck" data-footer-part="duck">
+        <div class="footer-portrait__head-rise" data-footer-part="rise">
+          <Image
+            class="footer-portrait__head"
+            data-footer-part="head"
+            src={PROFILE.portrait}
+            alt={common.portraitAlt}
+            width={HEAD_CROP.width}
+            height={HEAD_CROP.height}
+            fit="cover"
+            position="top"
+            widths={HEAD_WIDTHS}
+            sizes={HEAD_SIZES}
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-portrait__hands" aria-hidden="true">
+      {/* Own drawing: four fingers over the edge (y 88 of 160 = the divider) and a thumb. */}
+      <svg
+        class="footer-portrait__hand footer-portrait__hand_side_left"
+        data-footer-part="hand"
+        viewBox="0 0 174 160"
+        focusable="false"
+      >
+        <defs>
+          <linearGradient
+            id="pf-footer-hand-skin"
+            gradientUnits="userSpaceOnUse"
+            x1="0"
+            y1="56"
+            x2="0"
+            y2="140"
+          >
+            <stop offset="0" stop-color="#c98f78"></stop>
+            <stop offset=".26" stop-color="#e9b39b"></stop>
+            <stop offset=".36" stop-color="#d49c84"></stop>
+            <stop offset=".385" stop-color="#b47a63"></stop>
+            <stop offset=".43" stop-color="#e3ab93"></stop>
+            <stop offset=".8" stop-color="#f0c1aa"></stop>
+            <stop offset="1" stop-color="#dba48c"></stop>
+          </linearGradient>
+          <linearGradient id="pf-footer-hand-side" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stop-color="#7a4a3a" stop-opacity=".28"></stop>
+            <stop offset=".22" stop-color="#7a4a3a" stop-opacity="0"></stop>
+            <stop offset=".78" stop-color="#7a4a3a" stop-opacity="0"></stop>
+            <stop offset="1" stop-color="#7a4a3a" stop-opacity=".3"></stop>
+          </linearGradient>
+          <symbol id="pf-footer-hand" viewBox="0 0 174 160">
+            <g stroke="#99604c" stroke-opacity=".55" stroke-width=".9">
+              <path d="M26 92C24 74 40 60 70 57c30-3 58 0 66 14l-2 21Z" fill="#cf957d"></path>
+              <g transform="rotate(8 40 95)">
+                <rect
+                  x="29"
+                  y="70"
+                  width="22"
+                  height="50"
+                  rx="11"
+                  fill="url(#pf-footer-hand-skin)"
+                ></rect>
+                <rect
+                  x="29"
+                  y="70"
+                  width="22"
+                  height="50"
+                  rx="11"
+                  fill="url(#pf-footer-hand-side)"
+                  stroke="none"
+                ></rect>
+                <rect x="33.5" y="102" width="13" height="12" rx="5.5" fill="#f3cdbd"></rect>
+              </g>
+              <g transform="rotate(3 63 97)">
+                <rect
+                  x="50.5"
+                  y="62"
+                  width="25"
+                  height="70"
+                  rx="12.5"
+                  fill="url(#pf-footer-hand-skin)"
+                ></rect>
+                <rect
+                  x="50.5"
+                  y="62"
+                  width="25"
+                  height="70"
+                  rx="12.5"
+                  fill="url(#pf-footer-hand-side)"
+                  stroke="none"
+                ></rect>
+                <rect x="55.5" y="113" width="15" height="13" rx="6" fill="#f3cdbd"></rect>
+              </g>
+              <g transform="rotate(-1 89 97)">
+                <rect
+                  x="76"
+                  y="59"
+                  width="26"
+                  height="77"
+                  rx="13"
+                  fill="url(#pf-footer-hand-skin)"
+                ></rect>
+                <rect
+                  x="76"
+                  y="59"
+                  width="26"
+                  height="77"
+                  rx="13"
+                  fill="url(#pf-footer-hand-side)"
+                  stroke="none"
+                ></rect>
+                <rect x="81.5" y="117" width="15" height="13" rx="6" fill="#f3cdbd"></rect>
+              </g>
+              <g transform="rotate(-5 115 96)">
+                <rect
+                  x="102.5"
+                  y="62"
+                  width="25"
+                  height="68"
+                  rx="12.5"
+                  fill="url(#pf-footer-hand-skin)"
+                ></rect>
+                <rect
+                  x="102.5"
+                  y="62"
+                  width="25"
+                  height="68"
+                  rx="12.5"
+                  fill="url(#pf-footer-hand-side)"
+                  stroke="none"
+                ></rect>
+                <rect x="107.5" y="111" width="15" height="13" rx="6" fill="#f3cdbd"></rect>
+              </g>
+              <g transform="rotate(-16 138 80)">
+                <rect x="128" y="60" width="20" height="36" rx="10" fill="#d9a088"></rect>
+                <rect
+                  x="128"
+                  y="60"
+                  width="20"
+                  height="36"
+                  rx="10"
+                  fill="url(#pf-footer-hand-side)"
+                  stroke="none"
+                ></rect>
+              </g>
+            </g>
+            <path
+              d="M36 79q4-2 8 0M58 72q5-2.5 10 0M84 69q5-2.5 10 0M110 72q5-2.5 10 0M35 100q5 2 9 0M57 104q5 2 10 0M83 106q5 2 10 0M109 103q5 2 10 0"
+              fill="none"
+              stroke="#a0654f"
+              stroke-opacity=".45"
+              stroke-linecap="round"
+            ></path>
+          </symbol>
+        </defs>
+        <use href="#pf-footer-hand"></use>
+      </svg>
+      <svg
+        class="footer-portrait__hand footer-portrait__hand_side_right"
+        data-footer-part="hand"
+        viewBox="0 0 174 160"
+        focusable="false"
+      >
+        <use href="#pf-footer-hand"></use>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<style>
+  @layer pf {
+    .footer-portrait {
+      /* Measured constants of the reference scene (componentes-js §8). */
+      --fp-frame-color: var(--pf-frame-accent); /* Figma selection purple */
+      --fp-frame-top: 24px;
+      --fp-frame-line: 2px;
+      --fp-name-margin: 20px;
+      --fp-head-ratio: 2.4924; /* 1979 / 794 */
+      --fp-hands-ratio: 2.1728; /* 1849 / 851 */
+      --fp-head-scale: 90%; /* our crop inside the head box (see HEAD_CROP) */
+
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      container: footer-portrait / inline-size;
+
+      /* Before the scene: JS only, and never with reduced motion (the scene is then its end state). */
+      @media (prefers-reduced-motion: no-preference) {
+        :global(html.js [data-footer-scene='pending']) & {
+          .footer-portrait__frame {
+            scale: 0.997;
+          }
+
+          .footer-portrait__edge_side_top,
+          .footer-portrait__edge_side_bottom {
+            scale: 0 1;
+          }
+
+          .footer-portrait__edge_side_left,
+          .footer-portrait__edge_side_right {
+            scale: 1 0;
+          }
+
+          .footer-portrait__label {
+            opacity: 0;
+            translate: 0 5px;
+            scale: 0.98;
+          }
+
+          .footer-portrait__reveal {
+            clip-path: inset(100% 0 0 0);
+          }
+
+          .footer-portrait__name {
+            translate: 0 26px;
+            scale: 0.985;
+          }
+
+          .footer-portrait__head-rise {
+            translate: 0 calc(var(--fp-head-h) * 0.95);
+          }
+
+          .footer-portrait__head {
+            rotate: -2.5deg;
+            scale: 0.985;
+          }
+
+          .footer-portrait__hand {
+            opacity: 0;
+            translate: 0 16px;
+          }
+        }
+      }
+    }
+
+    /* The sizes live on a child: `cqw` resolves against the scene where each one is used. */
+    .footer-portrait__canvas {
+      --fp-inset: clamp(8px, 1.8cqw, 24px);
+      --fp-name-size: calc(
+        (100cqw - 2 * var(--fp-inset) - var(--fp-name-margin)) / var(--pf-footer-name-k)
+      );
+      --fp-frame-pad: 8px;
+      --fp-frame-height: calc(var(--fp-name-size) * 1.04 + var(--fp-frame-pad));
+      --fp-base: calc(var(--fp-frame-top) + var(--fp-frame-height));
+      --fp-h: calc(min(max(100cqw, 1300px) / 3, 760px) * 1.2);
+      --fp-head-w: calc(var(--fp-h) * 0.5);
+      --fp-head-h: calc(var(--fp-head-w) / var(--fp-head-ratio));
+      --fp-hands-w: calc(var(--fp-h) * 0.615);
+      --fp-hands-h: calc(var(--fp-hands-w) / var(--fp-hands-ratio));
+      --fp-hands-shift: calc(var(--fp-h) * 0.09);
+
+      position: absolute;
+      inset: 0;
+
+      @container footer-portrait (width < 1000px) {
+        --fp-h: calc(1100px / 3 * 1.2);
+      }
+
+      @container footer-portrait (width < 600px) {
+        --fp-h: calc(min(84cqw, 330px) * 1.2);
+        --fp-frame-pad: 16px;
+      }
+    }
+
+    .footer-portrait__divider {
+      position: absolute;
+      inset: var(--fp-base) 0 0;
+      z-index: 0;
+      border-block-start: 1px solid var(--pf-footer-divider);
+    }
+
+    /* ---------- Frame (SH-10), label (SH-11) and name (SH-12, SH-13) ---------- */
+
+    .footer-portrait__frame {
+      position: absolute;
+      inset-inline: var(--fp-inset);
+      inset-block-start: var(--fp-frame-top);
+      z-index: 2;
+      height: var(--fp-frame-height);
+      transform-origin: center;
+    }
+
+    .footer-portrait__edge {
+      position: absolute;
+      background: var(--fp-frame-color);
+    }
+
+    .footer-portrait__edge_side_top,
+    .footer-portrait__edge_side_bottom {
+      width: 50%;
+      height: var(--fp-frame-line);
+    }
+
+    .footer-portrait__edge_side_left,
+    .footer-portrait__edge_side_right {
+      width: var(--fp-frame-line);
+      height: 50%;
+    }
+
+    .footer-portrait__edge_side_top {
+      inset-block-start: 0;
+    }
+
+    .footer-portrait__edge_side_bottom {
+      inset-block-end: 0;
+    }
+
+    .footer-portrait__edge_side_left {
+      inset-inline-start: 0;
+    }
+
+    .footer-portrait__edge_side_right {
+      inset-inline-end: 0;
+    }
+
+    .footer-portrait__edge_side_top.footer-portrait__edge_end_start,
+    .footer-portrait__edge_side_bottom.footer-portrait__edge_end_start {
+      inset-inline-start: 0;
+      transform-origin: left center;
+    }
+
+    .footer-portrait__edge_side_top.footer-portrait__edge_end_end,
+    .footer-portrait__edge_side_bottom.footer-portrait__edge_end_end {
+      inset-inline-end: 0;
+      transform-origin: right center;
+    }
+
+    .footer-portrait__edge_side_left.footer-portrait__edge_end_start,
+    .footer-portrait__edge_side_right.footer-portrait__edge_end_start {
+      inset-block-start: 0;
+      transform-origin: center top;
+    }
+
+    .footer-portrait__edge_side_left.footer-portrait__edge_end_end,
+    .footer-portrait__edge_side_right.footer-portrait__edge_end_end {
+      inset-block-end: 0;
+      transform-origin: center bottom;
+    }
+
+    .footer-portrait__label {
+      position: absolute;
+      inset-inline-start: -2px;
+      inset-block-start: -19px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 4px;
+      color: var(--fp-frame-color);
+      font: 500 var(--pf-type-frame-label-size) / var(--pf-type-frame-label-lh) var(--pf-font-sans);
+      white-space: nowrap;
+    }
+
+    .footer-portrait__diamond {
+      display: block;
+      width: 7px;
+      height: 7px;
+      border: 1.5px solid currentColor;
+      rotate: 45deg;
+    }
+
+    .footer-portrait__reveal {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .footer-portrait__name {
+      margin: 0;
+      color: var(--pf-text);
+      font-family: var(--pf-font-sans);
+      font-size: var(--fp-name-size);
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: var(--pf-type-fit-ls);
+      white-space: nowrap;
+    }
+
+    /* ---------- Head (SH-14, SH-17): only the part above the divider shows ---------- */
+
+    .footer-portrait__head-mask {
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: 0;
+      z-index: 3;
+      height: var(--fp-base);
+      overflow: hidden;
+    }
+
+    .footer-portrait__head-duck {
+      position: absolute;
+      inset-inline-start: calc((100cqw - var(--fp-head-w)) / 2);
+      inset-block-start: calc(var(--fp-base) - var(--fp-head-h) * 0.86);
+      width: var(--fp-head-w);
+      height: var(--fp-head-h);
+    }
+
+    .footer-portrait__head-rise {
+      width: 100%;
+      height: 100%;
+    }
+
+    .footer-portrait__head {
+      display: block;
+      width: var(--fp-head-scale);
+      max-width: none;
+      height: auto;
+      margin-inline: auto;
+      transform-origin: 50% 100%;
+      filter: var(--pf-shadow-portrait);
+      user-select: none;
+    }
+
+    /* ---------- Hands (SH-15): fingers over the divider, animated by the scene script ---------- */
+
+    .footer-portrait__hands {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+    }
+
+    .footer-portrait__hand {
+      position: absolute;
+      inset-block-start: calc(var(--fp-base) - var(--fp-hands-h) * 0.55);
+      width: calc(var(--fp-hands-w) / 2);
+      height: var(--fp-hands-h);
+      overflow: visible;
+      filter: var(--pf-shadow-portrait);
+    }
+
+    .footer-portrait__hand_side_left {
+      inset-inline-start: calc((100cqw - var(--fp-hands-w)) / 2 - var(--fp-hands-shift));
+    }
+
+    .footer-portrait__hand_side_right {
+      inset-inline-start: calc(
+        (100cqw - var(--fp-hands-w)) / 2 + var(--fp-hands-shift) + var(--fp-hands-w) / 2
+      );
+      /* The same drawing, mirrored. */
+      transform: scaleX(-1);
+    }
+  }
+</style>

@@ -1,0 +1,103 @@
+---
+/**
+ * Footer profile links (SH-16; EF-01…EF-04; accesibilidad.md "SocialLinks"): a `nav` with four
+ * Aqua icon buttons, 44 × 44 and 20 px apart. Each name is in the SSR, with the new-tab suffix on
+ * external links. The buttons hydrate when visible (`client:visible`), so `motion/react` never
+ * ships with the page load; the skin is CSS and visible without JS.
+ *
+ * The staggered entrance runs on each item (not on the link, whose press scale is its own), driven
+ * by `footer-portrait.client.ts` with the scene; before it, the items wait hidden only with JS.
+ */
+import type { Locale } from '@/i18n/locales';
+import { format, getMessages } from '@/i18n/t';
+import { CONTACT_EMAILS, socialLinks, type SocialKey } from '@/data/profile';
+import { AquaButton, type AquaIcon } from '@/components/portfolio/ui/AquaButton';
+import { siGithub } from 'simple-icons';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { common, footer } = getMessages(locale);
+const links = socialLinks(locale);
+
+/**
+ * Icons on a 24 grid, painted with `currentColor` (nonzero fill: inner contours run the other way).
+ * GitHub is simple-icons (CC0); LinkedIn left simple-icons, so it and the other two are own glyphs.
+ */
+const ICONS: Record<SocialKey, AquaIcon> = {
+  linkedin: {
+    path: 'M3.4 5.2a2.1 2.1 0 1 0 4.2 0a2.1 2.1 0 1 0-4.2 0ZM3.7 8.9h3.6v11.6H3.7ZM9.6 8.9h3.4v1.6c.6-1.1 2-2 3.9-2 3.4 0 4.4 2.2 4.4 5.2v6.8h-3.6v-5.9c0-1.5-.3-2.9-2.1-2.9s-2.4 1.3-2.4 2.9v5.9H9.6Z',
+  },
+  github: { path: siGithub.path },
+  email: {
+    path: 'M4.5 4.5h15A2.5 2.5 0 0 1 22 7v10a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17V7a2.5 2.5 0 0 1 2.5-2.5ZM3.8 7v10c0 .4.3.7.7.7h15c.4 0 .7-.3.7-.7V7c0-.4-.3-.7-.7-.7h-15c-.4 0-.7.3-.7.7ZM3.6 7.6l1.2-1.4 7.2 5.2 7.2-5.2 1.2 1.4-8.4 6Z',
+  },
+  cv: {
+    path: 'M6.8 2h7.8L19 6.4v13.8a1.8 1.8 0 0 1-1.8 1.8H6.8A1.8 1.8 0 0 1 5 20.2V3.8A1.8 1.8 0 0 1 6.8 2Zm0 1.8v16.4h10.4V7.2h-3.4V3.8ZM11.1 9.5h1.8v5.6l2-2 1.3 1.3-4.2 4.2-4.2-4.2 1.3-1.3 2 2Z',
+  },
+};
+---
+
+<nav class="social-links" aria-label={footer.socialLabel}>
+  <ul class="social-links__list">
+    {links.map((link, index) => {
+      const label = footer.social[link.key];
+      return (
+        <li class="social-links__item" data-footer-social={index}>
+          <AquaButton
+            client:visible
+            href={link.href}
+            label={label}
+            accessibleName={link.external ? format(common.externalLink, { label }) : label}
+            external={link.external}
+            icon={ICONS[link.key]}
+            copyEmail={link.key === 'email' ? CONTACT_EMAILS[locale] : undefined}
+          />
+        </li>
+      );
+    })}
+  </ul>
+</nav>
+
+<style>
+  @layer pf {
+    .social-links {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex: none;
+      justify-content: center;
+      max-width: 100%;
+    }
+
+    .social-links__list {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .social-links__item {
+      position: relative;
+      display: flex;
+      flex: 0 0 44px;
+      justify-content: center;
+      align-items: center;
+      width: 44px;
+      height: 44px;
+
+      /* SH-16 first keyframe, held until the scene reaches this button (JS only, no reduced). */
+      @media (prefers-reduced-motion: no-preference) {
+        :global(html.js [data-footer-scene='pending']) & {
+          opacity: 0;
+          transform: translateY(10px) scale(0.88);
+        }
+      }
+    }
+  }
+</style>
