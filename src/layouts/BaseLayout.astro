@@ -1,0 +1,115 @@
+---
+/**
+ * Document shell of every page with chrome: head (metadata, alternates, fonts,
+ * theme bootstrap), <ClientRouter/>, skip link, header with the pill nav and the
+ * theme cord, <main id="main"> and the footer, plus the dark star field behind everything. The 404 does not use it (design-spec §9.1).
+ */
+import { ClientRouter } from 'astro:transitions';
+import layersCss from '@/styles/layers.css?raw';
+import '@/styles/reset.css';
+import '@/styles/fonts.css';
+import '@/styles/tokens.css';
+import '@/styles/portfolio.css';
+import '@/styles/view-transitions.css';
+import geistUrl from '@/assets/fonts/geist-variable.woff2?url';
+import serifUrl from '@/assets/fonts/noto-serif-latin-wdth-normal.woff2?url';
+import { HTML_LANG, OG_LOCALE, type Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { alternates, canonicalUrl } from '@/lib/i18n-paths';
+import { themeInlineScript } from '@/components/portfolio/theme/theme.inline';
+import SkipLink from '@/components/portfolio/shell/SkipLink.astro';
+import PillNav from '@/components/portfolio/shell/PillNav.astro';
+import Footer from '@/components/portfolio/shell/Footer.astro';
+import ThemeToggle from '@/components/portfolio/theme/ThemeToggle.astro';
+import Stellar from '@/components/portfolio/ui/Stellar.astro';
+
+interface Props {
+  locale: Locale;
+  /** Document title; defaults to the site title. */
+  title?: string;
+  /** Meta description; defaults to the site description. */
+  description?: string;
+  /** Keeps the page out of search results. */
+  noindex?: boolean;
+}
+
+const { locale, title, description, noindex = false } = Astro.props;
+const { common } = getMessages(locale);
+const pageTitle = title ?? common.meta.title;
+const pageDescription = description ?? common.meta.description;
+const pathname = Astro.url.pathname;
+const canonical = canonicalUrl(pathname);
+const otherLocale: Locale = locale === 'es' ? 'en' : 'es';
+---
+
+<!doctype html>
+<html lang={HTML_LANG[locale]} class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    {/* Layer order first, then the theme: both before any stylesheet or paint. */}
+    <style is:inline set:html={layersCss} />
+    <script is:inline set:html={themeInlineScript} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    {alternates(pathname).map(({ hreflang, href }) => (
+      <link rel="alternate" hreflang={hreflang} href={href} />
+    ))}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {/* The two faces above the fold: Geist and the serif Regular of the bio (fonts.css). */}
+    <link rel="preload" href={geistUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={common.siteName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={OG_LOCALE[locale]} />
+    <meta property="og:locale:alternate" content={OG_LOCALE[otherLocale]} />
+    <meta name="twitter:card" content="summary" />
+
+    <slot name="head" />
+    <ClientRouter />
+  </head>
+  <body>
+    {/* Direct child of body: paints at z-index −1 from the root stacking context (EF-09). */}
+    <Stellar />
+    <SkipLink locale={locale} />
+    <header class="site-header">
+      <PillNav locale={locale} pathname={pathname} />
+      <ThemeToggle locale={locale} />
+    </header>
+    {/* Right after the header, so it stays early in the Tab order (case back pill). */}
+    <slot name="after-header" />
+    <main id="main" class="site-main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+
+    <script>
+      // Page appear engine (animation-inventory.md §3–4), installed on every page so any
+      // [data-appear] is bound on load and on astro:page-load, with or without AppearMotion.
+      import { startAppearEngine } from '@/components/motion/appear.client';
+      import { startRouteTransitions } from '@/components/motion/route-transitions.client';
+
+      startAppearEngine();
+      startRouteTransitions();
+    </script>
+  </body>
+</html>
+
+<style>
+  @layer pf {
+    .site-main {
+      display: flex;
+      flex-direction: column;
+      /* Nothing escapes sideways (hero objects, carousels), without creating a scroll container. */
+      overflow: clip;
+    }
+  }
+</style>
