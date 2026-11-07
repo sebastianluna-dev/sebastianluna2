@@ -1,0 +1,6 @@
+/*
+ * Cascade layer order of the whole site. BaseLayout inlines this file as the
+ * first <style> of <head>, so the order holds whatever order the bundler emits
+ * the other stylesheets in. Unlayered rules (none on purpose) would win over all.
+ */
+@layer reset, tokens, pf, demos;

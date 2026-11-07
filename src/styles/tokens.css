@@ -1,0 +1,675 @@
+/*
+ * Portfolio design tokens (--pf-*). Values measured on the reference design
+ * (docs/design-spec.md §1, §2, §6.3). Demos never read these: they use --d-*.
+ *
+ * Theme:
+ *   - light in :root;
+ *   - manual or resolved dark in [data-theme="dark"] on <html> (theme.inline.ts
+ *     sets it before the first paint);
+ *   - without JS, dark follows prefers-color-scheme (block at the end, which
+ *     [data-theme="light"] cancels). Both dark blocks must stay identical:
+ *     tokens.test.ts compares them.
+ *
+ * Breakpoints (no custom media in plain CSS, so they are written out):
+ *   desktop >= 1200px · tablet 810px–1199.98px · phone <= 809.98px.
+ */
+@layer tokens {
+  :root {
+    color-scheme: light;
+
+    /* ---------- Colour: base ---------- */
+    --pf-bg: #fff;
+    --pf-text: #000;
+    --pf-text-inverse: #fff;
+    --pf-text-secondary: rgb(
+      0 0 0 / 0.52
+    ); /* bio, copyright, tip; contrast pending (decisiones.md 20) */
+    --pf-text-secondary-strong: rgb(0 0 0 / 0.58);
+    --pf-text-muted: rgb(0 0 0 / 0.6);
+    --pf-text-tertiary: rgb(0 0 0 / 0.4);
+    --pf-text-body: rgb(0 0 0 / 0.72); /* case body */
+    --pf-text-strong: rgb(0 0 0 / 0.88); /* side note titles */
+    --pf-text-neutral: #525252;
+    --pf-text-label: #999;
+
+    /* ---------- Colour: contrast knobs (decisiones.md 20, pending Sebastian) ---------- */
+    --pf-meta-dim: 0.4; /* opacity of the case meta values (Year…) */
+    --pf-map-inactive: 0.38; /* opacity of the inactive Works Map items */
+    --pf-prevnext-label: var(--pf-text-label); /* "Previous / Next case" label */
+
+    /* ---------- Colour: surfaces ---------- */
+    --pf-surface: #f6f6f6; /* pill nav, back pill */
+    --pf-surface-raised: #f6f6f6;
+    --pf-surface-subtle: #f6f6f6; /* kbd of the tip */
+    --pf-surface-elevated: #fff; /* hero menu */
+    --pf-media-placeholder: #ebebeb;
+    --pf-footer-bg: #fff;
+    --pf-badge-bg: rgb(246 246 248 / 0.78);
+    --pf-badge-text: #3c3c40;
+    --pf-badge-border: rgb(128 128 132 / 0.18);
+    --pf-nav-active-bg: #000;
+    --pf-nav-active-text: #fff;
+
+    /* ---------- Colour: borders and dividers ---------- */
+    --pf-border: rgb(0 0 0 / 0.08);
+    --pf-border-strong: rgb(0 0 0 / 0.2); /* Aqua outline */
+    --pf-divider: rgb(0 0 0 / 0.04); /* hero menu */
+    --pf-divider-case: var(--pf-media-placeholder); /* prev/next of the case */
+    --pf-divider-solid: #ebebeb;
+    --pf-border-solid: #e0e0e0;
+    --pf-footer-divider: #ededed;
+    --pf-hairline: oklch(0 0 0 / 0.1);
+    --pf-border-dark-only: transparent;
+
+    /* ---------- Colour: effects ---------- */
+    --pf-shadow-menu-color: rgb(30 40 60 / 0.14);
+    --pf-inner-glow: rgb(255 255 255 / 0.95);
+    --pf-shine: rgb(255 255 255 / 0.95);
+    --pf-star: transparent; /* stars only show in dark */
+    --pf-star-pulse: transparent;
+    --pf-star-shooting: transparent;
+    --pf-glow-pink: transparent;
+
+    /* ---------- Colour: reserved accents (no use seen yet) ---------- */
+    --pf-accent-blue: #1f67e8;
+    --pf-accent-violet: #754ed5;
+    --pf-accent-amber: #b06a0c;
+    --pf-accent-teal: #008778;
+    --pf-accent-red: #d34e43;
+
+    /* ---------- Colour: constants without a dark variant ---------- */
+    --pf-black: #000;
+    --pf-overlay-10: rgb(5 5 5 / 0.1);
+    --pf-overlay-24: rgb(5 5 5 / 0.24);
+    --pf-gray-dadada: #dadada;
+    --pf-chat-meta: rgb(60 60 67 / 0.62);
+
+    /* ---------- State tokens (design-spec §6.3) ---------- */
+    --pf-selection-accent: #007aff; /* hero scene and hero menu focus ring */
+    --pf-selection-highlight: rgb(0 122 255 / 0.22);
+    --pf-cover-bg: #111;
+    --pf-cover-dots-bg: rgb(0 0 0 / 0.32);
+    --pf-lightbox-scrim: rgb(0 0 0 / 0.92);
+    --pf-focus-ring: var(--pf-text);
+    --pf-nav-hover-bg: color-mix(in oklab, var(--pf-text) 8%, transparent);
+    --pf-back-pill-hover-bg: color-mix(in oklab, var(--pf-surface), var(--pf-text) 6%);
+
+    /* Theme cord (estados.md §1.7) */
+    --pf-toggle-ink: #161618;
+    --pf-toggle-string: rgb(38 38 42 / 0.82);
+    --pf-toggle-knob-bg: linear-gradient(155deg, #fff 0%, #eae9e5 48%, #c5c4bf 100%);
+    --pf-toggle-knob-border: #b8b7b2;
+    --pf-toggle-knob-shadow:
+      inset 0 1px 1px #fff, inset 0 -2px 2px rgb(91 86 71 / 0.18), 0 2px 0 #a6a49c,
+      0 5px 8px rgb(45 42 32 / 0.2);
+    --pf-toggle-face-bg: linear-gradient(160deg, #fafaf7, #e3e2dc);
+
+    /*
+     * Aqua buttons (estados.md §1.4). Own palettes: the layer recipe and the
+     * per-state Shadow opacities are the measured ones, the colours are ours.
+     * Components read the role aliases (--pf-aqua-neutral-*, --pf-aqua-accent-*),
+     * which switch palette with the theme.
+     */
+    --pf-aqua-mercury-fill: linear-gradient(180deg, #fefefe 0%, #f4f5f8 58%, #d9dde4 100%);
+    --pf-aqua-mercury-inset:
+      inset 0 -3px 8px rgb(98 108 126 / 0.24), inset 0 1px 0 rgb(255 255 255 / 0.96);
+    --pf-aqua-mercury-shadow-fill: linear-gradient(
+      180deg,
+      rgb(92 124 178 / 0.06),
+      rgb(74 116 188 / 0.28) 58%,
+      rgb(46 82 142 / 0.6)
+    );
+    --pf-aqua-mercury-shadow-drop: 0 16px 32px -10px rgb(40 72 128 / 0.76);
+    --pf-aqua-mercury-shadow-blur: 9px;
+    --pf-aqua-mercury-reflection: linear-gradient(180deg, transparent, rgb(255 255 255 / 0.42));
+    --pf-aqua-mercury-text: #000;
+    --pf-aqua-mercury-shadow-opacity: 0.55;
+    --pf-aqua-mercury-shadow-opacity-hover: 0.46;
+    --pf-aqua-mercury-shadow-opacity-pressed: 0.36;
+
+    --pf-aqua-crude-fill: linear-gradient(180deg, #2d2f35 0%, #1c1e23 62%, #131418 100%);
+    --pf-aqua-crude-inset: inset 0 -4px 8px rgb(0 0 0 / 0.56), inset 0 1px 0 rgb(255 255 255 / 0.1);
+    --pf-aqua-crude-shadow-fill: linear-gradient(
+      180deg,
+      rgb(0 0 0 / 0.02),
+      rgb(0 0 0 / 0.22) 58%,
+      rgb(0 0 0 / 0.68)
+    );
+    --pf-aqua-crude-shadow-drop: 0 16px 32px -12px rgb(0 0 0 / 0.86);
+    --pf-aqua-crude-shadow-blur: 8px;
+    --pf-aqua-crude-reflection: linear-gradient(180deg, transparent, rgb(255 255 255 / 0.2));
+    --pf-aqua-crude-text: #fff;
+    --pf-aqua-crude-shadow-opacity: 0.38;
+    --pf-aqua-crude-shadow-opacity-hover: 0.3;
+    --pf-aqua-crude-shadow-opacity-pressed: 0.22;
+
+    --pf-aqua-aqua-fill: linear-gradient(180deg, #1288ff 0%, #1ea2ff 62%, #7cc8ff 100%);
+    --pf-aqua-aqua-inset: inset 0 -5px 10px #cfe9ff, inset 0 1px 0 rgb(255 255 255 / 0.5);
+    --pf-aqua-aqua-shadow-fill: linear-gradient(
+      180deg,
+      rgb(18 136 255 / 0.1),
+      rgb(26 150 255 / 0.4) 58%,
+      rgb(70 178 255 / 0.78)
+    );
+    --pf-aqua-aqua-shadow-drop:
+      0 18px 38px -10px rgb(18 136 255 / 0.9), 0 26px 56px -14px rgb(18 136 255 / 0.66);
+    --pf-aqua-aqua-shadow-blur: 12px;
+    --pf-aqua-aqua-reflection: linear-gradient(180deg, transparent, rgb(255 255 255 / 0.55));
+    --pf-aqua-aqua-text: #fff;
+    --pf-aqua-aqua-shadow-opacity: 0.58;
+    --pf-aqua-aqua-shadow-opacity-hover: 0.5;
+    --pf-aqua-aqua-shadow-opacity-pressed: 0.4;
+
+    --pf-aqua-plasma-fill: linear-gradient(
+      180deg,
+      rgb(128 16 255 / 0.8) 0%,
+      rgb(220 48 255 / 0.8) 64%,
+      rgb(255 140 240 / 0.8) 100%
+    );
+    --pf-aqua-plasma-inset: inset 0 -5px 10px #ffe4fd, inset 0 5px 5px #7d10ff;
+    --pf-aqua-plasma-shadow-fill: linear-gradient(
+      180deg,
+      rgb(128 16 255 / 0.08),
+      rgb(220 48 255 / 0.34) 52%,
+      rgb(255 100 236 / 0.66)
+    );
+    --pf-aqua-plasma-shadow-drop:
+      0 18px 36px -10px rgb(200 40 255 / 0.84), 0 25px 52px -14px rgb(168 16 255 / 0.56);
+    --pf-aqua-plasma-shadow-blur: 11px;
+    --pf-aqua-plasma-reflection: linear-gradient(180deg, transparent, rgb(255 255 255 / 0.55));
+    --pf-aqua-plasma-text: #fff;
+    --pf-aqua-plasma-shadow-opacity: 0.52;
+    --pf-aqua-plasma-shadow-opacity-hover: 0.44;
+    --pf-aqua-plasma-shadow-opacity-pressed: 0.34;
+
+    /* Role aliases: neutral = Mercury (light) / Crude (dark); accent = Aqua / Plasma. */
+    --pf-aqua-neutral-fill: var(--pf-aqua-mercury-fill);
+    --pf-aqua-neutral-inset: var(--pf-aqua-mercury-inset);
+    --pf-aqua-neutral-shadow-fill: var(--pf-aqua-mercury-shadow-fill);
+    --pf-aqua-neutral-shadow-drop: var(--pf-aqua-mercury-shadow-drop);
+    --pf-aqua-neutral-shadow-blur: var(--pf-aqua-mercury-shadow-blur);
+    --pf-aqua-neutral-reflection: var(--pf-aqua-mercury-reflection);
+    --pf-aqua-neutral-text: var(--pf-aqua-mercury-text);
+    --pf-aqua-neutral-shadow-opacity: var(--pf-aqua-mercury-shadow-opacity);
+    --pf-aqua-neutral-shadow-opacity-hover: var(--pf-aqua-mercury-shadow-opacity-hover);
+    --pf-aqua-neutral-shadow-opacity-pressed: var(--pf-aqua-mercury-shadow-opacity-pressed);
+    --pf-aqua-accent-fill: var(--pf-aqua-aqua-fill);
+    --pf-aqua-accent-inset: var(--pf-aqua-aqua-inset);
+    --pf-aqua-accent-shadow-fill: var(--pf-aqua-aqua-shadow-fill);
+    --pf-aqua-accent-shadow-drop: var(--pf-aqua-aqua-shadow-drop);
+    --pf-aqua-accent-shadow-blur: var(--pf-aqua-aqua-shadow-blur);
+    --pf-aqua-accent-reflection: var(--pf-aqua-aqua-reflection);
+    --pf-aqua-accent-text: var(--pf-aqua-aqua-text);
+    --pf-aqua-accent-shadow-opacity: var(--pf-aqua-aqua-shadow-opacity);
+    --pf-aqua-accent-shadow-opacity-hover: var(--pf-aqua-aqua-shadow-opacity-hover);
+    --pf-aqua-accent-shadow-opacity-pressed: var(--pf-aqua-aqua-shadow-opacity-pressed);
+
+    /* ---------- Focus ring (design-spec §7.1) ---------- */
+    --pf-focus-width: 2px;
+    --pf-focus-offset: 2px;
+
+    /* ---------- Typography: families (design-spec §2.1, fonts.css) ---------- */
+    --pf-font-sans: 'Geist', 'Geist Fallback', system-ui, sans-serif;
+    --pf-font-serif: 'Serif Text', 'Serif Text Fallback', Georgia, serif;
+    --pf-font-mono: 'Geist Mono', ui-monospace, monospace; /* not loaded by the portfolio */
+    /* HE-14 tooltip: the reference asks for an unloaded Inter, so it paints in the system sans. */
+    --pf-font-system: system-ui, sans-serif;
+    --pf-serif-ls-adjust: 0.0019em; /* added to the letter-spacing of running serif text (hueco-4) */
+
+    /* Geist stylistic sets, only where the reference uses them (design-spec §2.1) */
+    --pf-ffs-alt: 'ss03' on, 'ss08' on;
+
+    /* ---------- Typography: scale (desktop; overrides below) ---------- */
+    /* Home */
+    --pf-type-hero-size: 24px;
+    --pf-type-hero-lh: 1.2;
+    --pf-type-hero-ls: -0.03em;
+    --pf-type-hero-action-size: clamp(11px, 2.8vw, 13px);
+    --pf-type-hero-action-lh: 1.2;
+    --pf-type-bio-size: 16px;
+    --pf-type-bio-lh: 1.4;
+    --pf-type-bio-ls: -0.03em;
+    /* Spacer between the bio paragraphs: 1.4em of the 12 px it inherits in the reference (151 px block). */
+    --pf-type-bio-gap: 16.8px;
+    --pf-type-cta-size: 22px;
+    --pf-type-cta-lh: 1;
+    --pf-type-nav-size: 14px;
+    --pf-type-nav-lh: 20px;
+    --pf-type-nav-ls: -0.02em;
+    --pf-type-badge-size: 14px;
+    --pf-type-badge-lh: 1;
+    --pf-type-badge-ls: -0.04em;
+    --pf-type-quote-size: 18px;
+    --pf-type-quote-lh: 1.3;
+    --pf-type-quote-ls: -0.035em;
+    --pf-type-caption-size: 12px; /* tip */
+    --pf-type-caption-lh: 1.2;
+    --pf-type-footer-size: 14px;
+    --pf-type-footer-lh: 1.5;
+    --pf-type-frame-label-size: 11px;
+    --pf-type-frame-label-lh: 14px;
+    --pf-type-fit-ls: -0.04em; /* footer name */
+    --pf-footer-name-k: 6.663; /* width of "Sebastian Luna" at 1px of Geist 500, -0.04em (design-spec §2.2) */
+    /* Case */
+    --pf-type-case-title-size: 48px;
+    --pf-type-case-title-lh: 1.1;
+    --pf-type-case-title-ls: -0.04em;
+    --pf-type-h2-size: 32px;
+    --pf-type-h2-lh: 1.2;
+    --pf-type-h2-ls: -0.04em;
+    --pf-type-h2-alt-size: 32px;
+    --pf-type-h2-alt-lh: 1.18;
+    --pf-type-h3-size: 22px;
+    --pf-type-h3-lh: 1.25;
+    --pf-type-h3-ls: -0.03em;
+    --pf-type-body-size: 18px;
+    --pf-type-body-lh: 1.55;
+    --pf-type-body-ls: -0.03em;
+    --pf-type-kicker-size: 14px;
+    --pf-type-kicker-lh: 1;
+    --pf-type-kicker-ls: -0.04em;
+    --pf-type-meta-size: 16px;
+    --pf-type-meta-lh: 1;
+    --pf-type-meta-ls: -0.04em;
+    --pf-type-index-size: 16px;
+    --pf-type-index-lh: 1;
+    --pf-type-index-ls: -0.01em;
+    --pf-type-note-size: 14px;
+    --pf-type-note-lh: 20px;
+    --pf-type-chat-size: 16px;
+    --pf-type-chat-lh: 21px;
+    --pf-type-chat-ls: -0.006em;
+    --pf-type-chat-emoji-size: 44px;
+    --pf-type-chat-emoji-lh: 52px;
+    --pf-type-chat-emoji-ls: 0.02em;
+    --pf-type-chat-meta-size: 12px;
+    --pf-type-chat-meta-lh: 16px;
+
+    /* ---------- Layout (design-spec §3) ---------- */
+    --pf-gutter-home: 8px;
+    --pf-gutter-case: 20px;
+    --pf-hero-max: 1280px;
+    --pf-hero-pad-block: 80px;
+    --pf-section-pad-block: 80px;
+    --pf-section-gap: 64px;
+    --pf-page-gap: 0px; /* 4px between home sections on phone */
+    --pf-grid-gap: 8px;
+    --pf-grid-cols: 3;
+    --pf-card-ratio: 4 / 3;
+    --pf-text-col: 560px;
+    --pf-case-col: 720px;
+    --pf-case-pad-top: 120px;
+    --pf-case-pad-bottom: 40px;
+    --pf-case-section-gap: 120px;
+    --pf-case-block-gap: 64px;
+    --pf-gallery-gap: 16px;
+    --pf-nav-top: 20px;
+    --pf-nav-bottom: 40px;
+    --pf-nav-height: 40px;
+    --pf-nav-pad: 4px;
+    --pf-toggle-right: 66px;
+
+    /* ---------- Radii and corner-shape ---------- */
+    --pf-radius-xs: 3px;
+    --pf-radius-kbd: 6px;
+    --pf-radius-badge: 8px;
+    --pf-radius-sm: 10px;
+    --pf-radius-md: 16px;
+    --pf-radius-cover: 20px;
+    --pf-radius-chip: 22px;
+    --pf-radius-card: 30px;
+    --pf-radius-pill: 999px;
+    --pf-radius-aqua: 1000px;
+    --pf-squircle: superellipse(1.2);
+    --pf-squircle-fallback: 0.892;
+    --pf-squircle-kbd: superellipse(1.8);
+    --pf-squircle-kbd-fallback: 0.634;
+    --pf-has-corner-shape: var(--pf-squircle-fallback); /* 1 when corner-shape is supported */
+    --pf-has-corner-shape-kbd: var(--pf-squircle-kbd-fallback);
+
+    /* ---------- Shadows and blurs ---------- */
+    --pf-shadow-badge: inset 0 1px 0 0 rgb(255 255 255 / 0.24), 0 1px 2px 0 rgb(0 0 0 / 0.06);
+    --pf-blur-badge: blur(12px);
+    --pf-shadow-menu: 0 8px 28px var(--pf-shadow-menu-color);
+    --pf-shadow-chip: 0 2px 6px 0 rgb(0 0 0 / 0.08), inset 0 0 4px 2px var(--pf-inner-glow);
+    --pf-shadow-portrait: drop-shadow(0 2px 1px rgb(0 0 0 / 0.2));
+    --pf-shadow-toast: 0 10px 30px rgb(0 0 0 / 0.18);
+
+    /* ---------- Motion: easings and CSS durations ---------- */
+    --pf-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --pf-ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --pf-ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+    --pf-ease-enter: cubic-bezier(0.23, 1, 0.32, 1);
+    --pf-ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+    --pf-ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+    --pf-ease-material: cubic-bezier(0.4, 0, 0.2, 1);
+    --pf-ease-link: cubic-bezier(0.44, 0, 0.56, 1);
+    --pf-dur-press: 150ms;
+    --pf-dur-fast: 200ms;
+    --pf-dur-icon: 300ms;
+    --pf-dur-theme: 350ms;
+    --pf-press-scale: 0.96;
+    --pf-press-scale-card: 0.98;
+
+    /* ---------- Component tokens (Phase 3 integration) ---------- */
+    /* Pill nav (SH-04…SH-08) */
+    --pf-nav-email-pad-duration: 230ms;
+    --pf-nav-email-label-in-duration: 260ms;
+    --pf-nav-email-label-out-duration: 210ms;
+    --pf-nav-email-icon-in-durations: 180ms, 260ms, 180ms;
+    --pf-nav-email-icon-out-durations: 150ms, 210ms, 160ms;
+    --pf-nav-email-fade-out-ease: cubic-bezier(0.4, 0, 0.6, 1);
+    --pf-nav-bands-duration: 1800ms;
+    --pf-nav-bands-travel: 5px; /* SH-06: half the sweep of the envelope sheen */
+    --pf-nav-toast-in-duration: 300ms;
+    --pf-nav-toast-out-duration: 150ms;
+    --pf-nav-hide-move-duration: 460ms;
+    --pf-nav-hide-fade-duration: 180ms;
+    --pf-nav-focus-offset: 3px;
+    --pf-z-nav-scrim: 8;
+    --pf-z-nav: 9;
+    --pf-z-toast: 40;
+    --pf-z-skip-link: 10001; /* above everything, Blue included */
+    --pf-nav-toast-top: 76px; /* SH-07 D/T */
+    --pf-nav-toast-bottom-phone: 112px; /* SH-07 P, above the phone chrome */
+    --pf-type-toast-size: 13px;
+    --pf-type-toast-lh: 18px;
+    --pf-type-toast-ls: -0.01em;
+
+    /* Theme cord knob (estados.md §1.7) */
+    --pf-toggle-face-shadow: inset 0 1px 2px rgb(109 103 85 / 0.25), 0 1px 0 rgb(255 255 255 / 0.9);
+    --pf-toggle-icon-glow: drop-shadow(0 1px 0 rgb(255 255 255 / 0.95));
+    --pf-toggle-icon-sun: #ffcd68;
+    --pf-toggle-icon-moon: #161618;
+
+    /* Stellar (EF-09, EF-10): only visible in dark, fixed colours */
+    --pf-star-sky: rgb(1 2 10);
+    --pf-star-shooting-mid: rgb(210 228 255 / 0.2);
+    --pf-star-shooting-bright: rgb(235 245 255 / 0.6);
+    --pf-star-shooting-tip: rgb(255 255 255 / 0.95);
+    --pf-star-shooting-head: #fff;
+
+    /* Hero selection scene (hero.md §3; HE-02…HE-12) */
+    --pf-hero-scene-rise-delay: 100ms; /* HE-02 */
+    --pf-hero-scene-rise: 400ms;
+    --pf-hero-scene-marker-delay: 440ms; /* HE-04, HE-05 */
+    --pf-hero-scene-edge-in: 220ms;
+    --pf-hero-scene-handle-in: 240ms;
+    --pf-hero-scene-selection-delay: 460ms; /* HE-06…HE-08 */
+    --pf-hero-scene-selection: 520ms;
+    --pf-hero-scene-menu-delay: 900ms; /* HE-09 */
+    --pf-hero-scene-menu: 560ms;
+    --pf-hero-scene-fade: 200ms; /* HE-10, = REDUCED_HERO_FADE.durationMs (tokens.test.ts) */
+    --pf-hero-scene-rail-step: 18px; /* HE-12 */
+    --pf-hero-scene-rail: 240ms;
+
+    /* Hero avatar and metal word (HE-13, HE-22) */
+    --pf-avatar-hover-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+    --pf-avatar-tooltip-bg: rgb(0 0 0 / 0.75);
+    --pf-avatar-tooltip-text: #fff; /* both themes, over the fixed dark tooltip */
+    --pf-hero-metal-shift: 8s; /* HE-22 loop */
+    --pf-metal-gradient: linear-gradient(
+      115deg,
+      #3c3f45 0%,
+      #8e9299 22%,
+      #4a4d54 43%,
+      #a3a7ae 58%,
+      #3a3d43 80%,
+      #7c8087 100%
+    );
+
+    /* Aqua (EF-01): Shadow inset on hover of the dark palettes; engraved label */
+    --pf-aqua-shadow-hover-left: 0px;
+    --pf-aqua-shadow-hover-right: 0px;
+    --pf-aqua-emboss: 0 0.5px 0 #fff, 0 -0.5px 0 #000;
+
+    /* Hero objects (HE-19 float, contact shadows) */
+    --pf-hero-float-x: 3px;
+    --pf-hero-float-y: 2.25px;
+    --pf-hero-float-rotate: 0.8deg;
+    --pf-hero-float-duration: 6.6s;
+    --pf-object-contact: drop-shadow(0 1px 1px rgb(18 24 38 / 0.16))
+      drop-shadow(0 2px 6px rgb(18 24 38 / 0.09));
+    --pf-object-contact-soft: drop-shadow(0 1px 1px rgb(18 24 38 / 0.12))
+      drop-shadow(0 2px 5px rgb(18 24 38 / 0.07));
+
+    /* Technology wall (EF-07, EF-08) */
+    --pf-logo-idle-opacity: 0.58;
+    --pf-logo-fade: 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    --pf-logo-follow: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    /* Works (HO-02 indicator, decisiones.md 13) */
+    --pf-dur-dots: 150ms;
+    --pf-dur-dash: 120ms;
+    --pf-cover-dash: #fff; /* both themes, over the always-dark cover */
+    --pf-works-max: calc(1920px - 2 * var(--pf-gutter-home));
+
+    /* Footer (SH-10…SH-18) */
+    --pf-frame-accent: #9747ff;
+    --pf-dur-link: 180ms;
+    --pf-dur-link-reduced: 90ms;
+    --pf-link-active-opacity: 0.72;
+  }
+
+  @supports (corner-shape: superellipse(2)) {
+    :root {
+      --pf-has-corner-shape: 1;
+      --pf-has-corner-shape-kbd: 1;
+    }
+  }
+
+  /* ---------- Breakpoint overrides ---------- */
+  @media (max-width: 1199.98px) {
+    :root {
+      --pf-type-case-title-size: 40px;
+      --pf-type-h2-alt-size: 28px;
+      --pf-type-h2-alt-lh: 1.2;
+      --pf-type-h3-size: 20px;
+      --pf-type-h3-lh: 1.3;
+      --pf-type-body-size: 17px;
+    }
+  }
+
+  @media (min-width: 810px) and (max-width: 1199.98px) {
+    :root {
+      --pf-grid-cols: 2;
+    }
+  }
+
+  @media (max-width: 809.98px) {
+    :root {
+      --pf-grid-cols: 1;
+      --pf-page-gap: 4px;
+      --pf-type-quote-size: 16px;
+      --pf-type-chat-size: 15px;
+      --pf-type-chat-lh: 20px;
+      --pf-type-chat-emoji-size: 40px;
+      --pf-type-chat-emoji-lh: 48px;
+      --pf-case-section-gap: 96px;
+      --pf-case-block-gap: 48px;
+      --pf-gallery-gap: 12px;
+      --pf-nav-height: 52px;
+      --pf-toggle-right: 24px;
+    }
+  }
+
+  /* ---------- Dark theme (manual or resolved by theme.inline.ts) ---------- */
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+    --pf-bg: #0a0a0a;
+    --pf-text: #fff;
+    --pf-text-inverse: #000;
+    --pf-text-secondary: rgb(255 255 255 / 0.6);
+    --pf-text-secondary-strong: rgb(255 255 255 / 0.6);
+    --pf-text-muted: rgb(255 255 255 / 0.7);
+    --pf-text-tertiary: rgb(255 255 255 / 0.4);
+    --pf-text-body: rgb(255 255 255 / 0.78);
+    --pf-text-strong: rgb(255 255 255 / 0.92);
+    --pf-text-neutral: #b8b8b8;
+    --pf-surface: #262626;
+    --pf-surface-raised: #2a2a2a;
+    --pf-surface-subtle: rgb(245 245 245 / 0.12);
+    --pf-surface-elevated: #262626;
+    --pf-media-placeholder: rgb(235 235 235 / 0.12);
+    --pf-footer-bg: transparent;
+    --pf-badge-bg: rgb(38 38 42 / 0.78);
+    --pf-badge-text: #e1e1e5;
+    --pf-nav-active-bg: #fff;
+    --pf-nav-active-text: #000;
+    --pf-border: rgb(255 255 255 / 0.08);
+    --pf-border-strong: rgb(255 255 255 / 0.2);
+    --pf-divider: rgb(255 255 255 / 0.12);
+    --pf-divider-solid: #313131;
+    --pf-border-solid: rgb(245 245 245 / 0.12);
+    --pf-footer-divider: #292929;
+    --pf-hairline: oklch(1 0 0 / 0.1);
+    --pf-border-dark-only: rgb(255 255 255 / 0.08);
+    --pf-shadow-menu-color: transparent;
+    --pf-inner-glow: rgb(255 255 255 / 0.12);
+    --pf-shine: rgb(218 232 255 / 0.65);
+    --pf-star: rgb(255 255 255 / 0.16);
+    --pf-star-pulse: rgb(255 255 255 / 0.7);
+    --pf-star-shooting: rgb(255 255 255 / 0.9);
+    --pf-glow-pink: #ff2e88;
+    --pf-accent-blue: #74abff;
+    --pf-accent-violet: #b09aff;
+    --pf-accent-amber: #ffc765;
+    --pf-accent-teal: #69d9c4;
+    --pf-accent-red: #ff9487;
+    --pf-chat-meta: rgb(235 235 245 / 0.6);
+    --pf-shadow-portrait: drop-shadow(0 3px 2px rgb(0 0 0 / 0.42));
+    --pf-toggle-ink: #ffcd68;
+    --pf-toggle-string: rgb(239 239 244 / 0.78);
+    --pf-toggle-knob-bg: linear-gradient(155deg, #56534e 0%, #292826 46%, #171715 100%);
+    --pf-toggle-knob-border: #57524a;
+    --pf-toggle-knob-shadow:
+      inset 0 1px 1px rgb(255 245 219 / 0.35), inset 0 -2px 2px rgb(0 0 0 / 0.8), 0 2px 0 #0b0b0a,
+      0 5px 9px rgb(0 0 0 / 0.5), 0 0 16px rgb(255 184 75 / 0.13);
+    --pf-toggle-face-bg: radial-gradient(circle at 48% 35%, #443d2c, #24221c 75%);
+    --pf-aqua-neutral-fill: var(--pf-aqua-crude-fill);
+    --pf-aqua-neutral-inset: var(--pf-aqua-crude-inset);
+    --pf-aqua-neutral-shadow-fill: var(--pf-aqua-crude-shadow-fill);
+    --pf-aqua-neutral-shadow-drop: var(--pf-aqua-crude-shadow-drop);
+    --pf-aqua-neutral-shadow-blur: var(--pf-aqua-crude-shadow-blur);
+    --pf-aqua-neutral-reflection: var(--pf-aqua-crude-reflection);
+    --pf-aqua-neutral-text: var(--pf-aqua-crude-text);
+    --pf-aqua-neutral-shadow-opacity: var(--pf-aqua-crude-shadow-opacity);
+    --pf-aqua-neutral-shadow-opacity-hover: var(--pf-aqua-crude-shadow-opacity-hover);
+    --pf-aqua-neutral-shadow-opacity-pressed: var(--pf-aqua-crude-shadow-opacity-pressed);
+    --pf-aqua-accent-fill: var(--pf-aqua-plasma-fill);
+    --pf-aqua-accent-inset: var(--pf-aqua-plasma-inset);
+    --pf-aqua-accent-shadow-fill: var(--pf-aqua-plasma-shadow-fill);
+    --pf-aqua-accent-shadow-drop: var(--pf-aqua-plasma-shadow-drop);
+    --pf-aqua-accent-shadow-blur: var(--pf-aqua-plasma-shadow-blur);
+    --pf-aqua-accent-reflection: var(--pf-aqua-plasma-reflection);
+    --pf-aqua-accent-text: var(--pf-aqua-plasma-text);
+    --pf-aqua-accent-shadow-opacity: var(--pf-aqua-plasma-shadow-opacity);
+    --pf-aqua-accent-shadow-opacity-hover: var(--pf-aqua-plasma-shadow-opacity-hover);
+    --pf-aqua-accent-shadow-opacity-pressed: var(--pf-aqua-plasma-shadow-opacity-pressed);
+    --pf-toggle-face-shadow: inset 0 1px 2px rgb(0 0 0 / 0.6), 0 1px 0 rgb(255 255 255 / 0.1);
+    --pf-toggle-icon-glow: drop-shadow(0 0 3px rgb(255 196 88 / 0.7));
+    --pf-metal-gradient: linear-gradient(
+      115deg,
+      #8d9198 0%,
+      #f8f9fb 22%,
+      #a6aab1 43%,
+      #fff 58%,
+      #868a91 80%,
+      #d9dce1 100%
+    );
+    --pf-aqua-shadow-hover-left: 3px;
+    --pf-aqua-shadow-hover-right: 2px;
+    --pf-logo-idle-opacity: 0.76;
+  }
+
+  /* ---------- Dark theme without JS: follow the system (keep identical to the block above) ---------- */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      color-scheme: dark;
+      --pf-bg: #0a0a0a;
+      --pf-text: #fff;
+      --pf-text-inverse: #000;
+      --pf-text-secondary: rgb(255 255 255 / 0.6);
+      --pf-text-secondary-strong: rgb(255 255 255 / 0.6);
+      --pf-text-muted: rgb(255 255 255 / 0.7);
+      --pf-text-tertiary: rgb(255 255 255 / 0.4);
+      --pf-text-body: rgb(255 255 255 / 0.78);
+      --pf-text-strong: rgb(255 255 255 / 0.92);
+      --pf-text-neutral: #b8b8b8;
+      --pf-surface: #262626;
+      --pf-surface-raised: #2a2a2a;
+      --pf-surface-subtle: rgb(245 245 245 / 0.12);
+      --pf-surface-elevated: #262626;
+      --pf-media-placeholder: rgb(235 235 235 / 0.12);
+      --pf-footer-bg: transparent;
+      --pf-badge-bg: rgb(38 38 42 / 0.78);
+      --pf-badge-text: #e1e1e5;
+      --pf-nav-active-bg: #fff;
+      --pf-nav-active-text: #000;
+      --pf-border: rgb(255 255 255 / 0.08);
+      --pf-border-strong: rgb(255 255 255 / 0.2);
+      --pf-divider: rgb(255 255 255 / 0.12);
+      --pf-divider-solid: #313131;
+      --pf-border-solid: rgb(245 245 245 / 0.12);
+      --pf-footer-divider: #292929;
+      --pf-hairline: oklch(1 0 0 / 0.1);
+      --pf-border-dark-only: rgb(255 255 255 / 0.08);
+      --pf-shadow-menu-color: transparent;
+      --pf-inner-glow: rgb(255 255 255 / 0.12);
+      --pf-shine: rgb(218 232 255 / 0.65);
+      --pf-star: rgb(255 255 255 / 0.16);
+      --pf-star-pulse: rgb(255 255 255 / 0.7);
+      --pf-star-shooting: rgb(255 255 255 / 0.9);
+      --pf-glow-pink: #ff2e88;
+      --pf-accent-blue: #74abff;
+      --pf-accent-violet: #b09aff;
+      --pf-accent-amber: #ffc765;
+      --pf-accent-teal: #69d9c4;
+      --pf-accent-red: #ff9487;
+      --pf-chat-meta: rgb(235 235 245 / 0.6);
+      --pf-shadow-portrait: drop-shadow(0 3px 2px rgb(0 0 0 / 0.42));
+      --pf-toggle-ink: #ffcd68;
+      --pf-toggle-string: rgb(239 239 244 / 0.78);
+      --pf-toggle-knob-bg: linear-gradient(155deg, #56534e 0%, #292826 46%, #171715 100%);
+      --pf-toggle-knob-border: #57524a;
+      --pf-toggle-knob-shadow:
+        inset 0 1px 1px rgb(255 245 219 / 0.35), inset 0 -2px 2px rgb(0 0 0 / 0.8), 0 2px 0 #0b0b0a,
+        0 5px 9px rgb(0 0 0 / 0.5), 0 0 16px rgb(255 184 75 / 0.13);
+      --pf-toggle-face-bg: radial-gradient(circle at 48% 35%, #443d2c, #24221c 75%);
+      --pf-aqua-neutral-fill: var(--pf-aqua-crude-fill);
+      --pf-aqua-neutral-inset: var(--pf-aqua-crude-inset);
+      --pf-aqua-neutral-shadow-fill: var(--pf-aqua-crude-shadow-fill);
+      --pf-aqua-neutral-shadow-drop: var(--pf-aqua-crude-shadow-drop);
+      --pf-aqua-neutral-shadow-blur: var(--pf-aqua-crude-shadow-blur);
+      --pf-aqua-neutral-reflection: var(--pf-aqua-crude-reflection);
+      --pf-aqua-neutral-text: var(--pf-aqua-crude-text);
+      --pf-aqua-neutral-shadow-opacity: var(--pf-aqua-crude-shadow-opacity);
+      --pf-aqua-neutral-shadow-opacity-hover: var(--pf-aqua-crude-shadow-opacity-hover);
+      --pf-aqua-neutral-shadow-opacity-pressed: var(--pf-aqua-crude-shadow-opacity-pressed);
+      --pf-aqua-accent-fill: var(--pf-aqua-plasma-fill);
+      --pf-aqua-accent-inset: var(--pf-aqua-plasma-inset);
+      --pf-aqua-accent-shadow-fill: var(--pf-aqua-plasma-shadow-fill);
+      --pf-aqua-accent-shadow-drop: var(--pf-aqua-plasma-shadow-drop);
+      --pf-aqua-accent-shadow-blur: var(--pf-aqua-plasma-shadow-blur);
+      --pf-aqua-accent-reflection: var(--pf-aqua-plasma-reflection);
+      --pf-aqua-accent-text: var(--pf-aqua-plasma-text);
+      --pf-aqua-accent-shadow-opacity: var(--pf-aqua-plasma-shadow-opacity);
+      --pf-aqua-accent-shadow-opacity-hover: var(--pf-aqua-plasma-shadow-opacity-hover);
+      --pf-aqua-accent-shadow-opacity-pressed: var(--pf-aqua-plasma-shadow-opacity-pressed);
+      --pf-toggle-face-shadow: inset 0 1px 2px rgb(0 0 0 / 0.6), 0 1px 0 rgb(255 255 255 / 0.1);
+      --pf-toggle-icon-glow: drop-shadow(0 0 3px rgb(255 196 88 / 0.7));
+      --pf-metal-gradient: linear-gradient(
+        115deg,
+        #8d9198 0%,
+        #f8f9fb 22%,
+        #a6aab1 43%,
+        #fff 58%,
+        #868a91 80%,
+        #d9dce1 100%
+      );
+      --pf-aqua-shadow-hover-left: 3px;
+      --pf-aqua-shadow-hover-right: 2px;
+      --pf-logo-idle-opacity: 0.76;
+    }
+  }
+}

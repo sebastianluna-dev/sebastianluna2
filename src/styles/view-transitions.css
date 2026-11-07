@@ -1,0 +1,12 @@
+/*
+ * Route transitions (RT-01…RT-04): the animations are WAAPI, played by
+ * `route-transitions.client.ts` from `ROUTE_TRANSITIONS`. Only the box of the shared cover lives here:
+ * both snapshots fill the morphing box and crop to it, so covers of another ratio never stretch.
+ */
+@layer pf {
+  ::view-transition-old(pf-work-cover),
+  ::view-transition-new(pf-work-cover) {
+    block-size: 100%;
+    object-fit: cover;
+  }
+}

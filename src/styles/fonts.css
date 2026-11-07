@@ -1,0 +1,118 @@
+/*
+ * Self-hosted faces (design-spec §2.1, docs/analisis/fuentes.md §3.3).
+ *
+ * Manual @font-face instead of the Astro Fonts API: in Astro 7.4 a family only
+ * takes weight, style, stretch, display, feature and variation settings, and
+ * computes size-adjust / *-override for its generated fallback alone. The serif
+ * needs those descriptors on every real face, so the faces live here and
+ * BaseLayout preloads the two used above the fold (Geist and the serif Regular).
+ *
+ * Licences: geist-ofl.txt and noto-serif-ofl.txt next to the files.
+ */
+
+/* Geist 1.900 variable (npm `geist`): keeps ss01–ss11, which @fontsource-variable/geist drops. */
+@font-face {
+  font-family: 'Geist';
+  src: url('../assets/fonts/geist-variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+ * "Serif Text": Noto Serif variable (wdth axis) pinned to wdth 97.5 by a
+ * single-value font-stretch, with the metrics that match the reference serif
+ * (x-height 53, line box 106 + 25 at 100px).
+ */
+@font-face {
+  font-family: 'Serif Text';
+  src: url('../assets/fonts/noto-serif-latin-wdth-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-stretch: 97.5%;
+  font-display: swap;
+  size-adjust: 98.88%;
+  ascent-override: 107.3%;
+  descent-override: 25.28%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Serif Text';
+  src: url('../assets/fonts/noto-serif-latin-wdth-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-stretch: 97.5%;
+  font-display: swap;
+  size-adjust: 100.75%;
+  ascent-override: 105.31%;
+  descent-override: 24.81%;
+  line-gap-override: 0%;
+}
+
+/* Italic 500: emphasis inside serif headings (h2/h3 `em { font-weight: 500 }`). */
+@font-face {
+  font-family: 'Serif Text';
+  src: url('../assets/fonts/noto-serif-latin-wdth-italic.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+  font-stretch: 97.5%;
+  font-display: swap;
+  size-adjust: 101.87%;
+  ascent-override: 104.16%;
+  descent-override: 24.54%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Serif Text';
+  src: url('../assets/fonts/noto-serif-latin-wdth-normal.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-stretch: 97.5%;
+  font-display: swap;
+  size-adjust: 102.61%;
+  ascent-override: 103.4%;
+  descent-override: 24.36%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Serif Text';
+  src: url('../assets/fonts/noto-serif-latin-wdth-italic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-stretch: 97.5%;
+  font-display: swap;
+  size-adjust: 104.29%;
+  ascent-override: 101.73%;
+  descent-override: 23.97%;
+  line-gap-override: 0%;
+}
+
+/*
+ * Metric fallbacks, shown while the real faces load (font-display: swap), so the
+ * swap barely moves the text. Each local face is scaled to the width of the real
+ * one and given its line box, measured in Chromium at 100px with the pangram
+ * "The quick brown fox jumps over the lazy dog":
+ *   Geist 2034.5 (box 101 / 29)  ← Arial 1978.76  → size-adjust 102.82%
+ *   Serif Text 2096.13 (106 / 25) ← Georgia 1967.68 → size-adjust 106.53%
+ * ascent/descent-override = box / size-adjust.
+ */
+@font-face {
+  font-family: 'Geist Fallback';
+  src: local('Arial'), local('ArialMT');
+  size-adjust: 102.82%;
+  ascent-override: 98.23%;
+  descent-override: 28.2%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Serif Text Fallback';
+  src: local('Georgia');
+  size-adjust: 106.53%;
+  ascent-override: 99.5%;
+  descent-override: 23.47%;
+  line-gap-override: 0%;
+}

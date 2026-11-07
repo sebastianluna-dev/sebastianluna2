@@ -1,0 +1,70 @@
+/*
+ * Shared portfolio rules: page base, the global focus ring and a few helpers.
+ * Components style themselves in their own <style> inside @layer pf.
+ */
+@layer pf {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Native jumps only: the smooth scroll to #works is the click handler's (design-spec §9.2). */
+    scroll-behavior: auto;
+    overscroll-behavior: none;
+    background: var(--pf-bg);
+  }
+
+  /* No background on body: html paints it, so Stellar (z-index −1 on the root) stays visible. */
+  body {
+    color: var(--pf-text);
+    font-family: var(--pf-font-sans);
+    font-weight: 400;
+  }
+
+  /* Global focus ring (design-spec §7.1); components may tune offset and radius. */
+  :where(a[href], button, [role='button'], [role='switch'], [tabindex='0'], summary):focus-visible {
+    outline: var(--pf-focus-width) solid var(--pf-focus-ring);
+    outline-offset: var(--pf-focus-offset);
+  }
+
+  /* Programmatic focus targets (skip link destination, h1 after navigation) show no ring. */
+  [tabindex='-1']:focus {
+    outline: none;
+  }
+
+  /* Visually hidden, still read by assistive technology. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Exact radius with corner-shape, reduced radius without it (design-spec §1). */
+  .pf-squircle {
+    border-radius: calc(var(--pf-r, var(--pf-radius-md)) * var(--pf-has-corner-shape));
+    corner-shape: var(--pf-squircle);
+  }
+
+  /* Geist ss03 + ss08, only where the reference uses them (design-spec §2.1). */
+  .pf-alt-glyphs {
+    font-feature-settings: var(--pf-ffs-alt);
+  }
+
+  /* Running serif text: the reference tracking plus the Noto Serif adjustment. */
+  .pf-serif {
+    font-family: var(--pf-font-serif);
+    font-weight: 400;
+    letter-spacing: calc(var(--pf-ls, -0.03em) + var(--pf-serif-ls-adjust));
+  }
+
+  /* Theme change is instant (TE-01): no transitions for 2 rAF, except the toggle icons. */
+  .pf-theme-switching *:not(.pf-theme-toggle__icon),
+  .pf-theme-switching *::before,
+  .pf-theme-switching *::after {
+    transition: none !important;
+  }
+}
