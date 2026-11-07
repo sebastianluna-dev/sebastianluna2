@@ -1,0 +1,62 @@
+---
+/**
+ * Hero calls to action (HE-16, EF-01…EF-04, HO-05): Contact (neutral Aqua) and Works (accent Aqua),
+ * in a row 12 px apart (home.md §2). Each button pops up with S1 on its own wrapper, so the appear's
+ * scale and translate never meet the link's press scale. The islands hydrate on idle, which keeps
+ * `motion/react` off pages without Aqua buttons (decisiones.md 1); the SSR already paints them.
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { CONTACT_EMAILS, mailtoHref } from '@/data/profile';
+import { localizePath } from '@/lib/i18n-paths';
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { HOME_APPEAR } from '@/components/motion/presets';
+import { AquaButton } from '@/components/portfolio/ui/AquaButton';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { hero } = getMessages(locale);
+---
+
+<div class="hero-ctas">
+  <AppearMotion appear={HOME_APPEAR.ctaPrimary} class="hero-ctas__item">
+    <AquaButton
+      client:idle
+      href={mailtoHref(locale)}
+      label={hero.ctas.contact}
+      variant="neutral"
+      copyEmail={CONTACT_EMAILS[locale]}
+    />
+  </AppearMotion>
+  <AppearMotion appear={HOME_APPEAR.ctaSecondary} class="hero-ctas__item">
+    <AquaButton
+      client:idle
+      href={localizePath('/#works', locale)}
+      label={hero.ctas.works}
+      variant="accent"
+    />
+  </AppearMotion>
+</div>
+
+<style>
+  @layer pf {
+    .hero-ctas {
+      /* Above the hero objects, which come later in the DOM (responsive.md §1.2). */
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hero-ctas__item {
+      display: flex;
+      flex: none;
+    }
+  }
+</style>
