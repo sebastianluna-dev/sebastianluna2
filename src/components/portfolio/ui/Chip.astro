@@ -1,0 +1,47 @@
+---
+/**
+ * Glass chip of the reference ("Badge on White Theme"): card meta, case badge and section kicker
+ * (design-spec §2.2, §6.1). Geist 14/1 with ss03 + ss08 and tabular figures, padding 4 10, radius 8,
+ * a 12 px backdrop blur and a 1 px hairline drawn over the background (it adds no size: 22 px tall,
+ * as measured). The text never wraps inside a chip.
+ */
+import type { HTMLTag, Polymorphic } from 'astro/types';
+
+type Props<Tag extends HTMLTag = 'span'> = Polymorphic<{ as: Tag }>;
+
+const { as: Tag = 'span', class: className, ...attrs } = Astro.props;
+---
+
+<Tag class:list={['chip', className]} {...attrs}>
+  <slot />
+</Tag>
+
+<style>
+  @layer pf {
+    .chip {
+      display: inline-flex;
+      flex: none;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      margin: 0;
+      border-radius: var(--pf-radius-badge);
+      background: var(--pf-badge-bg);
+      /* The reference draws its border as an overlay; an inset ring keeps the 22 px height. */
+      box-shadow:
+        inset 0 0 0 1px var(--pf-badge-border),
+        var(--pf-shadow-badge);
+      backdrop-filter: var(--pf-blur-badge);
+      color: var(--pf-badge-text);
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-badge-size);
+      font-weight: 400;
+      line-height: var(--pf-type-badge-lh);
+      letter-spacing: var(--pf-type-badge-ls);
+      font-feature-settings: var(--pf-ffs-alt);
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      white-space: nowrap;
+    }
+  }
+</style>

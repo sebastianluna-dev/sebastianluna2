@@ -1,0 +1,74 @@
+---
+/**
+ * Keycap of the shortcut tip (design-spec §4 ui/, §7.3): a 16 px squircle (radius 6, superellipse 1.8)
+ * with the key drawn as a 12 px glyph at .4 of the ink. Modifier keys are our own SVG glyphs (Geist
+ * has no ⌘ / ⌥); any other symbol is drawn as text. The spoken name comes from the messages.
+ */
+interface Props {
+  /** Symbol drawn on the key (⌘, ⌥, /). */
+  symbol: string;
+  /** Spoken name of the key, from the messages. */
+  label: string;
+}
+
+const { symbol, label } = Astro.props;
+
+/** Own 24×24 stroke glyphs for the modifier keys. */
+const GLYPHS: Record<string, string> = {
+  '⌘': 'M9 9h6v6H9zM9 9V6.5A2.5 2.5 0 1 0 6.5 9H9M15 9V6.5A2.5 2.5 0 1 1 17.5 9H15M15 15v2.5a2.5 2.5 0 1 0 2.5-2.5H15M9 15v2.5A2.5 2.5 0 1 1 6.5 15H9',
+  '⌥': 'M3.5 6.5h5.25l6.5 11h5.25M14.5 6.5h6',
+};
+const glyph = GLYPHS[symbol];
+---
+
+<kbd class="kbd">
+  {glyph ? (
+    <svg class="kbd__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d={glyph} />
+    </svg>
+  ) : (
+    <span class="kbd__glyph kbd__glyph_kind_text" aria-hidden="true">
+      {symbol}
+    </span>
+  )}
+  <span class="sr-only">{label}</span>
+</kbd>
+
+<style>
+  @layer pf {
+    .kbd {
+      /* Keycap box (reference "Keybind": padding 2 around a 12 px glyph). */
+      --kbd-glyph-size: 12px;
+      --kbd-glyph-opacity: 0.4;
+
+      display: inline-flex;
+      flex: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      background: var(--pf-surface-subtle);
+      border-radius: calc(var(--pf-radius-kbd) * var(--pf-has-corner-shape-kbd));
+      corner-shape: var(--pf-squircle-kbd);
+      color: var(--pf-text);
+      font: inherit;
+    }
+
+    .kbd__glyph {
+      display: block;
+      width: var(--kbd-glyph-size);
+      height: var(--kbd-glyph-size);
+      opacity: var(--kbd-glyph-opacity);
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .kbd__glyph_kind_text {
+      font-size: var(--kbd-glyph-size);
+      line-height: 1;
+      text-align: center;
+    }
+  }
+</style>
