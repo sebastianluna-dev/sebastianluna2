@@ -1,0 +1,83 @@
+---
+/**
+ * Hero bio: two serif paragraphs, 300 px wide, 16.8 px apart (HE-15, design-spec §2.2), with one word
+ * painted in liquid metal (HE-22). Only the technique of the reference is kept: a 115° gradient,
+ * 220 % wide, sliding back and forth in 8 s; here it is clipped to the text of the word itself
+ * instead of a masked logo, with our own greys tuned per theme so the word stays readable.
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { HOME_APPEAR } from '@/components/motion/presets';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { first, second } = getMessages(locale).hero.bio;
+---
+
+<AppearMotion appear={HOME_APPEAR.bio} class="hero-bio pf-serif">
+  {/* No whitespace around the metal word: the copy carries its own spaces and punctuation. */}
+  <!-- prettier-ignore -->
+  <p class="hero-bio__paragraph">{first.before}<span class="hero-bio__metal">{first.metal}</span>{first.after}</p>
+  <p class="hero-bio__paragraph">{second}</p>
+</AppearMotion>
+
+<style>
+  @layer pf {
+    .hero-bio {
+      --pf-ls: var(--pf-type-bio-ls);
+
+      display: flex;
+      flex: none;
+      flex-direction: column;
+      gap: var(--pf-type-bio-gap);
+      width: 100%;
+      max-width: 300px;
+      color: var(--pf-text-secondary);
+      font-size: var(--pf-type-bio-size);
+      line-height: var(--pf-type-bio-lh);
+      text-align: center;
+    }
+
+    .hero-bio__paragraph {
+      margin: 0;
+    }
+
+    /* HE-22: liquid metal word (own greys; light theme dark enough to read on white). */
+    .hero-bio__metal {
+      --hero-metal: var(--pf-metal-gradient);
+      --hero-metal-shift: var(--pf-hero-metal-shift);
+
+      background: var(--hero-metal);
+      background-size: 220% 220%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      /* One sweep per half cycle, there and back. */
+      animation: hero-bio-metal-sweep calc(var(--hero-metal-shift) / 2) ease-in-out infinite
+        alternate;
+
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
+
+      @media (forced-colors: active) {
+        background: none;
+        color: CanvasText;
+      }
+    }
+
+    @keyframes hero-bio-metal-sweep {
+      from {
+        background-position: 0% 50%;
+      }
+
+      to {
+        background-position: 100% 50%;
+      }
+    }
+  }
+</style>

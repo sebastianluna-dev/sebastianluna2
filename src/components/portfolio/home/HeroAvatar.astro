@@ -1,0 +1,141 @@
+---
+/**
+ * Round 60 px avatar linking to LinkedIn (HE-13 appear, HE-14 hover). On a fine pointer it lifts 4 px
+ * with a soft shadow and shows the profile handle in a tooltip 28 px above; the handle is a visual
+ * repeat of the link name, so it is hidden from assistive technology. The portrait is cropped to the
+ * face by CSS (the source is a 3:4 half-length photo).
+ */
+import { Image } from 'astro:assets';
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { PROFILE } from '@/data/profile';
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { HOME_APPEAR } from '@/components/motion/presets';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { hero } = getMessages(locale);
+---
+
+<AppearMotion appear={HOME_APPEAR.avatar} class="hero-avatar">
+  <a class="hero-avatar__link" href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer">
+    <span class="hero-avatar__frame">
+      <Image
+        class="hero-avatar__image"
+        src={PROFILE.portrait}
+        alt={hero.avatar.label}
+        width={224}
+        loading="eager"
+        decoding="async"
+      />
+    </span>
+    <span class="hero-avatar__tooltip" aria-hidden="true">
+      {PROFILE.linkedinHandle}
+    </span>
+  </a>
+</AppearMotion>
+
+<style>
+  @layer pf {
+    .hero-avatar {
+      --hero-avatar-size: 60px;
+      /* Face crop of the 900×1200 portrait: drawn 112 px wide, nudged so the head fills the circle. */
+      --hero-avatar-image-width: 112px;
+      --hero-avatar-image-x: -26px;
+      --hero-avatar-image-y: -5px;
+      --hero-avatar-lift: -4px;
+      /* Reference XProfileAvatar values. */
+      --hero-avatar-shadow: var(--pf-avatar-hover-shadow);
+      --hero-avatar-tooltip-bg: var(--pf-avatar-tooltip-bg);
+      --hero-avatar-tooltip-offset: -28px;
+
+      position: relative;
+      flex: none;
+      width: var(--hero-avatar-size);
+      height: var(--hero-avatar-size);
+    }
+
+    .hero-avatar__link {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      color: inherit;
+      text-decoration: none;
+      transition:
+        transform var(--pf-dur-fast) ease,
+        box-shadow var(--pf-dur-fast) ease;
+
+      &:focus-visible {
+        border-radius: 50%;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
+    .hero-avatar__frame {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 50%;
+      background: var(--pf-surface);
+    }
+
+    .hero-avatar__image {
+      position: absolute;
+      top: var(--hero-avatar-image-y);
+      left: var(--hero-avatar-image-x);
+      width: var(--hero-avatar-image-width);
+      max-width: none;
+      height: auto;
+      user-select: none;
+    }
+
+    .hero-avatar__tooltip {
+      position: absolute;
+      top: var(--hero-avatar-tooltip-offset);
+      left: 50%;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--hero-avatar-tooltip-bg);
+      color: var(--pf-avatar-tooltip-text);
+      font-family: var(--pf-font-system);
+      font-size: 12px;
+      line-height: normal;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      translate: -50% 0;
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity var(--pf-dur-icon) ease,
+        visibility var(--pf-dur-icon) ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .hero-avatar__link:hover {
+        transform: translateY(var(--hero-avatar-lift));
+        box-shadow: var(--hero-avatar-shadow);
+      }
+
+      .hero-avatar__link:hover .hero-avatar__tooltip {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    .hero-avatar__link:focus-visible .hero-avatar__tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+</style>

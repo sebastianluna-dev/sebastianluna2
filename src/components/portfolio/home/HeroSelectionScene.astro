@@ -1,0 +1,607 @@
+---
+/**
+ * The page h1 as a text selection: "I'm / <name>" with a blue highlight, two carets and two handles,
+ * a context menu hanging 18 px below (Copy email · Open CV · Ask Blue) and the title line
+ * (HE-01…HE-12; hero.md §1–§3; design-spec §3.1, §7.3, §8.2).
+ *
+ * - Every piece is CSS keyframes copied from the measured storyboard, keyed on `data-state`
+ *   (`enter` | `done` | `reduced`), which the inline script below sets before the first paint.
+ *   The CSS default is the final state: that is the no-JS render.
+ * - The end caret and handle slide on `translate` inside a track as wide as their travel, not on
+ *   `left` like the reference (no layout shift; HE-07, HE-08).
+ * - Without JS only "Open CV" (a real link) is shown; Copy and Ask Blue need the script.
+ * - Ask Blue is rendered only with `FEATURES.blue` (Phase 6), so it never shows without its panel.
+ * - The menu behaviour (icon rail, copy, CV, Blue event) is `hero-selection.client.ts`.
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { CONTACT_EMAILS, CV_FILES } from '@/data/profile';
+import { FEATURES } from '@/data/features';
+import { heroSceneInlineScript } from './hero-scene.inline';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { common, hero } = getMessages(locale);
+const words = hero.title.split(/\s+/).filter(Boolean);
+
+/** Own 18×18 stroke icons of the menu, plus the success check of the rail (HE-12). */
+const ICONS = {
+  copy: [
+    'M6.75 6.25V4.75c0-1.1.9-2 2-2h4.5c1.1 0 2 .9 2 2v4.5c0 1.1-.9 2-2 2h-1.5',
+    'M4.75 6.75h4.5c1.1 0 2 .9 2 2v4.5c0 1.1-.9 2-2 2h-4.5c-1.1 0-2-.9-2-2v-4.5c0-1.1.9-2 2-2Z',
+  ],
+  cv: [
+    'M10.5 2.25H5.25c-1.1 0-2 .9-2 2v9.5c0 1.1.9 2 2 2h7.5c1.1 0 2-.9 2-2V6.5L10.5 2.25Z',
+    'M9 7.5v5M6.75 10.25 9 12.5l2.25-2.25',
+  ],
+  blue: [
+    'M2.75 5c0-1.24 1.01-2.25 2.25-2.25h8c1.24 0 2.25 1.01 2.25 2.25v5.5c0 1.24-1.01 2.25-2.25 2.25H8.75l-3.5 2.75v-2.75H5c-1.24 0-2.25-1.01-2.25-2.25V5Z',
+    'M7 6.75v1.5M11 6.75v1.5',
+  ],
+  check: ['M3.75 9.5 7.25 13l7-8.25'],
+} as const;
+
+type ActionKind = 'copy' | 'cv' | 'blue';
+const rail = (kind: ActionKind) => [ICONS[kind], ICONS.check, ICONS[kind]] as const;
+---
+
+<div id="hero-scene" class="hero-scene">
+  <h1 id="hero-title" class="hero-scene__heading" tabindex="-1">
+    <span class="hero-scene__intro">{hero.intro}</span>{' '}
+    <span class="hero-scene__shell">
+      <span class="hero-scene__name">{hero.name}</span>
+      <span class="hero-scene__highlight" aria-hidden="true"></span>
+      <span class="hero-scene__edge hero-scene__edge_pos_start" aria-hidden="true"></span>
+      <span class="hero-scene__track hero-scene__track_kind_edge" aria-hidden="true">
+        <span class="hero-scene__edge"></span>
+      </span>
+      <span class="hero-scene__handle hero-scene__handle_pos_start" aria-hidden="true"></span>
+      <span class="hero-scene__track hero-scene__track_kind_handle" aria-hidden="true">
+        <span class="hero-scene__handle hero-scene__handle_pos_end"></span>
+      </span>
+    </span>
+  </h1>
+
+  <div class="hero-scene__slot">
+    <div class="hero-scene__menu" role="group" aria-label={hero.menu.label}>
+      <button
+        type="button"
+        class="hero-scene__action hero-scene__action_needs_js"
+        aria-label={hero.menu.copyName}
+        data-hero-action="copy"
+        data-copy-value={CONTACT_EMAILS[locale]}
+      >
+        <span class="hero-scene__icon" aria-hidden="true">
+          <span class="hero-scene__rail" data-hero-rail data-phase="0">
+            {rail('copy').map((paths, index) => (
+              <span
+                class:list={['hero-scene__cell', index === 1 && 'hero-scene__cell_kind_success']}
+              >
+                <svg viewBox="0 0 18 18" width="18" height="18" focusable="false">
+                  {paths.map((d) => (
+                    <path d={d} />
+                  ))}
+                </svg>
+              </span>
+            ))}
+          </span>
+        </span>
+        {hero.menu.copy}
+      </button>
+      <span class="hero-scene__divider hero-scene__divider_needs_js" aria-hidden="true"></span>
+      <a
+        class="hero-scene__action"
+        href={CV_FILES[locale]}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-hero-action="cv"
+      >
+        <span class="hero-scene__icon" aria-hidden="true">
+          <span class="hero-scene__rail" data-hero-rail data-phase="0">
+            {rail('cv').map((paths, index) => (
+              <span
+                class:list={['hero-scene__cell', index === 1 && 'hero-scene__cell_kind_success']}
+              >
+                <svg viewBox="0 0 18 18" width="18" height="18" focusable="false">
+                  {paths.map((d) => (
+                    <path d={d} />
+                  ))}
+                </svg>
+              </span>
+            ))}
+          </span>
+        </span>
+        {hero.menu.openCv}
+        <span class="sr-only"> {common.opensInNewTab}</span>
+      </a>
+      {FEATURES.blue && (
+        <>
+          <span class="hero-scene__divider hero-scene__divider_needs_js" aria-hidden="true"></span>
+          <button
+            type="button"
+            class="hero-scene__action hero-scene__action_needs_js"
+            data-hero-action="blue"
+          >
+            <span class="hero-scene__icon" aria-hidden="true">
+              <span class="hero-scene__rail" data-hero-rail data-phase="0">
+                {rail('blue').map((paths, index) => (
+                  <span
+                    class:list={[
+                      'hero-scene__cell',
+                      index === 1 && 'hero-scene__cell_kind_success',
+                    ]}
+                  >
+                    <svg viewBox="0 0 18 18" width="18" height="18" focusable="false">
+                      {paths.map((d) => (
+                        <path d={d} />
+                      ))}
+                    </svg>
+                  </span>
+                ))}
+              </span>
+            </span>
+            {hero.menu.askBlue}
+          </button>
+        </>
+      )}
+    </div>
+  </div>
+
+  <span
+    class="sr-only"
+    role="status"
+    aria-live="polite"
+    data-hero-status
+    data-copied={hero.menu.copied}
+  ></span>
+
+  <p class="hero-scene__title" data-hero-title>
+    {words.map((word, index) => (
+      <>
+        {index > 0 && ' '}
+        <span class="hero-scene__word" data-hero-word>
+          {word}
+        </span>
+      </>
+    ))}
+  </p>
+</div>
+{/* Render-blocking: picks the scene state before the first paint (HE-01); re-runs after a swap. */}
+<script is:inline data-astro-rerun set:html={heroSceneInlineScript(words.length)} />
+<script>
+  import { bindHeroSelection } from './hero-selection.client';
+
+  bindHeroSelection();
+</script>
+
+<style>
+  @layer pf {
+    .hero-scene {
+      /* Storyboard (hero.md §3). Delays are shifted by --hero-scene-elapsed, set by the inline script. */
+      --hero-scene-elapsed: 0ms;
+      --hero-scene-rise-delay: var(--pf-hero-scene-rise-delay); /* HE-02 */
+      --hero-scene-rise: var(--pf-hero-scene-rise);
+      --hero-scene-marker-delay: var(--pf-hero-scene-marker-delay); /* HE-04, HE-05 */
+      --hero-scene-edge-in: var(--pf-hero-scene-edge-in);
+      --hero-scene-handle-in: var(--pf-hero-scene-handle-in);
+      --hero-scene-selection-delay: var(--pf-hero-scene-selection-delay); /* HE-06…HE-08 */
+      --hero-scene-selection: var(--pf-hero-scene-selection);
+      --hero-scene-menu-delay: var(--pf-hero-scene-menu-delay); /* HE-09 */
+      --hero-scene-menu: var(--pf-hero-scene-menu);
+      --hero-scene-fade: var(--pf-hero-scene-fade); /* HE-10 */
+      --hero-scene-rail-step: var(--pf-hero-scene-rail-step); /* HE-12 */
+      --hero-scene-rail: var(--pf-hero-scene-rail);
+
+      position: relative;
+      display: flex;
+      flex: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 560px;
+      color: var(--pf-text);
+      text-align: center;
+    }
+
+    .hero-scene__heading,
+    .hero-scene__title {
+      margin: 0;
+      font-size: var(--pf-type-hero-size);
+      font-weight: 400;
+      line-height: var(--pf-type-hero-lh);
+      letter-spacing: var(--pf-type-hero-ls);
+    }
+
+    .hero-scene__heading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-scene__intro {
+      margin-bottom: 7px;
+    }
+
+    .hero-scene__shell {
+      position: relative;
+      display: inline-block;
+      padding: 0 5px;
+      white-space: nowrap;
+    }
+
+    .hero-scene__name {
+      position: relative;
+      z-index: 1;
+      display: inline-block;
+    }
+
+    .hero-scene__highlight {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: var(--pf-selection-highlight);
+      transform-origin: left center;
+      pointer-events: none;
+    }
+
+    .hero-scene__edge {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 2;
+      width: 2px;
+      background: var(--pf-selection-accent);
+      pointer-events: none;
+    }
+
+    .hero-scene__edge_pos_start {
+      transform-origin: left center;
+    }
+
+    .hero-scene__handle {
+      position: absolute;
+      left: -7px;
+      z-index: 3;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--pf-selection-accent);
+      pointer-events: none;
+    }
+
+    .hero-scene__handle_pos_start {
+      top: -14px;
+    }
+
+    .hero-scene__handle_pos_end {
+      bottom: -14px;
+    }
+
+    /* The end caret / handle travel: a box as wide as the travel, slid by its own width (HE-07/08). */
+    .hero-scene__track {
+      position: absolute;
+      inset-block: 0;
+      left: 0;
+      pointer-events: none;
+      translate: 100% 0;
+    }
+
+    .hero-scene__track_kind_edge {
+      z-index: 2;
+      width: calc(100% - 2px);
+    }
+
+    .hero-scene__track_kind_handle {
+      z-index: 3;
+      width: calc(100% - 1px);
+    }
+
+    .hero-scene__slot {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      box-sizing: border-box;
+      width: 100%;
+      height: 56px;
+      padding-top: 18px;
+    }
+
+    .hero-scene__menu {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      max-width: 100%;
+      overflow: hidden;
+      border-radius: var(--pf-radius-pill);
+      background: var(--pf-surface-elevated);
+      box-shadow: var(--pf-shadow-menu);
+      transform-origin: center top;
+    }
+
+    .hero-scene__action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 12px;
+      border: 0;
+      background: transparent;
+      color: var(--pf-text);
+      font: 500 var(--pf-type-hero-action-size) / var(--pf-type-hero-action-lh) var(--pf-font-sans);
+      white-space: nowrap;
+      text-decoration: none;
+      cursor: pointer;
+      appearance: none;
+
+      /* Decision 18: the reference's own ring (blue, inset, pill). */
+      &:focus-visible {
+        outline: var(--pf-focus-width) solid var(--pf-selection-accent);
+        outline-offset: -3px;
+        border-radius: var(--pf-radius-pill);
+      }
+
+      @media (max-width: 480px) {
+        padding: 10px 9px;
+      }
+    }
+
+    .hero-scene__divider {
+      flex: none;
+      width: 1px;
+      height: 20px;
+      background: var(--pf-divider);
+    }
+
+    /* Copy and Ask Blue only work with the script (design-spec §8.2). */
+    :global(html:not(.js)) .hero-scene__action_needs_js,
+    :global(html:not(.js)) .hero-scene__divider_needs_js {
+      display: none;
+    }
+
+    .hero-scene__icon {
+      display: block;
+      flex: 0 0 18px;
+      width: 18px;
+      height: 18px;
+      overflow: hidden;
+    }
+
+    .hero-scene__rail {
+      display: flex;
+      flex-direction: column;
+      width: 18px;
+      transition: translate var(--hero-scene-rail) var(--pf-ease-in-out-quart);
+
+      &[data-phase='1'] {
+        translate: 0 calc(-1 * var(--hero-scene-rail-step));
+      }
+
+      &[data-phase='2'] {
+        translate: 0 calc(-2 * var(--hero-scene-rail-step));
+      }
+
+      &[data-instant='true'] {
+        transition: none;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
+    .hero-scene__cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+
+      & svg {
+        display: block;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    }
+
+    .hero-scene__cell_kind_success {
+      color: var(--pf-selection-accent);
+    }
+
+    .hero-scene__title {
+      margin-top: 16px;
+    }
+
+    .hero-scene__word {
+      display: inline-block;
+    }
+
+    /* ---------- enter: the storyboard (HE-02…HE-09) ---------- */
+    .hero-scene[data-state='enter'] {
+      & .hero-scene__intro,
+      & .hero-scene__name {
+        animation: hero-scene-fade-in var(--hero-scene-rise) var(--pf-ease-enter)
+          calc(var(--hero-scene-rise-delay) - var(--hero-scene-elapsed)) both;
+      }
+
+      & .hero-scene__word {
+        animation: hero-scene-line-in var(--hero-word-duration) var(--pf-ease-out-expo)
+          calc(var(--hero-word-delay) - var(--hero-scene-elapsed)) both;
+      }
+
+      & .hero-scene__edge_pos_start {
+        animation: hero-scene-marker-in var(--hero-scene-edge-in) var(--pf-ease-enter)
+          calc(var(--hero-scene-marker-delay) - var(--hero-scene-elapsed)) both;
+      }
+
+      & .hero-scene__handle_pos_start {
+        animation: hero-scene-marker-in var(--hero-scene-handle-in) var(--pf-ease-enter)
+          calc(var(--hero-scene-marker-delay) - var(--hero-scene-elapsed)) both;
+      }
+
+      & .hero-scene__highlight {
+        animation: hero-scene-highlight-reveal var(--hero-scene-selection)
+          var(--pf-ease-in-out-quart)
+          calc(var(--hero-scene-selection-delay) - var(--hero-scene-elapsed)) both;
+      }
+
+      & .hero-scene__track_kind_edge {
+        animation: hero-scene-edge-track var(--hero-scene-selection) var(--pf-ease-in-out-quart)
+          calc(var(--hero-scene-selection-delay) - var(--hero-scene-elapsed)) both;
+      }
+
+      & .hero-scene__track_kind_handle {
+        animation: hero-scene-handle-track var(--hero-scene-selection) var(--pf-ease-in-out-quart)
+          calc(var(--hero-scene-selection-delay) - var(--hero-scene-elapsed)) both;
+      }
+
+      & .hero-scene__handle_pos_end {
+        animation: hero-scene-handle-pop var(--hero-scene-selection) var(--pf-ease-in-out-quart)
+          calc(var(--hero-scene-selection-delay) - var(--hero-scene-elapsed)) both;
+      }
+
+      & .hero-scene__menu {
+        animation: hero-scene-menu-reveal var(--hero-scene-menu) var(--pf-ease-sheet)
+          calc(var(--hero-scene-menu-delay) - var(--hero-scene-elapsed)) both;
+      }
+    }
+
+    /* ---------- reduced: everything fades in place (HE-10) ---------- */
+    .hero-scene[data-state='reduced'] {
+      & .hero-scene__intro,
+      & .hero-scene__name,
+      & .hero-scene__word,
+      & .hero-scene__highlight,
+      & .hero-scene__edge_pos_start,
+      & .hero-scene__handle_pos_start,
+      & .hero-scene__track,
+      & .hero-scene__menu {
+        animation: hero-scene-fade-in var(--hero-scene-fade) var(--pf-ease-enter) both;
+      }
+    }
+
+    /* HE-02 and HE-10: from transparent to the element's own opacity. */
+    @keyframes hero-scene-fade-in {
+      from {
+        opacity: 0;
+      }
+    }
+
+    @keyframes hero-scene-line-in {
+      from {
+        opacity: 0;
+        translate: 0 8px;
+      }
+
+      to {
+        opacity: 1;
+        translate: 0 0;
+      }
+    }
+
+    @keyframes hero-scene-marker-in {
+      0% {
+        opacity: 0;
+        scale: 0.82;
+      }
+
+      100% {
+        opacity: 1;
+        scale: 1;
+      }
+    }
+
+    /* The timing function applies per keyframe interval: a 42 ms start, then the sweep (HE-06). */
+    @keyframes hero-scene-highlight-reveal {
+      0% {
+        opacity: 0;
+        scale: 0.02 1;
+      }
+
+      8% {
+        opacity: 1;
+        scale: 0.06 1;
+      }
+
+      100% {
+        opacity: 1;
+        scale: 1 1;
+      }
+    }
+
+    @keyframes hero-scene-edge-track {
+      0% {
+        translate: 0 0;
+        opacity: 0;
+      }
+
+      8% {
+        opacity: 1;
+      }
+
+      100% {
+        translate: 100% 0;
+        opacity: 1;
+      }
+    }
+
+    @keyframes hero-scene-handle-track {
+      0% {
+        translate: 0 0;
+      }
+
+      100% {
+        translate: 100% 0;
+      }
+    }
+
+    @keyframes hero-scene-handle-pop {
+      0% {
+        opacity: 0;
+        scale: 0.82;
+      }
+
+      10% {
+        opacity: 1;
+        scale: 1;
+      }
+
+      100% {
+        opacity: 1;
+        scale: 1;
+      }
+    }
+
+    @keyframes hero-scene-menu-reveal {
+      0% {
+        opacity: 0;
+        translate: 0 -8px;
+        scale: 0.95 0.9;
+        filter: blur(4px);
+      }
+
+      38% {
+        opacity: 0.9;
+        translate: 0 -2px;
+        scale: 0.99 0.975;
+        filter: blur(1px);
+      }
+
+      100% {
+        opacity: 1;
+        translate: 0 0;
+        scale: 1 1;
+        filter: blur(0);
+      }
+    }
+  }
+</style>

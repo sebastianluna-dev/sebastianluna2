@@ -1,0 +1,78 @@
+---
+/**
+ * Hero section of the home (design-spec §3.1; hero.md §1). The default slot is the centred column
+ * (avatar, scene, bio, CTAs, tip); `objects` is the decorative layer, positioned against this box.
+ *
+ * - At least one viewport tall and growing with its content in every breakpoint (decisiones.md 11),
+ *   content centred in that height; 1280 px max, 80 px block padding, 8 px gutter.
+ * - Column gaps of the reference: 32 between blocks, 16 between the scene and the bio (its "Text"
+ *   group), 12 between the CTA row and the tip (its "CTA's" group).
+ * - Phone clips what sticks out (the objects); desktop and tablet let it overflow.
+ */
+import type { Locale } from '@/i18n/locales';
+
+interface Props {
+  locale: Locale;
+}
+
+// The h1 lives in HeroSelectionScene with id="hero-title".
+const { locale } = Astro.props;
+---
+
+<section class="hero" aria-labelledby="hero-title" data-locale={locale}>
+  <div class="hero__content">
+    <slot />
+  </div>
+  {/* Render-blocking target of HomeView's `<link rel="expect">`: the column is fully parsed here. */}
+  <span id="hero-end" hidden></span>
+  <slot name="objects" />
+</section>
+
+<style>
+  @layer pf {
+    .hero {
+      --hero-gap: 32px;
+      --hero-text-gap: 16px;
+      --hero-cta-gap: 12px;
+
+      position: relative;
+      display: flex;
+      flex: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--pf-section-gap);
+      box-sizing: border-box;
+      width: 100%;
+      max-width: var(--pf-hero-max);
+      min-height: 100vh;
+      min-height: 100svh;
+      margin-inline: auto;
+      padding: var(--pf-hero-pad-block) var(--pf-gutter-home);
+      overflow: visible;
+
+      @media (max-width: 809.98px) {
+        overflow: clip;
+      }
+    }
+
+    .hero__content {
+      display: flex;
+      flex: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--hero-gap);
+      width: 100%;
+
+      /* The bio belongs to the scene's group, the tip to the CTA's group (reference layout). */
+      & > :global(.hero-bio) {
+        margin-block-start: calc(var(--hero-text-gap) - var(--hero-gap));
+      }
+
+      & > :global(.hero-tip) {
+        margin-block-start: calc(var(--hero-cta-gap) - var(--hero-gap));
+      }
+    }
+  }
+</style>

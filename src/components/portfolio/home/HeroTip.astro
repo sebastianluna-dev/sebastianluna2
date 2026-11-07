@@ -1,0 +1,79 @@
+---
+/**
+ * Blue shortcut tip under the CTAs: "Press ⌘ + ⌥ + / to chat with Blue" (HE-17), hidden on phone,
+ * where the launcher does not exist (design-spec §3.1). Two keycaps and the rest as text, like the
+ * reference; every visual symbol has a spoken twin so it reads "Command plus Option plus slash".
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { HOME_APPEAR } from '@/components/motion/presets';
+import Kbd from '@/components/portfolio/ui/Kbd.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { tip } = getMessages(locale).hero;
+---
+
+<AppearMotion as="p" appear={HOME_APPEAR.shortcutTip} class="hero-tip pf-alt-glyphs">
+  <span class="hero-tip__text">{tip.before}</span>
+  <span class="hero-tip__keys">
+    <Kbd symbol="⌘" label={tip.keys.command} />
+    <svg class="hero-tip__plus" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 5v14M5 12h14"></path>
+    </svg>
+    <span class="sr-only">{tip.keys.plus}</span>
+    <Kbd symbol="⌥" label={tip.keys.option} />
+  </span>
+  <span class="hero-tip__text">
+    <span aria-hidden="true">+ /</span>
+    <span class="sr-only">
+      {tip.keys.plus} {tip.keys.slash}
+    </span>
+    {tip.after}
+  </span>
+</AppearMotion>
+
+<style>
+  @layer pf {
+    .hero-tip {
+      display: flex;
+      flex: none;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin: 0;
+      color: var(--pf-text-secondary);
+      font-size: var(--pf-type-caption-size);
+      line-height: var(--pf-type-caption-lh);
+      letter-spacing: 0;
+      white-space: nowrap;
+
+      @media (max-width: 809.98px) {
+        display: none;
+      }
+    }
+
+    .hero-tip__keys {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    /* 8 px plus at .4 of the ink (the reference paints it black in both themes; ours follows it). */
+    .hero-tip__plus {
+      display: block;
+      width: 8px;
+      height: 8px;
+      opacity: 0.4;
+      color: var(--pf-text);
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+  }
+</style>
