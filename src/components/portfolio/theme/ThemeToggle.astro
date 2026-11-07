@@ -1,0 +1,246 @@
+---
+/**
+ * Theme cord (TE-02…TE-07; design-spec §4 "theme/", §6.1, §7.3, §8.2): a lamp pull-cord that
+ * hangs from the top right and scrolls with the page. The handle is a `button role=switch` with a
+ * fixed name and `aria-checked` = dark. The SSR draws the cord at rest with the icon of the active
+ * scheme and the button `disabled` (decision 29); `theme-toggle.client.ts` enables it and drives
+ * drag, tap, keyboard tug and hover with the springs of `lib/spring.ts`. Persisted across
+ * navigations (RT-05).
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { CORD, cordPath } from '@/lib/theme-cord';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { theme } = getMessages(locale);
+// Desktop cord at rest; on phones the knob hides the extra length until the script redraws it.
+const restPath = cordPath(0, 0, CORD.length);
+---
+
+<div class="pf-theme-toggle" data-theme-toggle transition:persist="pf-theme-toggle">
+  <svg
+    class="pf-theme-toggle__cord"
+    viewBox="0 0 48 220"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path class="pf-theme-toggle__path" d={restPath}></path>
+  </svg>
+  <button class="pf-theme-toggle__switch" type="button" role="switch" aria-checked="false" disabled>
+    <span class="sr-only" data-theme-toggle-label>
+      {theme.toggle}
+    </span>
+    <span class="pf-theme-toggle__face" aria-hidden="true">
+      <span class="pf-theme-toggle__icons">
+        <svg
+          class="pf-theme-toggle__icon pf-theme-toggle__icon_kind_sun"
+          viewBox="0 0 24 24"
+          focusable="false"
+        >
+          <circle cx="12" cy="12" r="4.25"></circle>
+          <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.28 5.28l1.42 1.42M17.3 17.3l1.42 1.42M5.28 18.72l1.42-1.42M17.3 6.7l1.42-1.42"></path>
+        </svg>
+        <svg
+          class="pf-theme-toggle__icon pf-theme-toggle__icon_kind_moon"
+          viewBox="0 0 24 24"
+          focusable="false"
+        >
+          <path d="M20.5 13.6A8.6 8.6 0 1 1 10.4 3.5a6.8 6.8 0 0 0 10.1 10.1Z"></path>
+        </svg>
+      </span>
+    </span>
+  </button>
+</div>
+
+<script>
+  import { startThemeToggle } from './theme-toggle.client';
+
+  startThemeToggle();
+</script>
+
+<style is:global>
+  @layer pf {
+    .pf-theme-toggle {
+      /* Cord geometry (interacciones.md §5): read by the script for the path and the rotation. */
+      --pf-theme-toggle-length: 142px;
+      --pf-theme-toggle-knob: 30px;
+      /* Knob face and icon light (estados.md §1.7); each icon keeps its own ink (TE-06). */
+      --pf-theme-toggle-face-shadow: var(--pf-toggle-face-shadow);
+      --pf-theme-toggle-icon-glow: var(--pf-toggle-icon-glow);
+      --pf-theme-toggle-sun: var(--pf-toggle-icon-sun);
+      --pf-theme-toggle-moon: var(--pf-toggle-icon-moon);
+
+      position: absolute;
+      top: 0;
+      /* BL-05: Blue's panel pushes the page and the cord with it. */
+      right: calc(var(--pf-toggle-right) + var(--pf-blue-offset, 0px));
+      z-index: 10;
+      width: 48px;
+      height: 220px;
+      overflow: visible;
+      line-height: 0;
+      /* Only the handle catches the pointer (TE-03). */
+      pointer-events: none;
+
+      @media (max-width: 809.98px) {
+        --pf-theme-toggle-length: 128px;
+        --pf-theme-toggle-knob: 34.5px;
+      }
+    }
+
+    .pf-theme-toggle__cord {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .pf-theme-toggle__path {
+      fill: none;
+      stroke: var(--pf-toggle-string);
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      /* TE-07 (cut by .pf-theme-switching, as in the reference). */
+      transition: stroke var(--pf-dur-theme) ease;
+    }
+
+    .pf-theme-toggle__switch {
+      position: absolute;
+      top: var(--pf-theme-toggle-length);
+      left: 50%;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      width: var(--pf-theme-toggle-knob);
+      height: var(--pf-theme-toggle-knob);
+      margin-left: calc(var(--pf-theme-toggle-knob) / -2);
+      padding: 0;
+      appearance: none;
+      border: 1px solid var(--pf-toggle-knob-border);
+      border-radius: 50%;
+      background: var(--pf-toggle-knob-bg);
+      box-shadow: var(--pf-toggle-knob-shadow);
+      color: var(--pf-toggle-ink);
+      cursor: grab;
+      pointer-events: auto;
+      touch-action: none;
+      transform-origin: 50% 0;
+      -webkit-tap-highlight-color: transparent;
+      /* TE-07 */
+      transition:
+        background-color var(--pf-dur-theme) ease,
+        border-color var(--pf-dur-theme) ease;
+
+      /* Touch area: 44 px on desktop, 48.5 px on phones (inset from the padding box). */
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+      }
+
+      &:focus-visible {
+        outline: var(--pf-focus-width) solid currentColor;
+        outline-offset: 5px;
+        border-radius: 50%;
+      }
+
+      &:disabled {
+        cursor: default;
+      }
+    }
+
+    .pf-theme-toggle[data-dragging] .pf-theme-toggle__switch {
+      cursor: grabbing;
+    }
+
+    .pf-theme-toggle__face {
+      position: absolute;
+      inset: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--pf-toggle-face-bg);
+      box-shadow: var(--pf-theme-toggle-face-shadow);
+      pointer-events: none;
+    }
+
+    .pf-theme-toggle__icons {
+      display: grid;
+      place-items: center;
+      filter: var(--pf-theme-toggle-icon-glow);
+    }
+
+    /* TE-06: the icons cross-fade; the only transition the theme switch keeps. */
+    .pf-theme-toggle__icon {
+      grid-area: 1 / 1;
+      display: block;
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition-property: opacity, scale, filter;
+      transition-duration: var(--pf-dur-icon);
+      transition-timing-function: var(--pf-ease-standard);
+    }
+
+    .pf-theme-toggle__icon_kind_sun {
+      stroke: var(--pf-theme-toggle-sun);
+    }
+
+    .pf-theme-toggle__icon_kind_moon {
+      stroke: var(--pf-theme-toggle-moon);
+    }
+
+    /* Hidden icon: light shows the moon, dark the sun. */
+    .pf-theme-toggle__icon_kind_sun,
+    :root[data-theme='dark'] .pf-theme-toggle__icon_kind_moon {
+      opacity: 0;
+      scale: 0.25;
+      filter: blur(4px);
+    }
+
+    :root[data-theme='dark'] .pf-theme-toggle__icon_kind_sun {
+      opacity: 1;
+      scale: 1;
+      filter: blur(0);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme='light']) .pf-theme-toggle__icon_kind_moon {
+        opacity: 0;
+        scale: 0.25;
+        filter: blur(4px);
+      }
+
+      :root:not([data-theme='light']) .pf-theme-toggle__icon_kind_sun {
+        opacity: 1;
+        scale: 1;
+        filter: blur(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pf-theme-toggle__icon {
+        transition-property: opacity;
+      }
+
+      :root .pf-theme-toggle .pf-theme-toggle__icon {
+        scale: 1;
+        filter: none;
+      }
+    }
+  }
+</style>
