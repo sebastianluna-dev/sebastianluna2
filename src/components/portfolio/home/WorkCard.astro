@@ -1,0 +1,338 @@
+---
+/**
+ * Card of the works list (design-spec §4 home, §6.1, §7.3, §8.2): a link to the case study with a
+ * 4:3 cover that fills the card, the glass meta chips on top and the press scale.
+ *
+ * - HO-02: the cover splits into three invisible vertical thirds; hovering one swaps the idle image
+ *   for that zone's image in one frame (CSS sibling rules, no transition) and lights the indicator.
+ *   Only with a fine pointer; the zone images are `display: none` elsewhere, so they never load there.
+ * - HO-03: the meta (name + year; the role is only in the accessible name) fades in on hover (200 ms, ease-link); always visible on touch and with focus.
+ * - HO-04: `:active` scales the link to .98 in 150 ms ease-out (the appear lives on the list item).
+ * - RT-02: the cover is the origin of the `pf-work-cover` shared element; the name is set on the clicked
+ *   cover only, right before the navigation, and handed to the case cover (`[data-hero-image]`).
+ * Without JS everything but RT-02 works: the idle `<img>` and the chips are in the SSR.
+ */
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '@/i18n/locales';
+import { format, getMessages } from '@/i18n/t';
+import { workHref, workSlug } from '@/lib/works';
+import Chip from '@/components/portfolio/ui/Chip.astro';
+
+interface Props {
+  work: CollectionEntry<'works'>;
+  locale: Locale;
+}
+
+const { work, locale } = Astro.props;
+const { title, year, role, cover, zones } = work.data;
+const messages = getMessages(locale);
+const slug = workSlug(work);
+
+/** Hover zones in DOM order; a zone without its own image keeps showing the idle one. */
+const ZONE_POSITIONS = ['left', 'center', 'right'] as const;
+const variants = ZONE_POSITIONS.flatMap((position, index) => {
+  const zone = zones[index];
+  return zone && zone.src.src !== cover.src.src ? [{ position, src: zone.src }] : [];
+});
+const hasZones = variants.length > 0;
+
+/** Rendered width of a card at each breakpoint (design-spec §3.1), capped at 1920 (decisiones.md 13). */
+const SIZES = [
+  '(min-width: 1920px) calc((1920px - 32px) / 3)',
+  '(min-width: 1200px) calc((100vw - 32px) / 3)',
+  '(min-width: 810px) calc((100vw - 24px) / 2)',
+  'calc(100vw - 16px)',
+].join(', ');
+const WIDTHS = [400, 640, 960, 1280, 1600];
+---
+
+<a
+  class="work-card"
+  href={workHref(slug, locale)}
+  aria-label={format(messages.works.cardLabel, { title, year, role })}
+  data-cover={slug}
+>
+  <div class="work-card__cover" data-cover-image>
+    {hasZones &&
+      ZONE_POSITIONS.map((position) => (
+        <div
+          class:list={['work-card__zone', `work-card__zone_pos_${position}`]}
+          aria-hidden="true"
+        />
+      ))}
+    {variants.map(({ position, src }) => (
+      <Image
+        class:list={[
+          'work-card__image',
+          'work-card__image_role_zone',
+          `work-card__image_pos_${position}`,
+        ]}
+        src={src}
+        alt=""
+        widths={WIDTHS}
+        sizes={SIZES}
+        loading="lazy"
+        decoding="async"
+        draggable="false"
+      />
+    ))}
+    <Image
+      class="work-card__image work-card__image_role_idle"
+      src={cover.src}
+      alt=""
+      widths={WIDTHS}
+      sizes={SIZES}
+      loading="lazy"
+      decoding="async"
+      draggable="false"
+    />
+    {hasZones && (
+      <span class="work-card__dots" aria-hidden="true">
+        <span class="work-card__dash" />
+        <span class="work-card__dash" />
+        <span class="work-card__dash" />
+      </span>
+    )}
+  </div>
+  <span class="work-card__meta">
+    <Chip>{title}</Chip>
+    <Chip>{year}</Chip>
+  </span>
+</a>
+
+<style>
+  @layer pf {
+    .work-card {
+      /* Indicator fades of HO-02 (ease-out). */
+      --work-card-dots-fade: var(--pf-dur-dots);
+      --work-card-dash-fade: var(--pf-dur-dash);
+      --work-card-dash-dim: 0.45;
+      --work-card-dash-color: var(--pf-cover-dash);
+
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: clip;
+      border-radius: calc(var(--pf-radius-card) * var(--pf-has-corner-shape));
+      corner-shape: var(--pf-squircle);
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      will-change: transform;
+      -webkit-tap-highlight-color: transparent;
+
+      /* HO-04: press .98, keeps the hover state. */
+      @media (prefers-reduced-motion: no-preference) {
+        transition: scale var(--pf-dur-press) ease-out;
+
+        &:active {
+          scale: var(--pf-press-scale-card);
+        }
+      }
+
+      /* HO-03: meta hidden until hover or keyboard focus, only with a fine pointer. */
+      @media (hover: hover) and (pointer: fine) {
+        & .work-card__meta {
+          opacity: 0;
+          transition: opacity var(--pf-dur-fast) var(--pf-ease-link);
+        }
+
+        &:hover .work-card__meta,
+        &:focus-visible .work-card__meta {
+          opacity: 1;
+        }
+      }
+    }
+
+    .work-card__cover {
+      position: relative;
+      width: 100%;
+      aspect-ratio: var(--pf-card-ratio);
+      overflow: hidden;
+      contain: paint;
+      isolation: isolate;
+      background: var(--pf-cover-bg);
+
+      /* Touch: the reference clips the cover itself to the card radius. */
+      @media (hover: none) {
+        border-radius: var(--pf-radius-card);
+        clip-path: inset(0 round var(--pf-radius-card));
+      }
+    }
+
+    .work-card__image {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .work-card__image_role_zone,
+    .work-card__zone,
+    .work-card__dots {
+      display: none;
+    }
+
+    .work-card__zone {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      z-index: 2;
+      width: calc(100% / 3);
+    }
+
+    .work-card__zone_pos_left {
+      left: 0;
+    }
+
+    .work-card__zone_pos_center {
+      left: calc(100% / 3);
+    }
+
+    .work-card__zone_pos_right {
+      right: 0;
+    }
+
+    .work-card__dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      z-index: 3;
+      gap: 4px;
+      padding: 5px 6px;
+      border-radius: var(--pf-radius-pill);
+      background: var(--pf-cover-dots-bg);
+      translate: -50% 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--work-card-dots-fade) ease-out;
+    }
+
+    .work-card__dash {
+      width: 14px;
+      height: 2px;
+      border-radius: 1px;
+      background: var(--work-card-dash-color);
+      opacity: var(--work-card-dash-dim);
+      transition: opacity var(--work-card-dash-fade) ease-out;
+    }
+
+    /* HO-02: zones, swaps and indicator only where a fine pointer can hover. */
+    @media (hover: hover) and (pointer: fine) {
+      .work-card__image_role_zone,
+      .work-card__zone {
+        display: block;
+      }
+
+      .work-card__image_role_zone {
+        opacity: 0;
+      }
+
+      .work-card__dots {
+        display: flex;
+      }
+
+      .work-card__cover:hover > .work-card__dots {
+        opacity: 1;
+      }
+
+      .work-card__zone_pos_left:hover ~ .work-card__dots > :nth-child(1),
+      .work-card__zone_pos_center:hover ~ .work-card__dots > :nth-child(2),
+      .work-card__zone_pos_right:hover ~ .work-card__dots > :nth-child(3) {
+        opacity: 1;
+      }
+
+      .work-card__zone_pos_left:hover ~ .work-card__image_pos_left,
+      .work-card__zone_pos_center:hover ~ .work-card__image_pos_center,
+      .work-card__zone_pos_right:hover ~ .work-card__image_pos_right {
+        z-index: 1;
+        opacity: 1;
+      }
+
+      .work-card__zone_pos_left:hover ~ .work-card__image_pos_left ~ .work-card__image_role_idle,
+      .work-card__zone_pos_center:hover
+        ~ .work-card__image_pos_center
+        ~ .work-card__image_role_idle,
+      .work-card__zone_pos_right:hover ~ .work-card__image_pos_right ~ .work-card__image_role_idle {
+        opacity: 0;
+      }
+    }
+
+    .work-card__meta {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      left: 8px;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+      justify-content: flex-start;
+      pointer-events: none;
+    }
+  }
+</style>
+
+<script>
+  /*
+   * RT-02: shared element from the clicked card cover to the case cover. The name is given on the
+   * fly, so only that cover morphs and no other navigation captures the list; it is skipped with
+   * reduced motion or when the cover is off screen. Timing and keyframes: ROUTE_TRANSITIONS.cover.
+   */
+  import { ROUTE_TRANSITIONS } from '@/components/motion/presets';
+  import { prefersReducedMotion } from '@/lib/motion-policy';
+
+  const SHARED_NAME = ROUTE_TRANSITIONS.cover.name;
+  const DESTINATION = '[data-hero-image]';
+
+  let source: HTMLElement | undefined;
+  let destination: HTMLElement | undefined;
+
+  function release() {
+    source?.style.removeProperty('view-transition-name');
+    destination?.style.removeProperty('view-transition-name');
+    source = undefined;
+    destination = undefined;
+  }
+
+  function isOnScreen(el: Element): boolean {
+    const rect = el.getBoundingClientRect();
+    return (
+      rect.width > 0 &&
+      rect.bottom > 0 &&
+      rect.right > 0 &&
+      rect.top < window.innerHeight &&
+      rect.left < window.innerWidth
+    );
+  }
+
+  document.addEventListener('astro:before-preparation', (event) => {
+    release();
+    const link = event.sourceElement?.closest<HTMLAnchorElement>('a[data-cover]');
+    if (!link || prefersReducedMotion()) return;
+    if (new URL(link.href, location.href).pathname !== event.to.pathname) return;
+    const cover = link.querySelector<HTMLElement>('[data-cover-image]');
+    if (!cover || !isOnScreen(cover)) return;
+    cover.style.setProperty('view-transition-name', SHARED_NAME);
+    source = cover;
+  });
+
+  document.addEventListener('astro:after-swap', () => {
+    if (!source) return;
+    source = undefined;
+    const target = document.querySelector<HTMLElement>(DESTINATION);
+    if (!target) return;
+    target.style.setProperty('view-transition-name', SHARED_NAME);
+    destination = target;
+  });
+
+  // The pseudo-elements are already captured by then; the names must not leak into later navigations.
+  document.addEventListener('astro:page-load', release);
+</script>

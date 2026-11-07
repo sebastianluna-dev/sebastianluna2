@@ -1,0 +1,68 @@
+---
+/**
+ * `#works` section of the home: an `h2` for assistive technology and the card grid (design-spec §3.1,
+ * §7.3). Three columns of (100vw − 32)/3 in D, two of (100vw − 24)/2 in T, one of 100vw − 16 in P,
+ * always 8 apart inside an 8 px gutter; the list stops growing at its 1920 px width (decisiones.md 13).
+ * Each item carries the card's appear (HO-01: `cardIn`, IntersectionObserver threshold 0, once, no
+ * stagger), so the press scale of the link inside never fights the committed appear values.
+ */
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { HOME_APPEAR } from '@/components/motion/presets';
+import WorkCard from './WorkCard.astro';
+
+interface Props {
+  locale: Locale;
+  /** Works of this language, already in list order (lib/works.ts `worksForLocale`). */
+  works: CollectionEntry<'works'>[];
+}
+
+const { locale, works } = Astro.props;
+const messages = getMessages(locale);
+---
+
+<section id="works" class="works-list" aria-labelledby="works-title">
+  <h2 id="works-title" class="sr-only">
+    {messages.works.title}
+  </h2>
+  <ul class="works-list__grid" role="list">
+    {works.map((work) => (
+      <AppearMotion as="li" appear={HOME_APPEAR.workCard} class="works-list__item">
+        <WorkCard work={work} locale={locale} />
+      </AppearMotion>
+    ))}
+  </ul>
+</section>
+
+<style>
+  @layer pf {
+    .works-list {
+      /* decisiones.md 13: the grid keeps the width it has at a 1920 px viewport. */
+      --works-list-max: var(--pf-works-max);
+
+      display: flex;
+      flex-direction: column;
+      padding: var(--pf-section-pad-block) var(--pf-gutter-home);
+      /* Cold load of /#works lands on the section top (RT-11). */
+      scroll-margin-top: 0;
+    }
+
+    .works-list__grid {
+      display: grid;
+      grid-template-columns: repeat(var(--pf-grid-cols), minmax(50px, 1fr));
+      gap: var(--pf-grid-gap);
+      width: 100%;
+      max-width: var(--works-list-max);
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    .works-list__item {
+      /* The appear scales from the centre of the cell, as the reference container does. */
+      position: relative;
+      min-width: 0;
+    }
+  }
+</style>
