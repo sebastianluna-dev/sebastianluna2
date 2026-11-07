@@ -1,0 +1,56 @@
+---
+/**
+ * Home page of either language, in the order of the reference (design-spec §3.1):
+ * hero, technology wall, works. No testimonials until there are real ones (decisiones.md 3).
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Locale } from '@/i18n/locales';
+import { worksForLocale } from '@/lib/works';
+import Hero from '@/components/portfolio/home/Hero.astro';
+import HeroAvatar from '@/components/portfolio/home/HeroAvatar.astro';
+import HeroBio from '@/components/portfolio/home/HeroBio.astro';
+import HeroCtas from '@/components/portfolio/home/HeroCtas.astro';
+import HeroObjects from '@/components/portfolio/home/HeroObjects.astro';
+import HeroSelectionScene from '@/components/portfolio/home/HeroSelectionScene.astro';
+import HeroTip from '@/components/portfolio/home/HeroTip.astro';
+import { FEATURES } from '@/data/features';
+import LogoWall from '@/components/portfolio/home/LogoWall.astro';
+import WorksList from '@/components/portfolio/home/WorksList.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const works = worksForLocale(await getCollection('works'), locale);
+---
+
+<BaseLayout locale={locale}>
+  {/* The hero column is centred in its height: a paint before it is fully parsed (the parser
+       yields after inline scripts) would move it up when the rest arrives (CLS). Chromium waits for
+       #hero-end before the first render; other browsers ignore the hint. */}
+  <link slot="head" rel="expect" href="#hero-end" blocking="render" />
+  <div class="home">
+    <Hero locale={locale}>
+      <HeroAvatar locale={locale} />
+      <HeroSelectionScene locale={locale} />
+      <HeroBio locale={locale} />
+      <HeroCtas locale={locale} />
+      {FEATURES.blue && <HeroTip locale={locale} />}
+      <HeroObjects slot="objects" locale={locale} />
+    </Hero>
+    <LogoWall locale={locale} />
+    <WorksList locale={locale} works={works} />
+  </div>
+</BaseLayout>
+
+<style>
+  @layer pf {
+    .home {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-page-gap);
+    }
+  }
+</style>
