@@ -1,0 +1,100 @@
+---
+/**
+ * Dark-theme star field (EF-09, EF-10; design-spec §4 "ui/", §8.2). Decorative and fixed behind the
+ * page: an empty host in the SSR (plain background without JS), a canvas mounted by
+ * `stellar.client.ts` only while the dark theme is on. Persisted across navigations (RT-05).
+ *
+ * Paints at z-index −1 from the root stacking context, so it must be a direct child of <body> and
+ * the body itself must not paint a background (the html background already covers the canvas).
+ */
+---
+
+<div class="pf-stellar" aria-hidden="true" data-stellar transition:persist="pf-stellar">
+  <div class="pf-stellar__sky"></div>
+  <div class="pf-stellar__meteor">
+    <span class="pf-stellar__meteor-tail"></span>
+    <span class="pf-stellar__meteor-head"></span>
+  </div>
+</div>
+
+<script>
+  import { startStellar } from './stellar.client';
+
+  startStellar();
+</script>
+
+<style is:global>
+  @layer pf {
+    .pf-stellar {
+      /* EF-09 sky behind the stars and EF-10 streak colours (tokens; read by the script too). */
+      --pf-stellar-sky: var(--pf-star-sky);
+      --pf-stellar-meteor-mid: var(--pf-star-shooting-mid);
+      --pf-stellar-meteor-bright: var(--pf-star-shooting-bright);
+      --pf-stellar-meteor-tip: var(--pf-star-shooting-tip);
+      --pf-stellar-meteor-head: var(--pf-star-shooting-head);
+      --pf-stellar-meteor-length: 150px;
+
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+      contain: strict;
+      /* BL-05: fixed layers move with the page while Blue's panel pushes it. */
+      translate: calc(-1 * var(--pf-blue-offset, 0px)) 0;
+
+      &:not([data-active]) > * {
+        display: none;
+      }
+    }
+
+    .pf-stellar__sky {
+      position: absolute;
+      inset: 0;
+    }
+
+    .pf-stellar__canvas {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .pf-stellar__meteor {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: var(--pf-stellar-meteor-length);
+      height: 1.2px;
+      margin-left: calc(-1 * var(--pf-stellar-meteor-length));
+      opacity: 0;
+      transform-origin: 100% 50%;
+      will-change: transform, opacity;
+    }
+
+    .pf-stellar__meteor-tail {
+      position: absolute;
+      inset: 0;
+      border-radius: 1px;
+      opacity: 0.9;
+      background: linear-gradient(
+        to right,
+        transparent 0%,
+        var(--pf-stellar-meteor-mid) 50%,
+        var(--pf-stellar-meteor-bright) 85%,
+        var(--pf-stellar-meteor-tip) 100%
+      );
+    }
+
+    .pf-stellar__meteor-head {
+      position: absolute;
+      top: -0.2px;
+      right: -0.8px;
+      width: 1.6px;
+      height: 1.6px;
+      border-radius: 50%;
+      background: var(--pf-stellar-meteor-head);
+    }
+  }
+</style>
