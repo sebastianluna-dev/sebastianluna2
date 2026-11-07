@@ -1,0 +1,24 @@
+# build output
+dist/
+.vercel/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+
+# environment variables
+.env*
+!.env.example
+
+# analysis of the reference site: kept on this machine only
+recon/
+scripts/recon/
+docs/
+
+# os / editors
+.DS_Store
+.idea/
