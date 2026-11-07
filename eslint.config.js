@@ -13,6 +13,14 @@ export default defineConfig(
   ...astro.configs.recommended,
   ...astro.configs['jsx-a11y-recommended'],
   {
+    // WebKit drops the list role of a styled `ul`/`ol` outside `nav` (reset.css removes the
+    // markers), so the explicit `role="list"` is not redundant there (review R-07).
+    files: ['**/*.astro'],
+    rules: {
+      'astro/jsx-a11y/no-redundant-roles': ['error', { ul: ['list'], ol: ['list'] }],
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     plugins: { 'react-hooks': reactHooks, 'jsx-a11y': jsxA11y },
     rules: { ...reactHooks.configs.recommended.rules },
