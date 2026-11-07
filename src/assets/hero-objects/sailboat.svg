@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs>
+    <linearGradient id="hull" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5aa2ff"/>
+      <stop offset="0.45" stop-color="#1f62e8"/>
+      <stop offset="1" stop-color="#0b2f8f"/>
+    </linearGradient>
+    <linearGradient id="hullSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.35"/>
+      <stop offset="0.4" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#001a5c" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="deck" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#cfd9ea"/>
+    </linearGradient>
+    <linearGradient id="main" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#f1f5fb"/>
+      <stop offset="1" stop-color="#b9c6db"/>
+    </linearGradient>
+    <linearGradient id="jib" x1="1" y1="0" x2="0" y2="0.8">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#c5d2e6"/>
+    </linearGradient>
+    <linearGradient id="mast" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f1c27c"/>
+      <stop offset="1" stop-color="#9a5a1c"/>
+    </linearGradient>
+    <linearGradient id="flag" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffb08a"/>
+      <stop offset="1" stop-color="#ff4b2b"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.8"/>
+    </filter>
+  </defs>
+  <!-- mast -->
+  <rect x="117" y="26" width="7" height="146" rx="3.5" fill="url(#mast)"/>
+  <!-- flag -->
+  <path d="M124 26c10 2 18 6 26 4-6 6-16 8-26 8z" fill="url(#flag)"/>
+  <!-- mainsail -->
+  <path d="M128 40c34 34 54 76 58 120-22 4-42 4-58 2z" fill="url(#main)"/>
+  <path d="M128 40c34 34 54 76 58 120" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+  <path d="M136 72c18 22 30 48 34 76" fill="none" stroke="#9fb0cb" stroke-width="1.2" opacity="0.55"/>
+  <!-- jib -->
+  <path d="M113 52c-24 30-40 66-50 106 16 4 34 4 50 2z" fill="url(#jib)"/>
+  <path d="M106 70c-16 24-28 52-34 82" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.8" filter="url(#soft)"/>
+  <!-- stripe on the mainsail -->
+  <path d="M146 118c10-1 22-1 34 0l3 12c-12-1-24-1-37 0z" fill="#ff6a3d" opacity="0.92"/>
+  <!-- deck -->
+  <path d="M40 168h160c-2 6-6 10-12 12H52c-6-2-10-6-12-12z" fill="url(#deck)"/>
+  <!-- hull -->
+  <path d="M42 176h156c-6 24-26 42-56 44H96c-30-2-48-20-54-44z" fill="url(#hull)"/>
+  <path d="M42 176h156c-6 24-26 42-56 44H96c-30-2-48-20-54-44z" fill="url(#hullSide)"/>
+  <path d="M56 186h128" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+  <path d="M62 198c18 12 40 16 62 14" fill="none" stroke="#bfe0ff" stroke-width="3" stroke-linecap="round" opacity="0.5" filter="url(#soft)"/>
+  <circle cx="82" cy="200" r="4" fill="#d9ebff"/>
+  <circle cx="100" cy="202" r="4" fill="#d9ebff"/>
+  <circle cx="81" cy="199" r="1.4" fill="#fff"/>
+  <circle cx="99" cy="201" r="1.4" fill="#fff"/>
+</svg>

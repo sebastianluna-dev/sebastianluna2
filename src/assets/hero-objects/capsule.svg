@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs>
+    <linearGradient id="a" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7fe8ff"/>
+      <stop offset="0.5" stop-color="#1aa4e6"/>
+      <stop offset="1" stop-color="#0b4f9c"/>
+    </linearGradient>
+    <linearGradient id="b" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#eef2f7"/>
+      <stop offset="1" stop-color="#aab6c6"/>
+    </linearGradient>
+    <linearGradient id="spec" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+  <g transform="rotate(-40 120 120)">
+    <path d="M120 82H70a38 38 0 0 0 0 76h50z" fill="url(#a)"/>
+    <path d="M120 82h50a38 38 0 0 1 0 76h-50z" fill="url(#b)"/>
+    <path d="M120 82v76" stroke="#7d8ba0" stroke-width="2" opacity="0.6"/>
+    <path d="M52 96c16-6 100-6 136 0" fill="none" stroke="url(#spec)" stroke-width="7" stroke-linecap="round" filter="url(#soft)"/>
+    <path d="M58 146c40 6 90 6 128 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.3" filter="url(#soft)"/>
+  </g>
+</svg>

@@ -1,0 +1,432 @@
+---
+/**
+ * Five decorative objects around the hero (HE-18…HE-21; hero.md §1, §5–7; design-spec §3.1).
+ * Own illustrations for Sebastian's projects: a knight (365 días de ajedrez), a violin (Cuarteto
+ * Fratres), a stethoscope (Reto MD), a sailboat (Vallarta Tours) and a keycap; four more join the
+ * click swap so it always has a free object (rook, capsule, lifebuoy, note).
+ *
+ * Nodes per object, one job each so no animation clobbers another:
+ *   slot (AppearMotion: position, final rotate, appear HE-18)
+ *   └ object (hit area, ground shadow tint, click swap HE-21)
+ *     ├ shadow (light theme only)
+ *     └ float (CSS loop HE-19)
+ *       └ bump (WAAPI HE-20)
+ *         └ image(s) (crossfade HE-21)
+ *
+ * Positions: D is the reference as is, px on the 1200 canvas plus the shift that spreads the centres
+ * between 1200 and 1280 (a·min(100vw, 1280) − centre₁₂₀₀). Like the reference, the shift sits inside
+ * the rotated box, so it also nudges the object up or down by shift·sin(rotate). T and P use % of the
+ * hero width from the 810 / 390 canvases (decisiones.md 12). Tops in px per breakpoint. Without JS the objects sit in
+ * their final pose and the float may run (design-spec §8). Decorative: `aria-hidden`, empty `alt`.
+ */
+import type { Locale } from '@/i18n/locales';
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { APPEAR_PRESETS, HOME_APPEAR, type AppearSlot } from '@/components/motion/presets';
+import type { MotionValues } from '@/components/motion/types';
+import knight from '@/assets/hero-objects/knight.svg?url';
+import violin from '@/assets/hero-objects/violin.svg?url';
+import stethoscope from '@/assets/hero-objects/stethoscope.svg?url';
+import sailboat from '@/assets/hero-objects/sailboat.svg?url';
+import keycap from '@/assets/hero-objects/keycap.svg?url';
+import rook from '@/assets/hero-objects/rook.svg?url';
+import capsule from '@/assets/hero-objects/capsule.svg?url';
+import lifebuoy from '@/assets/hero-objects/lifebuoy.svg?url';
+import note from '@/assets/hero-objects/note.svg?url';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+/** Swap pool (HE-21): id → URL. The first five start in the slots. */
+const POOL = { knight, violin, stethoscope, sailboat, keycap, rook, capsule, lifebuoy, note };
+type ObjectId = keyof typeof POOL;
+
+/** Canvas widths the reference positions were drawn on (design-spec §3.1). */
+const CANVAS = { desktop: 1200, tablet: 810, phone: 390 } as const;
+
+interface Box {
+  left: number;
+  top: number;
+}
+interface Slot {
+  object: ObjectId;
+  appear: AppearSlot;
+  /** HE-19 float phase (s): the loop starts this far in. */
+  phase: number;
+  /** D/T size (px). */
+  size: { w: number; h: number };
+  phoneSize: { w: number; h: number };
+  desktop: Box;
+  tablet: Box;
+  phone: Box;
+}
+
+// Reference slots (design-spec §3.1, responsive.md §1.2), in its DOM order; `appear` keeps its
+// stagger order (HE-18: 1.50 / 1.62 / 1.74 / 1.86 / 1.98 s).
+const SLOTS: readonly Slot[] = [
+  {
+    object: 'keycap',
+    appear: HOME_APPEAR.objects[4],
+    phase: 4.2,
+    size: { w: 80, h: 80 },
+    phoneSize: { w: 52, h: 52 },
+    desktop: { left: 917, top: 677 },
+    tablet: { left: 606, top: 677 },
+    phone: { left: 325, top: 686 },
+  },
+  {
+    object: 'violin',
+    appear: HOME_APPEAR.objects[1],
+    phase: 1.3,
+    size: { w: 93, h: 105 },
+    phoneSize: { w: 60, h: 68 },
+    desktop: { left: 659, top: 38 },
+    tablet: { left: 430, top: 38 },
+    phone: { left: 169, top: 40 },
+  },
+  {
+    object: 'sailboat',
+    appear: HOME_APPEAR.objects[3],
+    phase: 3.6,
+    size: { w: 112, h: 121 },
+    phoneSize: { w: 74, h: 79 },
+    desktop: { left: 159, top: 610 },
+    tablet: { left: 89, top: 610 },
+    phone: { left: 39, top: 625 },
+  },
+  {
+    object: 'stethoscope',
+    appear: HOME_APPEAR.objects[2],
+    phase: 0,
+    size: { w: 140, h: 160 },
+    phoneSize: { w: 86, h: 96 },
+    desktop: { left: 968, top: 230 },
+    tablet: { left: 631, top: 230 },
+    phone: { left: 296, top: 109 },
+  },
+  {
+    object: 'knight',
+    appear: HOME_APPEAR.objects[0],
+    phase: 2.4,
+    size: { w: 135, h: 138 },
+    phoneSize: { w: 80, h: 83 },
+    desktop: { left: 79, top: 110 },
+    tablet: { left: 31, top: 110 },
+    phone: { left: 41, top: 140 },
+  },
+];
+
+/** Centre of a box as a fraction of its canvas (6 decimals, like the reference's shift table). */
+const centre = (left: number, width: number, canvas: number) =>
+  Math.round(((left + width / 2) / canvas) * 1e6) / 1e6;
+
+/** Hero max width: the D shift freezes from here on (design-spec §3.1). */
+const HERO_MAX = 1280;
+
+/** D shift: keeps the centre at a·min(100vw, 1280) with a = centre₁₂₀₀ / 1200 (responsive.md §1.2). */
+function desktopShift(slot: Slot): string {
+  const middle = slot.desktop.left + slot.size.w / 2;
+  const a = middle / CANVAS.desktop;
+  const round = (n: number) => Math.round(n * 1e5) / 1e5;
+  return `calc(min(${round(a * 100)}vw, ${round(a * HERO_MAX)}px) - ${middle}px)`;
+}
+
+function slotStyle(slot: Slot): string {
+  const end: MotionValues = APPEAR_PRESETS[slot.appear.preset].animate;
+  const rotate = end.rotate ?? 0;
+  const vars = {
+    '--slot-w': `${slot.size.w}px`,
+    '--slot-h': `${slot.size.h}px`,
+    '--slot-w-phone': `${slot.phoneSize.w}px`,
+    '--slot-h-phone': `${slot.phoneSize.h}px`,
+    '--slot-left-desktop': `${slot.desktop.left}px`,
+    '--slot-shift': desktopShift(slot),
+    '--slot-x-tablet': centre(slot.tablet.left, slot.size.w, CANVAS.tablet),
+    '--slot-x-phone': centre(slot.phone.left, slot.phoneSize.w, CANVAS.phone),
+    '--slot-top-desktop': `${slot.desktop.top}px`,
+    '--slot-top-tablet': `${slot.tablet.top}px`,
+    '--slot-top-phone': `${slot.phone.top}px`,
+    '--slot-rotate': `${rotate}deg`,
+    '--slot-phase': `${-slot.phase}s`,
+  };
+  return Object.entries(vars)
+    .map(([key, value]) => `${key}:${value}`)
+    .join(';');
+}
+---
+
+<div
+  class="hero-objects"
+  aria-hidden="true"
+  data-hero-objects
+  data-locale={locale}
+  data-pool={JSON.stringify(POOL)}
+>
+  {SLOTS.map((slot, index) => (
+    <AppearMotion appear={slot.appear} class="hero-objects__slot" style={slotStyle(slot)}>
+      <div class="hero-objects__object" data-object={slot.object} data-slot={index}>
+        <div class="hero-objects__shadow" />
+        <div class="hero-objects__float">
+          <div class="hero-objects__bump">
+            <img
+              class="hero-objects__image"
+              src={POOL[slot.object]}
+              alt=""
+              width="240"
+              height="240"
+              decoding="async"
+              draggable="false"
+            />
+          </div>
+        </div>
+      </div>
+    </AppearMotion>
+  ))}
+</div>
+
+<script>
+  import { startHeroObjects } from './hero-objects.client';
+
+  startHeroObjects();
+</script>
+
+<style>
+  @layer pf {
+    /* HE-19 as two tracks on the individual properties; 0 % and 100 % are the rest pose. */
+    @keyframes hero-objects-drift {
+      25% {
+        translate: var(--float-x) calc(-1 * var(--float-y));
+      }
+
+      50% {
+        translate: 0 var(--float-y);
+      }
+
+      75% {
+        translate: calc(-1 * var(--float-x)) 0;
+      }
+    }
+
+    @keyframes hero-objects-tilt {
+      25% {
+        rotate: var(--float-rotate);
+      }
+
+      50% {
+        rotate: 0deg;
+      }
+
+      75% {
+        rotate: calc(-1 * var(--float-rotate));
+      }
+    }
+
+    .hero-objects {
+      /* HE-19 float {amount 3, rotate .8, duration 6.6}: y is .75 of the amount. */
+      --float-x: var(--pf-hero-float-x);
+      --float-y: var(--pf-hero-float-y);
+      --float-rotate: var(--pf-hero-float-rotate);
+      --float-duration: var(--pf-hero-float-duration);
+      /* Contact shadow under the art (light theme only). */
+      --object-contact: var(--pf-object-contact);
+      --object-contact-soft: var(--pf-object-contact-soft);
+
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+
+      /* Position box; AppearMotion owns its opacity/scale/rotate while it appears. */
+      & :global(.hero-objects__slot) {
+        --slot-box-w: var(--slot-w);
+        --slot-box-h: var(--slot-h);
+
+        position: absolute;
+        top: var(--slot-top-desktop);
+        left: var(--slot-left-desktop);
+        width: var(--slot-box-w);
+        height: var(--slot-box-h);
+        rotate: var(--slot-rotate);
+
+        @media (min-width: 810px) and (max-width: 1199.98px) {
+          top: var(--slot-top-tablet);
+          left: calc(var(--slot-x-tablet) * 100% - var(--slot-box-w) / 2);
+        }
+
+        @media (max-width: 809.98px) {
+          --slot-box-w: var(--slot-w-phone);
+          --slot-box-h: var(--slot-h-phone);
+
+          top: var(--slot-top-phone);
+          left: calc(var(--slot-x-phone) * 100% - var(--slot-box-w) / 2);
+        }
+      }
+
+      & .hero-objects__object {
+        /* Ground shadow by object (reference values; its tints follow our objects' colours). */
+        --shadow-tint: rgb(74 87 120 / 0.09);
+        --shadow-width: 50%;
+        --shadow-height: 10%;
+        --shadow-bottom: 12%;
+        --shadow-blur: 7px;
+        --shadow-opacity: 0.84;
+        --contact: var(--object-contact);
+
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        cursor: pointer;
+        pointer-events: auto;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+
+        @media (min-width: 1200px) {
+          transform: translate3d(var(--slot-shift), 0, 0);
+        }
+
+        &[data-object='knight'] {
+          --shadow-tint: rgb(246 139 24 / 0.12);
+          --shadow-opacity: 0.86;
+        }
+
+        &[data-object='violin'] {
+          --shadow-tint: rgb(170 70 30 / 0.11);
+          --shadow-width: 42%;
+          --shadow-height: 9%;
+          --shadow-bottom: 14%;
+          --shadow-blur: 6px;
+          --shadow-opacity: 0.82;
+        }
+
+        &[data-object='stethoscope'] {
+          --shadow-tint: rgb(20 150 160 / 0.08);
+          --shadow-width: 56%;
+          --shadow-height: 8%;
+          --shadow-bottom: 15%;
+          --shadow-opacity: 0.76;
+          --contact: var(--object-contact-soft);
+        }
+
+        &[data-object='sailboat'] {
+          --shadow-tint: rgb(40 112 232 / 0.105);
+        }
+
+        &[data-object='keycap'] {
+          --shadow-tint: rgb(220 50 40 / 0.11);
+          --shadow-width: 44%;
+          --shadow-height: 9%;
+          --shadow-bottom: 13%;
+          --shadow-blur: 6px;
+        }
+
+        &[data-object='rook'] {
+          --shadow-tint: rgb(70 80 170 / 0.1);
+        }
+
+        &[data-object='capsule'] {
+          --shadow-tint: rgb(26 164 230 / 0.1);
+        }
+
+        &[data-object='lifebuoy'] {
+          --shadow-tint: rgb(255 74 61 / 0.1);
+        }
+
+        &[data-object='note'] {
+          --shadow-tint: rgb(123 47 242 / 0.11);
+        }
+      }
+
+      & .hero-objects__shadow {
+        position: absolute;
+        bottom: var(--shadow-bottom);
+        left: 50%;
+        z-index: 0;
+        width: var(--shadow-width);
+        height: var(--shadow-height);
+        border-radius: 999px;
+        background:
+          radial-gradient(
+            ellipse at center,
+            rgb(18 24 38 / 0.23) 0%,
+            rgb(18 24 38 / 0.105) 30%,
+            rgb(18 24 38 / 0.03) 58%,
+            rgb(18 24 38 / 0) 78%
+          ),
+          radial-gradient(ellipse at center, var(--shadow-tint) 0%, rgb(0 0 0 / 0) 72%);
+        filter: blur(var(--shadow-blur));
+        mix-blend-mode: multiply;
+        opacity: var(--shadow-opacity);
+        pointer-events: none;
+        transform: translate3d(-50%, 0, 0);
+      }
+
+      & .hero-objects__float {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        transform-origin: center;
+        animation-name: hero-objects-drift, hero-objects-tilt;
+        animation-duration: var(--float-duration);
+        animation-timing-function: var(--pf-ease-in-out-quart);
+        animation-delay: var(--slot-phase);
+        animation-iteration-count: infinite;
+
+        @media (prefers-reduced-motion: reduce) {
+          animation: none;
+        }
+      }
+
+      /* Out of view (100 px margin) the loop pauses (HE-19). */
+      & .hero-objects__object[data-offscreen] .hero-objects__float {
+        animation-play-state: paused;
+      }
+
+      & .hero-objects__bump {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-origin: center;
+      }
+
+      & .hero-objects__image {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transform-origin: center;
+        filter: var(--contact);
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+
+      /* Dark theme: no ground or contact shadow (chosen or from the system). */
+      :global(:root[data-theme='dark']) & .hero-objects__shadow {
+        opacity: 0;
+      }
+
+      :global(:root[data-theme='dark']) & .hero-objects__image {
+        filter: none;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :global(:root:not([data-theme='light'])) & .hero-objects__shadow {
+          opacity: 0;
+        }
+
+        :global(:root:not([data-theme='light'])) & .hero-objects__image {
+          filter: none;
+        }
+      }
+    }
+  }
+</style>

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs>
+    <linearGradient id="tube" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3fd0c6"/>
+      <stop offset="0.5" stop-color="#0d8f9a"/>
+      <stop offset="1" stop-color="#05515e"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8d97a6"/>
+      <stop offset="0.35" stop-color="#f7f9fc"/>
+      <stop offset="0.6" stop-color="#c4cbd6"/>
+      <stop offset="1" stop-color="#6c7686"/>
+    </linearGradient>
+    <radialGradient id="disc" cx="0.38" cy="0.32" r="0.75">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.4" stop-color="#dfe4ec"/>
+      <stop offset="0.8" stop-color="#9aa4b4"/>
+      <stop offset="1" stop-color="#6a7383"/>
+    </radialGradient>
+    <radialGradient id="membrane" cx="0.4" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#e9f8f8"/>
+      <stop offset="0.6" stop-color="#bfd6db"/>
+      <stop offset="1" stop-color="#8aa3ab"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.5" stop-color="#a9b2c0"/>
+      <stop offset="1" stop-color="#596273"/>
+    </linearGradient>
+    <radialGradient id="tip" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#4b5160"/>
+      <stop offset="1" stop-color="#0d0f14"/>
+    </radialGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.6"/>
+    </filter>
+  </defs>
+  <!-- binaural metal tubes -->
+  <path d="M62 30c-6 30 6 54 32 70" fill="none" stroke="url(#metal)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M150 26c8 30-4 56-34 74" fill="none" stroke="url(#metal)" stroke-width="7" stroke-linecap="round"/>
+  <!-- ear tips -->
+  <ellipse cx="63" cy="26" rx="9" ry="7.5" fill="url(#tip)" transform="rotate(-20 63 26)"/>
+  <ellipse cx="149" cy="22" rx="9" ry="7.5" fill="url(#tip)" transform="rotate(20 149 22)"/>
+  <ellipse cx="60" cy="23" rx="3" ry="2" fill="#fff" opacity="0.6"/>
+  <ellipse cx="146" cy="19" rx="3" ry="2" fill="#fff" opacity="0.6"/>
+  <!-- Y joint and tubing -->
+  <path d="M92 98c6 6 10 8 14 8s10-2 14-8" fill="none" stroke="url(#tube)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M106 106c0 30-26 48-38 70-12 22 4 44 30 40 26-4 44-26 58-44" fill="none" stroke="url(#tube)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M103 110c-2 26-24 42-35 62" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.55" filter="url(#soft)"/>
+  <path d="M74 196c4 12 14 16 24 14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity="0.4" filter="url(#soft)"/>
+  <!-- stem -->
+  <path d="M150 176l14-12" stroke="url(#metal)" stroke-width="9" stroke-linecap="round"/>
+  <!-- chest piece -->
+  <circle cx="178" cy="150" r="40" fill="#5a6372"/>
+  <circle cx="176" cy="147" r="39" fill="url(#disc)"/>
+  <circle cx="176" cy="147" r="30" fill="url(#ring)"/>
+  <circle cx="176" cy="147" r="26" fill="url(#membrane)"/>
+  <circle cx="176" cy="147" r="26" fill="none" stroke="#6d7f88" stroke-width="1" opacity="0.6"/>
+  <ellipse cx="164" cy="132" rx="12" ry="6" fill="#fff" opacity="0.75" transform="rotate(-35 164 132)" filter="url(#soft)"/>
+  <path d="M146 128c6-10 16-16 28-18" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.8" filter="url(#soft)"/>
+</svg>

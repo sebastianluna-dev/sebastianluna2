@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs>
+    <linearGradient id="body" x1="0.15" y1="0.1" x2="0.95" y2="0.9">
+      <stop offset="0" stop-color="#ffe08a"/>
+      <stop offset="0.3" stop-color="#ffaa2b"/>
+      <stop offset="0.7" stop-color="#f06a0c"/>
+      <stop offset="1" stop-color="#a83a04"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.38" cy="0.32" r="0.6">
+      <stop offset="0" stop-color="#fff3c4" stop-opacity="0.9"/>
+      <stop offset="0.45" stop-color="#ffc34d" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#ffc34d" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rim" x1="1" y1="0" x2="0.3" y2="0.6">
+      <stop offset="0" stop-color="#ffd27a" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#ffd27a" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#c84c06"/>
+      <stop offset="0.28" stop-color="#ffb43c"/>
+      <stop offset="0.42" stop-color="#ffe7a3"/>
+      <stop offset="0.6" stop-color="#ff9a1f"/>
+      <stop offset="1" stop-color="#9c3203"/>
+    </linearGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd476"/>
+      <stop offset="1" stop-color="#f47a12"/>
+    </linearGradient>
+    <linearGradient id="spec" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="clip"><path d="M80 172c0-16 6-28 20-40-8-1-20-3-30-6-12-4-18-12-16-22 2-9 12-18 26-30 12-10 22-20 32-26l6-18c6 5 10 10 12 16 22 8 40 34 42 64 2 26-6 46-16 62-20 6-56 6-76 0z"/></clipPath>
+    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0.55" stop-color="#7a2804" stop-opacity="0"/>
+      <stop offset="1" stop-color="#7a2804" stop-opacity="0.45"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+  </defs>
+  <g transform="rotate(10 120 130)">
+  <!-- base -->
+  <path d="M46 196c0-10 33-18 74-18s74 8 74 18v10c0 11-33 19-74 19s-74-8-74-19z" fill="url(#band)"/>
+  <ellipse cx="120" cy="196" rx="74" ry="18" fill="url(#top)"/>
+  <path d="M62 176c0-8 26-14 58-14s58 6 58 14v8c0 8-26 14-58 14s-58-6-58-14z" fill="url(#band)"/>
+  <ellipse cx="120" cy="176" rx="58" ry="14" fill="url(#top)"/>
+  <ellipse cx="96" cy="191" rx="34" ry="5" fill="#fff" opacity="0.35" filter="url(#soft)"/>
+  <!-- head and neck -->
+  <path d="M80 172c0-16 6-28 20-40-8-1-20-3-30-6-12-4-18-12-16-22 2-9 12-18 26-30 12-10 22-20 32-26l6-18c6 5 10 10 12 16 22 8 40 34 42 64 2 26-6 46-16 62-20 6-56 6-76 0z" fill="url(#body)"/>
+  <path d="M80 172c0-16 6-28 20-40-8-1-20-3-30-6-12-4-18-12-16-22 2-9 12-18 26-30 12-10 22-20 32-26l6-18c6 5 10 10 12 16 22 8 40 34 42 64 2 26-6 46-16 62-20 6-56 6-76 0z" fill="url(#glow)"/>
+  <g clip-path="url(#clip)">
+  <rect x="40" y="20" width="160" height="170" fill="url(#shade)"/>
+  <!-- mane -->
+  <path d="M138 50c18 9 32 32 34 60 1 22-4 40-12 56" fill="none" stroke="#b44206" stroke-width="10" stroke-linecap="round" opacity="0.35"/>
+  <path d="M146 62c4 4 10 6 15 6M156 84c4 3 9 4 14 4M162 108c4 2 8 2 12 1M162 132c4 1 8 0 11-2" fill="none" stroke="#a83a04" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+  <path d="M168 90c4 22 2 46-8 70" fill="none" stroke="url(#rim)" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- face -->
+  <path d="M64 102c8-2 16-1 22 2" fill="none" stroke="#a83a04" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <ellipse cx="68" cy="96" rx="3.2" ry="2.4" fill="#8a2f05" opacity="0.8"/>
+  <ellipse cx="112" cy="70" rx="6" ry="4.5" fill="#7a2804" transform="rotate(-25 112 70)"/>
+  <ellipse cx="110.5" cy="68.6" rx="1.8" ry="1.3" fill="#fff" opacity="0.9"/>
+  <path d="M128 34l2 14" stroke="#b44206" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+  <!-- highlights -->
+  <path d="M76 86c10-12 24-24 38-34" fill="none" stroke="url(#spec)" stroke-width="7" stroke-linecap="round" opacity="0.85" filter="url(#soft)"/>
+  <path d="M96 140c-4 8-6 18-6 28" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.4" filter="url(#soft)"/>
+  <ellipse cx="88" cy="74" rx="9" ry="4" fill="#fff" opacity="0.9" transform="rotate(-38 88 74)"/>
+  </g>
+</svg>
