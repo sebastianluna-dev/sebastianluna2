@@ -22,6 +22,10 @@ export default defineConfig({
     locales: ['es', 'en'],
     routing: { prefixDefaultLocale: false },
   },
+  vite: {
+    // Lets several dev servers run side by side without sharing the dep optimizer cache.
+    cacheDir: process.env.VITE_CACHE_DIR ?? 'node_modules/.vite',
+  },
   env: {
     schema: {
       ANTHROPIC_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
