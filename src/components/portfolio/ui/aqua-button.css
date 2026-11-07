@@ -1,0 +1,225 @@
+/*
+ * Aqua button skin (design-spec §4 ui/AquaButton, §6.1; estados.md §1.4–1.5; efectos-y-demos.md §2.3).
+ *
+ * Three layers inside the link: Shadow (blurred glow under the body), Body (gradient pill with the
+ * inset bevel) and Reflection (gloss on top of the label). The link keeps a fixed box: an invisible
+ * sizer with the rest padding sets it, and the skin is laid over it from the start edge, so the
+ * size variants never move the surrounding layout.
+ *
+ * The size variants (EF-01 hover, EF-02 pressed) are two spring-driven numbers written by the island
+ * on the link: `--aqua-hover` (0 → 1 on hover and while pressed) and `--aqua-press` (0 → 1 while
+ * pressed). Every measured geometry is an affine function of them, so each property follows the
+ * same spring, retargets with its velocity and reproduces the overshoot. Without JS both stay 0 and
+ * the SSR paints the rest state (design-spec §8).
+ */
+@layer pf {
+  .aqua-button {
+    --aqua-hover: 0;
+    --aqua-press: 0;
+    /* EF-01: Shadow inset on hover, only for the text kind (Crude/Plasma: left 3, right 2). */
+    --aqua-shadow-hover-left: 0px;
+    --aqua-shadow-hover-right: 0px;
+    /* Engraved label (estados.md §1.4): same light/dark edge in every palette. */
+    --aqua-emboss: var(--pf-aqua-emboss);
+
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    vertical-align: top;
+    border-radius: var(--pf-radius-aqua);
+    color: var(--aqua-text);
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+
+    &:focus-visible {
+      border-radius: var(--pf-radius-aqua);
+    }
+
+    /* EF-04: CSS press on the link, on top of the spring of the body. */
+    @media (prefers-reduced-motion: no-preference) {
+      transition: scale var(--pf-dur-press) ease-out;
+
+      &:active {
+        scale: var(--pf-press-scale);
+      }
+    }
+  }
+
+  /* ---------- Palettes by role; the tokens switch with the theme (TE-08) ---------- */
+
+  .aqua-button_variant_neutral {
+    --aqua-fill: var(--pf-aqua-neutral-fill);
+    --aqua-inset: var(--pf-aqua-neutral-inset);
+    --aqua-shadow-fill: var(--pf-aqua-neutral-shadow-fill);
+    --aqua-shadow-drop: var(--pf-aqua-neutral-shadow-drop);
+    --aqua-shadow-blur: var(--pf-aqua-neutral-shadow-blur);
+    --aqua-reflection: var(--pf-aqua-neutral-reflection);
+    --aqua-text: var(--pf-aqua-neutral-text);
+    --aqua-shadow-opacity: var(--pf-aqua-neutral-shadow-opacity);
+    --aqua-shadow-opacity-hover: var(--pf-aqua-neutral-shadow-opacity-hover);
+    --aqua-shadow-opacity-pressed: var(--pf-aqua-neutral-shadow-opacity-pressed);
+  }
+
+  .aqua-button_variant_accent {
+    --aqua-fill: var(--pf-aqua-accent-fill);
+    --aqua-inset: var(--pf-aqua-accent-inset);
+    --aqua-shadow-fill: var(--pf-aqua-accent-shadow-fill);
+    --aqua-shadow-drop: var(--pf-aqua-accent-shadow-drop);
+    --aqua-shadow-blur: var(--pf-aqua-accent-shadow-blur);
+    --aqua-reflection: var(--pf-aqua-accent-reflection);
+    --aqua-text: var(--pf-aqua-accent-text);
+    --aqua-shadow-opacity: var(--pf-aqua-accent-shadow-opacity);
+    --aqua-shadow-opacity-hover: var(--pf-aqua-accent-shadow-opacity-hover);
+    --aqua-shadow-opacity-pressed: var(--pf-aqua-accent-shadow-opacity-pressed);
+  }
+
+  .aqua-button_kind_text {
+    --aqua-shadow-hover-left: var(--pf-aqua-shadow-hover-left);
+    --aqua-shadow-hover-right: var(--pf-aqua-shadow-hover-right);
+  }
+
+  /* ---------- Layers ---------- */
+
+  .aqua-button__skin {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .aqua-button__shadow {
+    position: absolute;
+    z-index: 0;
+    background: var(--aqua-shadow-fill);
+    box-shadow: var(--aqua-shadow-drop);
+    filter: blur(var(--aqua-shadow-blur));
+    /* rest → hover (−.08) → pressed, per palette (EF-01, EF-02). */
+    opacity: calc(
+      var(--aqua-shadow-opacity) + (var(--aqua-shadow-opacity-hover) - var(--aqua-shadow-opacity)) *
+        var(--aqua-hover) +
+        (var(--aqua-shadow-opacity-pressed) - var(--aqua-shadow-opacity-hover)) * var(--aqua-press)
+    );
+  }
+
+  .aqua-button__body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: var(--pf-radius-aqua);
+    /* The hover and press variants follow the body (EF-01, EF-02); the rest of the skin is inert. */
+    pointer-events: auto;
+    background: var(--aqua-fill);
+    box-shadow: var(--aqua-inset);
+  }
+
+  .aqua-button__reflection {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 2px;
+    width: 100%;
+    border-radius: 48px;
+    background: var(--aqua-reflection);
+  }
+
+  /* ---------- Text kind (hero CTAs): 50 px pill, padding 14 28 ---------- */
+
+  .aqua-button_kind_text {
+    height: 50px;
+
+    .aqua-button__sizer {
+      display: flex;
+      align-items: center;
+      padding-inline: 28px;
+      font: 400 var(--pf-type-cta-size) / 1.2 var(--pf-font-sans);
+      white-space: pre;
+      opacity: 0;
+    }
+
+    .aqua-button__skin {
+      height: 50px;
+    }
+
+    /* rest top 10 · h 35 · r 200; hover top 0 · h 40; pressed top 0 · h 40 · r 102.99. */
+    .aqua-button__shadow {
+      inset-inline-start: calc(var(--aqua-shadow-hover-left) * var(--aqua-hover));
+      inset-inline-end: calc(var(--aqua-shadow-hover-right) * var(--aqua-hover));
+      inset-block-start: calc(10px - 10px * var(--aqua-hover));
+      height: calc(35px + 5px * var(--aqua-hover));
+      border-radius: calc(200px - 97.008px * var(--aqua-press));
+    }
+
+    /* padding 28 → 24 (hover) → 26 (pressed); height 50 → 55 when pressed, centred. */
+    .aqua-button__body {
+      height: calc(50px + 5px * var(--aqua-press));
+      padding-inline: calc(28px - 4px * var(--aqua-hover) + 2px * var(--aqua-press));
+    }
+
+    /* height 26 → 25 → 28; the reference offsets it by −0.909 % / −1 % / −0.526 % of its width. */
+    .aqua-button__reflection {
+      inset-inline-start: calc(
+        -0.90909% - 0.09091% * var(--aqua-hover) + 0.47369% * var(--aqua-press)
+      );
+      height: calc(26px - 1px * var(--aqua-hover) + 3px * var(--aqua-press));
+    }
+
+    .aqua-button__label {
+      position: relative;
+      font: 400 var(--pf-type-cta-size) / var(--pf-type-cta-lh) var(--pf-font-sans);
+      white-space: pre;
+      opacity: 0.9;
+      text-shadow: var(--aqua-emboss);
+    }
+  }
+
+  /* ---------- Icon kind (footer socials): 44 × 44 ---------- */
+
+  .aqua-button_kind_icon {
+    width: 44px;
+    height: 44px;
+
+    &:focus-visible {
+      outline-offset: 3px;
+    }
+
+    .aqua-button__skin {
+      inset: 0;
+      justify-content: center;
+    }
+
+    /* rest 40×36 at (2, 7); hover 38×36 at (2, 4); pressed 36×40 at (4, 2). */
+    .aqua-button__shadow {
+      inset-inline-start: calc(2px + 2px * var(--aqua-press));
+      inset-block-start: calc(7px - 3px * var(--aqua-hover) - 2px * var(--aqua-press));
+      width: calc(40px - 2px * var(--aqua-hover) - 2px * var(--aqua-press));
+      height: calc(36px + 4px * var(--aqua-press));
+      border-radius: calc(200px - 97.008px * var(--aqua-press));
+    }
+
+    /* 44×44 → 42×42 (hover) → 38×48 (pressed), centred. */
+    .aqua-button__body {
+      width: calc(44px - 2px * var(--aqua-hover) - 4px * var(--aqua-press));
+      height: calc(44px - 2px * var(--aqua-hover) + 6px * var(--aqua-press));
+    }
+
+    .aqua-button__reflection {
+      inset-inline-start: -0.90909%;
+      height: 18px;
+    }
+
+    .aqua-button__icon {
+      position: relative;
+      flex: none;
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
