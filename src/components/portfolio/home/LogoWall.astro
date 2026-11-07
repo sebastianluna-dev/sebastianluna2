@@ -1,0 +1,169 @@
+---
+/**
+ * Technology wall of the home (EF-06…EF-08; decisiones.md 3: Sebastian's stack, simple-icons CC0).
+ *
+ * The SSR paints every mark as a grey DOM logo (the reference's failure state, design-spec §8.2), so
+ * it is complete without JS. `metal-marks.client.ts` lays an own WebGL2 liquid-metal canvas over it
+ * once the wall is near the viewport, cross-fades each logo into its metal twin and adds the pointer
+ * magnetism. Layout: label 14 px, 16 px gap, wall min(520px, 100%) × 240 with a 12-column grid in
+ * rows of 4 / 3 / 4 (design-spec §3.1).
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { TECHNOLOGIES, TECHNOLOGY_VIEWBOX } from '@/data/technologies';
+import { buildMarks } from './metal-marks/marks';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { logos } = getMessages(locale);
+const marks = buildMarks(TECHNOLOGIES, TECHNOLOGY_VIEWBOX);
+---
+
+<section class="logo-wall" aria-labelledby="logos-title">
+  <h2 id="logos-title" class="logo-wall__title pf-alt-glyphs">
+    {logos.title}
+  </h2>
+  <div class="logo-wall__field" data-metal-marks>
+    <ul class="logo-wall__list" role="list">
+      {marks.map((mark) => (
+        <li class:list={['logo-wall__item', mark.wide && 'logo-wall__item_span_wide']}>
+          <span
+            class="logo-wall__mark"
+            role="img"
+            aria-label={mark.name}
+            data-mass={mark.mass}
+            data-ratio={mark.ratio}
+            style={{
+              '--logo-wall-mark-width': `${mark.width}px`,
+              '--logo-wall-mark-ratio': mark.ratio,
+              '--logo-wall-mark-max-height': `${mark.maxHeight}px`,
+            }}
+          >
+            <svg
+              class="logo-wall__glyph"
+              viewBox={mark.viewBox}
+              fill="currentColor"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d={mark.iconPath} transform={mark.iconTransform} />
+              {mark.namePath && <path d={mark.namePath} />}
+            </svg>
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<script>
+  import { startMetalMarks } from '@/components/portfolio/home/metal-marks.client';
+
+  startMetalMarks();
+</script>
+
+<style>
+  @layer pf {
+    .logo-wall {
+      /* Grey DOM state of the marks (EF-07 / onFailure): .58 in light, .76 in dark. */
+      --logo-wall-idle-opacity: var(--pf-logo-idle-opacity);
+      /* EF-07 DOM fade and EF-08 DOM follow. */
+      --logo-wall-fade: var(--pf-logo-fade);
+      --logo-wall-follow: var(--pf-logo-follow);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 0 var(--pf-gutter-home);
+    }
+
+    .logo-wall__title {
+      /* Longhands: the `font` shorthand would reset the ss03/ss08 of `.pf-alt-glyphs` (§2.1). */
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-badge-size);
+      font-weight: 400;
+      line-height: var(--pf-type-badge-lh);
+      letter-spacing: var(--pf-type-badge-ls);
+      color: var(--pf-text);
+      text-align: center;
+      text-wrap: balance;
+    }
+
+    .logo-wall__field {
+      position: relative;
+      isolation: isolate;
+      width: 100%;
+      max-width: 520px;
+      height: 240px;
+      container-type: inline-size;
+
+      & :global(.logo-wall__canvas) {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+    }
+
+    .logo-wall__list {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-template-rows: repeat(3, 1fr);
+      align-items: center;
+      gap: 8px 16px;
+      width: 100%;
+      height: 100%;
+      padding: 12px 8px;
+    }
+
+    .logo-wall__item {
+      display: flex;
+      grid-column: span 3;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+
+      &.logo-wall__item_span_wide {
+        grid-column: span 4;
+      }
+    }
+
+    .logo-wall__mark {
+      display: block;
+      width: var(--logo-wall-mark-width);
+      max-width: 100%;
+      min-width: 0;
+      max-height: var(--logo-wall-mark-max-height);
+      aspect-ratio: var(--logo-wall-mark-ratio);
+      color: var(--pf-text);
+      opacity: var(--logo-wall-idle-opacity);
+      transform: translate3d(0, 0, 0);
+      transition:
+        transform var(--logo-wall-follow),
+        opacity var(--logo-wall-fade);
+      pointer-events: none;
+      user-select: none;
+
+      &.logo-wall__mark_metal_on {
+        opacity: 0;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
+    .logo-wall__glyph {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+  }
+</style>
