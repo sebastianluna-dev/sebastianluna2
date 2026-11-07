@@ -1,0 +1,82 @@
+---
+/**
+ * Wraps content in `<Tag data-appear="preset" data-appear-delay>` for the page engine.
+ *
+ * The element's own CSS must already be the END state of the preset (`animate`): that is what shows
+ * without JS and with reduced motion (design-spec §8). The pre-animation state lives in the
+ * `html.js` rules below, fed by CSS custom properties, never as an inline state.
+ * Put it on a wrapper when the content animates `scale` or `translate` itself (press, float).
+ *
+ * Usage: `<AppearMotion appear={HOME_APPEAR.bio}>…</AppearMotion>` or
+ * `<AppearMotion as="li" preset="cardIn" delay={0}>…</AppearMotion>`.
+ */
+import type { HTMLTag, Polymorphic } from 'astro/types';
+import { appearInitialStyle, appearInitialVars, appearProperties } from '@/lib/motion-policy';
+import { APPEAR_PRESETS, type AppearPresetName, type AppearSlot } from './presets';
+import type { StaggerMode } from './types';
+
+type AppearChoice =
+  | { preset: AppearPresetName; delay?: number; appear?: never }
+  | { appear: AppearSlot; preset?: never; delay?: never };
+
+type Props<Tag extends HTMLTag = 'div'> = Polymorphic<{ as: Tag }> &
+  AppearChoice & {
+    /** Makes this element the root of a stagger group (CA-01); default `absolute`. */
+    stagger?: StaggerMode;
+    [data: `data-${string}`]: string | number | boolean | undefined;
+  };
+
+const { as: Tag = 'div', preset, delay, appear, stagger, style, ...attrs } = Astro.props;
+const name = (appear?.preset ?? preset) as AppearPresetName;
+const delaySeconds = appear?.delay ?? delay ?? 0;
+const definition = APPEAR_PRESETS[name];
+const from = appearProperties(definition).join(' ') || undefined;
+const mergedStyle =
+  typeof style === 'string'
+    ? `${appearInitialStyle(definition)};${style}`
+    : style
+      ? { ...appearInitialVars(definition), ...style }
+      : appearInitialStyle(definition);
+// The slot is rendered to a string so no formatter whitespace lands around it (inline wrappers).
+const content = await Astro.slots.render('default');
+const attributes = {
+  ...attrs,
+  'data-appear': name,
+  'data-appear-delay': delaySeconds > 0 ? delaySeconds : undefined,
+  'data-appear-from': from,
+  'data-appear-stagger': stagger,
+  style: mergedStyle,
+};
+---
+
+<Tag {...attributes} set:html={content} />
+
+<style is:global>
+  @layer pf {
+    /* Pre-animation state, only when JS will run it (design-spec §8.1). Opacity always;
+       transforms only without reduced motion (animation-inventory §4). */
+    html.js [data-appear]:not([data-appear-state='done']) {
+      opacity: var(--pf-appear-opacity);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      html.js [data-appear-from~='translate']:not([data-appear-state='done']) {
+        translate: var(--pf-appear-translate);
+      }
+
+      html.js [data-appear-from~='scale']:not([data-appear-state='done']) {
+        scale: var(--pf-appear-scale);
+      }
+
+      html.js [data-appear-from~='rotate']:not([data-appear-state='done']) {
+        rotate: var(--pf-appear-rotate);
+      }
+    }
+  }
+</style>
+
+<script>
+  import { startAppearEngine } from './appear.client';
+
+  startAppearEngine();
+</script>
