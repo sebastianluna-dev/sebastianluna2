@@ -6,6 +6,7 @@
 
 ## Accessibility
 
+- **Interface sounds have no mute control** (priority: low). Like the reference, Blue and the theme cord play short sounds (`src/lib/sound/`) with no way to turn them off besides the system volume. They are under 0.65 s and always answer a gesture, so WCAG 1.4.2 does not apply, but a visitor in a quiet room may want silence. Approach: a sound toggle in the Blue panel header, stored in `localStorage`, read by `playInterfaceSound`.
 - **Contrast of the secondary text is 4.29:1** (priority: high, pending decisiones.md 20). `--pf-text-secondary` (.52 of black, the reference value) fails AA for 14 px text: the footer © and the current language of the locale switch are the only Lighthouse/axe findings (accessibility 96). Approach: set it to `.55` in `tokens.css` (≈4.7:1) once Sebastian decides; the other three contrast knobs are next to it.
 
 ## Motion
