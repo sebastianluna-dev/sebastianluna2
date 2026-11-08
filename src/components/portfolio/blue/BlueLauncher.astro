@@ -1,0 +1,92 @@
+---
+/**
+ * Blue launcher (design-spec §4 blue/, §7.3; BL-01…BL-03; decisiones.md 4, 15, 24): a fixed 88 × 88
+ * button at the bottom right with Blue's own mark, last in the Tab order, plus the empty host the
+ * panel mounts into. Rendered once per page by BaseLayout (last thing in <body>) when `FEATURES.blue`
+ * is on, and persisted across navigations, so an open conversation survives them.
+ *
+ * - No JS: nothing is painted (`html.no-js`), since the button would do nothing.
+ * - Phone (≤809) and touch landscape (decision 15): the button is hidden; "Ask Blue" in the hero and
+ *   the shortcut still open the panel (full screen from the bottom on phones, decision 21).
+ * - BL-01: S2 appear on mount, without the reference's .8 s delay. BL-02: CSS hover, press and sweep.
+ *   BL-03: it moves left with the page while the panel is open (`--pf-blue-offset`).
+ * - `blue-launcher.client.ts` loads `BluePanel` with `import()` on first use, so neither React nor
+ *   motion travel with any page (hueco-6 §6.3).
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { BLUE_LAUNCHER_APPEAR } from '@/components/motion/presets';
+import { BLUE_MARK } from './blue-mark';
+import './blue-launcher.css';
+// Here, not in the island: the router's head swap would drop a stylesheet the import() added.
+import './blue-panel.css';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { blue } = getMessages(locale);
+// One launcher per document, so fixed ids are unique.
+const ids = {
+  body: 'pf-blue-launcher-body',
+  clip: 'pf-blue-launcher-clip',
+  sweep: 'pf-blue-launcher-sweep',
+};
+---
+
+<div class="pf-blue" data-blue transition:persist="pf-blue">
+  <AppearMotion appear={BLUE_LAUNCHER_APPEAR} class="pf-blue-launcher">
+    <button type="button" class="pf-blue-launcher__button" data-blue-launcher aria-expanded="false">
+      <span class="sr-only" data-blue-launcher-label>
+        {blue.launcher}
+      </span>
+      <svg
+        class="pf-blue-launcher__mark"
+        viewBox={BLUE_MARK.viewBox}
+        aria-hidden="true"
+        focusable="false"
+      >
+        <defs>
+          <linearGradient id={ids.body} x1="0" y1="0" x2="0" y2="1">
+            {BLUE_MARK.stops.map((stop) => (
+              <stop offset={stop.offset} style={`stop-color: ${stop.color}`} />
+            ))}
+          </linearGradient>
+          <linearGradient id={ids.sweep} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#fff" stop-opacity="0" />
+            <stop offset="0.5" stop-color="#fff" stop-opacity="0.55" />
+            <stop offset="1" stop-color="#fff" stop-opacity="0" />
+          </linearGradient>
+          <clipPath id={ids.clip}>
+            <path d={BLUE_MARK.body} />
+          </clipPath>
+        </defs>
+        <path class="pf-blue-launcher__body" d={BLUE_MARK.body} fill={`url(#${ids.body})`} />
+        <path class="pf-blue-launcher__gloss" d={BLUE_MARK.gloss} />
+        <g clip-path={`url(#${ids.clip})`}>
+          <rect
+            class="pf-blue-launcher__sweep"
+            x="16"
+            y="-8"
+            width="32"
+            height="80"
+            fill={`url(#${ids.sweep})`}
+          />
+        </g>
+        {BLUE_MARK.eyes.map((eye) => (
+          <rect class="pf-blue-launcher__eye" {...eye} />
+        ))}
+        <path class="pf-blue-launcher__rim" d={BLUE_MARK.body} />
+      </svg>
+    </button>
+  </AppearMotion>
+  <div class="pf-blue__host" data-blue-host></div>
+</div>
+
+<script>
+  import { startBlueLauncher } from './blue-launcher.client';
+
+  startBlueLauncher();
+</script>

@@ -1,0 +1,153 @@
+/*
+ * Blue launcher and the page push (BL-01…BL-05; design-spec §4 blue/, §6.1).
+ *
+ * The push is one animated custom property on <html>: `--pf-blue-offset` goes 0 → 380 px while the
+ * panel is open as a sidebar, and everything that makes room reads it: the body's right padding, the
+ * launcher's `right`, the pill nav, its toast, the theme cord and Stellar. Registered with @property,
+ * so a single transition on <html> moves all of them on the same curve (BL-03, BL-05; decision 16).
+ *
+ * Sidebar or sheet: the panel is a full-screen sheet on phones (≤809, decision 21) and on short
+ * touch screens (`(hover: none) and (max-height: 500px)`, the landscape phone of decision 15), the
+ * query `BLUE.sheetQuery` of presets.ts. A sheet does not push the page; it covers it, so the page
+ * stops scrolling under it (and turns inert, blue-launcher.client.ts). The sidebar media query below
+ * is that query's complement.
+ */
+@property --pf-blue-offset {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+@layer pf {
+  html {
+    transition: --pf-blue-offset var(--pf-blue-panel-duration) var(--pf-ease-sheet);
+
+    @media (min-width: 810px) and (hover: hover), (min-width: 810px) and (min-height: 500.02px) {
+      &[data-blue-open] {
+        --pf-blue-offset: var(--pf-blue-panel-width);
+      }
+    }
+
+    @media (max-width: 809.98px), (hover: none) and (max-height: 500px) {
+      &[data-blue-open] {
+        overflow: hidden;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  body {
+    padding-right: var(--pf-blue-offset);
+  }
+
+  .pf-blue-launcher {
+    position: fixed;
+    right: calc(
+      var(--pf-blue-launcher-inset) + env(safe-area-inset-right, 0px) + var(--pf-blue-offset)
+    );
+    bottom: calc(var(--pf-blue-launcher-inset) + env(safe-area-inset-bottom, 0px));
+    z-index: var(--pf-z-blue-launcher);
+    width: var(--pf-blue-launcher-size);
+    height: var(--pf-blue-launcher-size);
+
+    html[data-blue-open] & {
+      z-index: var(--pf-z-blue-launcher-open);
+    }
+
+    /* Without JS it would do nothing (design-spec §8.2); hidden on phones and touch landscape. */
+    html.no-js & {
+      display: none;
+    }
+
+    @media (max-width: 809.98px), (hover: none) and (max-height: 500px) {
+      display: none;
+    }
+  }
+
+  .pf-blue-launcher__button {
+    display: grid;
+    /* One 100 % cell: the 110 px mark overflows the 88 px button evenly on all four sides. */
+    grid-template: 100% / 100%;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: scale var(--pf-blue-hover-duration) var(--pf-ease-enter);
+
+    /* BL-02 */
+    @media (hover: hover) {
+      &:hover {
+        scale: var(--pf-blue-hover-scale);
+      }
+    }
+
+    &:active {
+      scale: var(--pf-blue-press-scale);
+    }
+
+    &:focus-visible {
+      outline-offset: var(--pf-blue-launcher-focus-offset);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  .pf-blue-launcher__mark {
+    display: block;
+    width: var(--pf-blue-launcher-mark);
+    max-width: none;
+    height: var(--pf-blue-launcher-mark);
+    overflow: visible;
+    filter: var(--pf-blue-mark-shadow);
+  }
+
+  .pf-blue-launcher__gloss {
+    fill: #fff;
+    opacity: 0.5;
+  }
+
+  .pf-blue-launcher__eye {
+    fill: var(--pf-blue-mark-eye);
+  }
+
+  .pf-blue-launcher__rim {
+    fill: none;
+    stroke: var(--pf-blue-mark-rim);
+    stroke-width: 1;
+  }
+
+  /* BL-02: a sheen crosses the mark once per hover (the reference's non-mascot launcher). */
+  .pf-blue-launcher__sweep {
+    transform-box: fill-box;
+    transform-origin: center;
+    translate: calc(-1 * var(--pf-blue-sweep-travel)) 0;
+    rotate: var(--pf-blue-sweep-angle);
+
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+      .pf-blue-launcher__button:hover & {
+        animation: pf-blue-sweep var(--pf-blue-sweep-duration) var(--pf-ease-material) both;
+      }
+    }
+  }
+
+  @keyframes pf-blue-sweep {
+    from {
+      translate: calc(-1 * var(--pf-blue-sweep-travel)) 0;
+    }
+
+    to {
+      translate: var(--pf-blue-sweep-travel) 0;
+    }
+  }
+}

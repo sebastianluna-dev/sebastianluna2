@@ -1,0 +1,521 @@
+/*
+ * Blue panel (BL-04…BL-09, BL-12; design-spec §6.1, §6.3; componentes-js §1.3). Imported by
+ * BlueLauncher.astro, so it is part of every page's stylesheet: a sheet added by the island's
+ * import() would be dropped by <ClientRouter/>'s head swap while the panel stays open. Geometry and type are the reference's, measured at 1440 and
+ * 1024; colours are the `--pf-blue-*` tokens of each theme. Hover is subtle and every control has
+ * the global focus ring (decision 19; the reference shows neither).
+ */
+@layer pf {
+  .pf-blue-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--pf-z-blue-panel);
+    display: flex;
+    flex-direction: column;
+    width: min(var(--pf-blue-panel-width), 100vw);
+    height: 100vh;
+    height: 100dvh;
+    color: var(--pf-text);
+    font-family: var(--pf-font-sans);
+    background: var(--pf-blue-surface);
+    border-left: 1px solid var(--pf-blue-border);
+    /* BL-04: closed it sits one panel to the right, transparent, then hidden once there. */
+    opacity: 0;
+    transform: translate3d(var(--pf-blue-panel-width), 0, 0);
+    visibility: hidden;
+    transition:
+      opacity var(--pf-blue-panel-duration) var(--pf-ease-sheet),
+      transform var(--pf-blue-panel-duration) var(--pf-ease-sheet),
+      visibility 0s linear var(--pf-blue-panel-duration);
+
+    &[data-open] {
+      opacity: 1;
+      transform: none;
+      visibility: visible;
+      transition-delay: 0s;
+      /* Stays put while the page underneath changes route. */
+      view-transition-name: pf-blue-panel;
+    }
+
+    /*
+     * Decision 21: full screen, from the bottom, on phones and on short touch screens (decision 15's
+     * landscape phone, where a 380 px sidebar would leave the conversation ~40 px tall). Same query as
+     * `BLUE.sheetQuery`.
+     */
+    @media (max-width: 809.98px), (hover: none) and (max-height: 500px) {
+      left: 0;
+      width: auto;
+      border-left: 0;
+      transform: translate3d(0, 100%, 0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0s;
+      transition-delay: 0s;
+    }
+
+    & a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+  }
+
+  /* ---------- header ---------- */
+
+  .pf-blue-panel__header {
+    display: flex;
+    flex: none;
+    gap: 10px;
+    align-items: center;
+    min-height: 72px;
+    padding: 0 16px;
+    padding-top: env(safe-area-inset-top, 0px);
+    border-bottom: 1px solid var(--pf-blue-border);
+  }
+
+  .pf-blue-panel__avatar {
+    display: block;
+    flex: none;
+    width: 38px;
+    height: 38px;
+  }
+
+  .pf-blue-panel__mark {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .pf-blue-panel__mark-gloss {
+    fill: #fff;
+    opacity: 0.5;
+  }
+
+  .pf-blue-panel__mark-eye {
+    fill: var(--pf-blue-mark-eye);
+  }
+
+  .pf-blue-panel__mark-rim {
+    fill: none;
+    stroke: var(--pf-blue-mark-rim);
+    stroke-width: 1;
+  }
+
+  .pf-blue-panel__heading {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pf-blue-panel__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.04em;
+  }
+
+  .pf-blue-panel__subtitle {
+    margin: 3px 0 0;
+    overflow: hidden;
+    color: var(--pf-blue-text-muted);
+    font-size: 12px;
+    line-height: 1.35;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Close and new conversation: 28 × 28, radius 10, the bubble fill (estados.md §1.8). */
+  .pf-blue-panel__icon-button {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    color: var(--pf-text);
+    background: var(--pf-blue-bubble);
+    border: 1px solid var(--pf-blue-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: box-shadow var(--pf-blue-control-fade) ease-out;
+  }
+
+  .pf-blue-panel__icon {
+    width: 13px;
+    height: 13px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ---------- conversation ---------- */
+
+  .pf-blue-panel__log {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 20px 16px;
+    /* The edges fade into the surface (componentes-js §1.3). */
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 24px,
+      #000 calc(100% - 24px),
+      transparent 100%
+    );
+
+    &:focus-visible {
+      outline: var(--pf-focus-width) solid var(--pf-focus-ring);
+      outline-offset: calc(-1 * var(--pf-focus-width));
+      mask-image: none;
+    }
+  }
+
+  .pf-blue-panel__content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .pf-blue-panel__messages {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pf-blue-panel__message {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .pf-blue-panel__message_role_user {
+    align-items: flex-end;
+  }
+
+  .pf-blue-panel__bubble {
+    max-width: 80%;
+    margin: 0;
+    padding: 8px 14px;
+    color: var(--pf-blue-user-text);
+    font-size: 15px;
+    line-height: 21px;
+    letter-spacing: -0.01em;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    background: var(--pf-blue-user-bg);
+    border-radius: 12px;
+  }
+
+  /* Blue speaks in the serif, without a bubble (17 / 1.55, −0.03em). */
+  .pf-blue-panel__answer {
+    --pf-ls: -0.03em;
+
+    font-size: 17px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+
+    & p,
+    & ul,
+    & ol {
+      margin: 0;
+    }
+
+    /* :not() lifts it over the `p { margin: 0 }` above. */
+    & > :not(:first-child) {
+      margin-top: 0.6em;
+    }
+
+    & ul,
+    & ol {
+      padding-left: 1.2em;
+    }
+
+    & ul {
+      list-style: disc;
+    }
+
+    & ol {
+      list-style: decimal;
+    }
+
+    & li + li {
+      margin-top: 0.25em;
+    }
+
+    & strong {
+      font-weight: 600;
+    }
+
+    & code {
+      padding: 0 0.25em;
+      font-family: var(--pf-font-mono);
+      font-size: 0.85em;
+      background: var(--pf-blue-bubble);
+      border-radius: 4px;
+    }
+  }
+
+  .pf-blue-panel__note,
+  .pf-blue-panel__caption,
+  .pf-blue-panel__label,
+  .pf-blue-panel__counter {
+    margin: 0;
+    color: var(--pf-blue-text-muted);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  /* BL-08 */
+  .pf-blue-panel__thinking {
+    margin: 0;
+    color: var(--pf-blue-text-muted);
+    font-size: 14px;
+    line-height: 20px;
+    animation: pf-blue-thinking var(--pf-blue-thinking-duration) ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  @keyframes pf-blue-thinking {
+    0%,
+    100% {
+      opacity: var(--pf-blue-thinking-dim);
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .pf-blue-panel__error {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 20px;
+
+    & p {
+      margin: 0;
+    }
+  }
+
+  .pf-blue-panel__pill {
+    min-height: 28px;
+    padding: 0 12px;
+    color: var(--pf-text);
+    font: inherit;
+    font-size: 13px;
+    background: var(--pf-blue-bubble);
+    border: 1px solid var(--pf-blue-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: box-shadow var(--pf-blue-control-fade) ease-out;
+  }
+
+  /* ---------- suggestions ---------- */
+
+  .pf-blue-panel__suggestions {
+    flex: none;
+    padding: 0 16px 14px;
+
+    /*
+     * Short screens: the four cards (~180 px) would squeeze the conversation under ~150 px. They go;
+     * the question box stays (decision 15's landscape phone, a short desktop window).
+     */
+    @media (max-height: 560px) {
+      display: none;
+    }
+  }
+
+  .pf-blue-panel__caption {
+    margin-bottom: 8px;
+  }
+
+  .pf-blue-panel__suggestion-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pf-blue-panel__suggestion {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 52px;
+    padding: 10px 30px 10px 11px;
+    color: var(--pf-text);
+    font: inherit;
+    font-size: 13px;
+    line-height: 1.35;
+    text-align: left;
+    background: var(--pf-blue-suggestion-bg);
+    border: 1px solid var(--pf-blue-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: box-shadow var(--pf-blue-control-fade) ease-out;
+  }
+
+  .pf-blue-panel__suggestion-arrow {
+    position: absolute;
+    top: 50%;
+    right: 11px;
+    width: 12px;
+    height: 12px;
+    translate: 0 -50%;
+    fill: none;
+    stroke: var(--pf-blue-icon-muted);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Decision 19: a faint tint over the resting fill, only for a real hover. */
+  @media (hover: hover) {
+    .pf-blue-panel__icon-button:hover,
+    .pf-blue-panel__pill:hover,
+    .pf-blue-panel__suggestion:hover {
+      box-shadow: inset 0 0 0 100px var(--pf-blue-hover-tint);
+    }
+  }
+
+  .pf-blue-panel__icon-button,
+  .pf-blue-panel__pill,
+  .pf-blue-panel__suggestion {
+    &:focus-visible {
+      outline-offset: 2px;
+    }
+  }
+
+  /* ---------- composer ---------- */
+
+  .pf-blue-panel__composer {
+    flex: none;
+    padding: 12px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--pf-blue-border);
+  }
+
+  .pf-blue-panel__field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 68px;
+    padding: 10px 44px 10px 12px;
+    border: 1px solid var(--pf-blue-border);
+    border-radius: 12px;
+    cursor: text;
+
+    /* The box carries the textarea's focus ring (accesibilidad §8). */
+    &:has(.pf-blue-panel__input:focus-visible) {
+      outline: var(--pf-focus-width) solid var(--pf-focus-ring);
+      outline-offset: -1px;
+    }
+  }
+
+  .pf-blue-panel__input {
+    display: block;
+    width: 100%;
+    min-height: 20px;
+    max-height: 140px;
+    margin: 0;
+    padding: 0;
+    color: var(--pf-text);
+    font: inherit;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.03em;
+    background: transparent;
+    border: 0;
+    outline: none;
+    resize: none;
+    field-sizing: content;
+
+    &[aria-invalid='true'] {
+      text-decoration: underline wavy var(--pf-blue-icon-muted);
+    }
+  }
+
+  /* BL-12: 24 × 24, radius 8; empty = the bubble fill and a faint icon, with text = ink. Instant. */
+  .pf-blue-panel__send {
+    position: absolute;
+    /* Measured on the reference: 8 px from the box's right edge and bottom edge, border included. */
+    right: 8px;
+    bottom: 7px;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    color: var(--pf-blue-send-ink);
+    background: var(--pf-blue-send-bg);
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &[aria-disabled='true'] {
+      color: var(--pf-blue-icon-muted);
+      background: var(--pf-blue-bubble);
+      cursor: default;
+    }
+  }
+
+  .pf-blue-panel__send-icon {
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    [data-busy] > & {
+      fill: currentColor;
+      stroke: none;
+    }
+  }
+
+  .pf-blue-panel__counter {
+    margin-top: 6px;
+    text-align: right;
+
+    &[data-over] {
+      color: var(--pf-text);
+      font-weight: 500;
+    }
+  }
+
+  /* ---------- BL-09: outline around the section a link leads to ---------- */
+
+  /* Placed in document coordinates by guide.ts, so it scrolls with the section it outlines. */
+  .pf-blue-guide {
+    position: absolute;
+    z-index: var(--pf-z-blue-guide);
+    box-sizing: border-box;
+    border: 1px solid var(--pf-blue-guide-border);
+    border-radius: var(--pf-blue-guide-radius);
+    box-shadow: var(--pf-blue-guide-shadow);
+    opacity: 0;
+    pointer-events: none;
+  }
+}
