@@ -302,19 +302,21 @@ export function tapbackAnimation(timings: ChatTimings = CHAT_ASIDE): ChatAnimati
 export const RAIN_GEOMETRY = CHAT_ASIDE.rain.geometry;
 
 /**
- * Avatar of Sebastian in the chat: `--pf-chat-avatar` (24 on phones) and the face crop of the
- * portrait (`--pf-portrait-crop-width`, 112 / 60), so the image is asked at 1x/2x/3x of what is drawn
- * (53 px wide, 45 on phones). `tokens.test.ts` keeps both in sync with the CSS.
+ * Avatar of Sebastian in the chat: `--pf-chat-avatar`, 28 px (24 on phones). At that size the whole
+ * head leaves ~10 px of face, so the photo is drawn `zoom` times larger inside the circle
+ * (`--pf-chat-photo-zoom`) and asked at 1x/2x/3x of that drawn size (`avatarWidths`), never blurrier.
+ * `tokens.test.ts` keeps it in sync with the CSS.
  */
-export const CHAT_AVATAR = { px: 28, phonePx: 24, cropWidth: 112 / 60, phoneMax: 809.98 } as const;
+export const CHAT_AVATAR = { px: 28, phonePx: 24, phoneMax: 809.98, zoom: 1.3 } as const;
 
-const drawn = (px: number) => Math.ceil(px * CHAT_AVATAR.cropWidth);
+/** CSS px the photo is drawn at inside the avatar, on desktop/tablet and on phones. */
+export const CHAT_PHOTO_PX = {
+  px: Math.ceil(CHAT_AVATAR.px * CHAT_AVATAR.zoom),
+  phonePx: Math.ceil(CHAT_AVATAR.phonePx * CHAT_AVATAR.zoom),
+} as const;
 
-/** `getImage` widths and `sizes` of the chat portrait. */
-export const CHAT_PORTRAIT = {
-  widths: [1, 2, 3].map((density) => drawn(CHAT_AVATAR.px * density)),
-  sizes: `(max-width: ${CHAT_AVATAR.phoneMax}px) ${drawn(CHAT_AVATAR.phonePx)}px, ${drawn(CHAT_AVATAR.px)}px`,
-};
+/** `sizes` of the chat photo (its drawn size, zoom included). */
+export const CHAT_AVATAR_SIZES = `(max-width: ${CHAT_AVATAR.phoneMax}px) ${CHAT_PHOTO_PX.phonePx}px, ${CHAT_PHOTO_PX.px}px`;
 
 /** Particles of a rain over an aside `width` px wide: clamp(10, round(width / 40), 18). */
 export function rainParticleCount(width: number, timings: ChatTimings = CHAT_ASIDE): number {

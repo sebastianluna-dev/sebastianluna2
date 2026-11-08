@@ -14,10 +14,17 @@
  * columns line up and the script can slide it from one message to the next.
  */
 import { getImage } from 'astro:assets';
-import { PROFILE } from '@/data/profile';
+import { AVATAR_IMAGE, avatarWidths } from '@/data/profile';
 import { format, getMessages } from '@/i18n/t';
 import { splitLocale } from '@/lib/i18n-paths';
-import { CHAT_PORTRAIT, chatRows, splitChatMeta, tapbacksByTarget } from '@/lib/chat-sequence';
+import {
+  CHAT_AVATAR,
+  CHAT_AVATAR_SIZES,
+  CHAT_PHOTO_PX,
+  chatRows,
+  splitChatMeta,
+  tapbacksByTarget,
+} from '@/lib/chat-sequence';
 import type { ChatAsideProps, ChatSpeaker } from './types';
 
 type Props = ChatAsideProps;
@@ -33,8 +40,21 @@ const rows = chatRows(messages);
 const tapbacks = tapbacksByTarget(messages);
 const metaParts = meta ? splitChatMeta(meta) : null;
 const showStatus = delivered && messages.at(-1)?.from === 'sebastian';
-// 1x/2x/3x of the face crop as drawn (lib/chat-sequence.ts), not the 224 px of the home avatar.
-const portrait = await getImage({ src: PROFILE.portrait, ...CHAT_PORTRAIT });
+// The square photo at 1x/2x/3x of its drawn size (the 28/24 px avatar, zoomed), AVIF with a WebP fallback.
+const { src, formats, fit, position } = AVATAR_IMAGE;
+const [avatarAvif, avatarWebp] = await Promise.all(
+  formats.map((format) =>
+    getImage({
+      src,
+      format,
+      width: CHAT_PHOTO_PX.px,
+      height: CHAT_PHOTO_PX.px,
+      widths: avatarWidths(CHAT_PHOTO_PX.px, CHAT_PHOTO_PX.phonePx),
+      fit,
+      position,
+    }),
+  ),
+);
 // What the script needs to rebuild the calendar (chat-sequence.ts), without re-reading the DOM text.
 const script = JSON.stringify(
   messages.map(({ from, text, fx, rain, tapback }) => ({ from, text, fx, rain, tapback })),
@@ -120,18 +140,25 @@ const script = JSON.stringify(
           </div>
           {message.from === 'sebastian' ? (
             <span class="chat-aside__avatar" aria-hidden="true" data-chat-avatar>
-              <img
-                class="chat-aside__portrait"
-                src={portrait.src}
-                srcset={portrait.srcSet.attribute}
-                sizes={CHAT_PORTRAIT.sizes}
-                width={portrait.attributes.width}
-                height={portrait.attributes.height}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                draggable="false"
-              />
+              <picture>
+                <source
+                  type="image/avif"
+                  srcset={avatarAvif.srcSet.attribute}
+                  sizes={CHAT_AVATAR_SIZES}
+                />
+                <img
+                  class="chat-aside__photo"
+                  src={avatarWebp.src}
+                  srcset={avatarWebp.srcSet.attribute}
+                  sizes={CHAT_AVATAR_SIZES}
+                  width={CHAT_AVATAR.px}
+                  height={CHAT_AVATAR.px}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </picture>
             </span>
           ) : (
             <span
@@ -162,11 +189,6 @@ const script = JSON.stringify(
 <style>
   @layer pf {
     .chat-aside {
-      /* Face crop of the 900×1200 portrait, the HeroAvatar ratios. */
-      --chat-portrait-width: calc(var(--pf-chat-avatar) * var(--pf-portrait-crop-width));
-      --chat-portrait-x: calc(var(--pf-chat-avatar) * var(--pf-portrait-crop-x));
-      --chat-portrait-y: calc(var(--pf-chat-avatar) * var(--pf-portrait-crop-y));
-
       position: relative;
       width: 100%;
       margin: var(--pf-chat-margin-top) 0 var(--pf-chat-margin-bottom);
@@ -444,14 +466,14 @@ const script = JSON.stringify(
       visibility: visible;
     }
 
-    .chat-aside__portrait {
-      position: absolute;
-      top: var(--chat-portrait-y);
-      left: var(--chat-portrait-x);
-      width: var(--chat-portrait-width);
-      max-width: none;
-      height: auto;
+    .chat-aside__photo {
+      display: block;
+      width: 100%;
+      height: 100%;
       margin: 0;
+      object-fit: cover;
+      scale: var(--pf-chat-photo-zoom);
+      transform-origin: var(--pf-chat-photo-focus);
       user-select: none;
       -webkit-user-drag: none;
     }

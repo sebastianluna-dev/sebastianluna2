@@ -118,7 +118,8 @@ export interface ChatMessage {
 
 /**
  * Messaging-style aside inside the body (560), with the typing sequence of CA-09…CA-13. The full
- * conversation is in the SSR; names come from `case.chat`, Sebastian's avatar is the portrait.
+ * conversation is in the SSR; names come from `case.chat`, Sebastian's avatar is
+ * `PROFILE.avatar` (the 384 × 384 photo), served at the displayed size.
  */
 export interface ChatAsideProps {
   /** Centred line above the messages ("Mar 20:15"). */

@@ -1,4 +1,4 @@
-import portrait from '@/assets/portrait/retrato-sebastian-luna.png';
+import avatar from '@/assets/portrait/avatar-sebastian-luna.jpg';
 import type { Locale } from '@/i18n/locales';
 
 // Who the site is about. Names, handles and links are not translated; the copy
@@ -10,9 +10,34 @@ export const PROFILE = {
   linkedinHandle: 'in/sebastianlunarodriguez',
   github: 'https://github.com/sebastianluna-dev',
   githubHandle: 'sebastianluna-dev',
-  /** 900×1200 PNG with a transparent background (decisiones.md, provisional content). */
-  portrait,
+  /** 384×384 JPEG headshot, face centred; always served through `AVATAR_IMAGE`. */
+  avatar,
 } as const;
+
+/**
+ * How every round avatar of Sebastian is served (the home HeroAvatar and the case ChatAside): a
+ * square crop (a no-op on the square source; `attention` keeps the face if a taller photo replaces
+ * it), AVIF with a WebP `<img>` fallback (`formats`, the last one is the fallback) and only the
+ * 1x/2x/3x of the size it is drawn at. Astro components pass these to `getImage`.
+ */
+export const AVATAR_IMAGE = {
+  src: avatar,
+  formats: ['avif', 'webp'],
+  densities: [1, 2, 3],
+  fit: 'cover',
+  position: 'attention',
+} as const;
+
+/** CSS px of the home avatar (HE-13): `--pf-hero-avatar`, kept in sync by `tokens.test.ts`. */
+export const HERO_AVATAR_PX = 60;
+
+/** Widths to generate for an avatar drawn at each of `cssPx`: every density, ascending, unique. */
+export function avatarWidths(...cssPx: number[]): number[] {
+  const widths = cssPx.flatMap((px) =>
+    AVATAR_IMAGE.densities.map((density) => Math.ceil(px * density)),
+  );
+  return [...new Set(widths)].filter((width) => width <= avatar.width).sort((a, b) => a - b);
+}
 
 /** The address to write to, one per language; both reach the same inbox. */
 export const CONTACT_EMAILS: Record<Locale, string> = {

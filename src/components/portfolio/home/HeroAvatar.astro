@@ -2,13 +2,13 @@
 /**
  * Round 60 px avatar linking to LinkedIn (HE-13 appear, HE-14 hover). On a fine pointer it lifts 4 px
  * with a soft shadow and shows the profile handle in a tooltip 28 px above; the handle is a visual
- * repeat of the link name, so it is hidden from assistive technology. The portrait is cropped to the
- * face by CSS (the source is a 3:4 half-length photo).
+ * repeat of the link name, so it is hidden from assistive technology. The photo is served square at
+ * exactly 1x/2x/3x of `HERO_AVATAR_PX` (60/120/180 px; `AVATAR_IMAGE`: AVIF, WebP fallback).
  */
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import type { Locale } from '@/i18n/locales';
 import { getMessages } from '@/i18n/t';
-import { PROFILE } from '@/data/profile';
+import { AVATAR_IMAGE, HERO_AVATAR_PX, PROFILE } from '@/data/profile';
 import AppearMotion from '@/components/motion/AppearMotion.astro';
 import { HOME_APPEAR } from '@/components/motion/presets';
 
@@ -18,19 +18,34 @@ interface Props {
 
 const { locale } = Astro.props;
 const { hero } = getMessages(locale);
+
+/** Drawn size in CSS px, the `--pf-hero-avatar` token (`tokens.test.ts` keeps both equal). */
+const SIZE = HERO_AVATAR_PX;
+const { src, formats, densities, fit, position } = AVATAR_IMAGE;
+const [avif, webp] = await Promise.all(
+  formats.map((format) =>
+    getImage({ src, format, width: SIZE, height: SIZE, densities: [...densities], fit, position }),
+  ),
+);
 ---
 
 <AppearMotion appear={HOME_APPEAR.avatar} class="hero-avatar">
   <a class="hero-avatar__link" href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer">
     <span class="hero-avatar__frame">
-      <Image
-        class="hero-avatar__image"
-        src={PROFILE.portrait}
-        alt={hero.avatar.label}
-        width={224}
-        loading="eager"
-        decoding="async"
-      />
+      <picture>
+        <source type="image/avif" srcset={avif.srcSet.attribute} />
+        <img
+          class="hero-avatar__image"
+          src={webp.src}
+          srcset={webp.srcSet.attribute}
+          alt={hero.avatar.label}
+          width={SIZE}
+          height={SIZE}
+          loading="eager"
+          decoding="async"
+          draggable="false"
+        />
+      </picture>
     </span>
     <span class="hero-avatar__tooltip" aria-hidden="true">
       {PROFILE.linkedinHandle}
@@ -41,11 +56,7 @@ const { hero } = getMessages(locale);
 <style>
   @layer pf {
     .hero-avatar {
-      --hero-avatar-size: 60px;
-      /* Face crop of the 900×1200 portrait: drawn 112 px wide, nudged so the head fills the circle. */
-      --hero-avatar-image-width: 112px;
-      --hero-avatar-image-x: -26px;
-      --hero-avatar-image-y: -5px;
+      --hero-avatar-size: var(--pf-hero-avatar);
       --hero-avatar-lift: -4px;
       /* Reference XProfileAvatar values. */
       --hero-avatar-shadow: var(--pf-avatar-hover-shadow);
@@ -90,12 +101,10 @@ const { hero } = getMessages(locale);
     }
 
     .hero-avatar__image {
-      position: absolute;
-      top: var(--hero-avatar-image-y);
-      left: var(--hero-avatar-image-x);
-      width: var(--hero-avatar-image-width);
-      max-width: none;
-      height: auto;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       user-select: none;
     }
 
