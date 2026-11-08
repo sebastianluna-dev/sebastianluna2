@@ -7,6 +7,8 @@
  * `html.js` rules below, fed by CSS custom properties, never as an inline state.
  * Put it on a wrapper when the content animates `scale` or `translate` itself (press, float).
  *
+ * The engine itself is started by BaseLayout on every page, so this component ships no script.
+ *
  * Usage: `<AppearMotion appear={HOME_APPEAR.bio}>…</AppearMotion>` or
  * `<AppearMotion as="li" preset="cardIn" delay={0}>…</AppearMotion>`.
  */
@@ -74,9 +76,3 @@ const attributes = {
     }
   }
 </style>
-
-<script>
-  import { startAppearEngine } from './appear.client';
-
-  startAppearEngine();
-</script>
