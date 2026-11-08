@@ -10,7 +10,6 @@ export const common = {
   skipToContent: 'Skip to content',
   opensInNewTab: '(opens in a new tab)',
   externalLink: '{label} (opens in a new tab)',
-  portraitAlt: 'Portrait of Sebastian Luna',
   localeSwitch: {
     label: 'Language',
     target: 'Español',

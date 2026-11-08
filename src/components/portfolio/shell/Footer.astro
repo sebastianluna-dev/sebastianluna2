@@ -1,22 +1,19 @@
 ---
 /**
- * Site footer (design-spec §3.1 "Footer", §4 shell; home.md "Footer"; SH-09…SH-18): one
- * `<footer>` (contentinfo) that is the reference's large footer from 810 px and its mobile footer
+ * Site footer (design-spec §3.1 "Footer", §4 shell; home.md "Footer"; SH-09…SH-13, SH-16…SH-18):
+ * one `<footer>` (contentinfo) that is the reference's large footer from 810 px and its mobile footer
  * below, switched by CSS instead of rendering two copies.
  *
- * - Stage: `aspect-ratio 3.5`, 380…700 tall (P: 2.5, 220…324), padding 0 20 32 (P: 0 12 28). The
- *   portrait scene fills it behind the social links, which sit at its bottom.
+ * - Stage (`FooterStage`): the selection frame with the giant name, the divider and the social
+ *   links, as tall as its content. It persists across navigations in the same language
+ *   (`transition:persist`), so the scene plays once; its state is `data-footer-scene`.
  * - Strip: copyright and language switch in a centred, wrapping row of at most 560 px, padding
  *   0 20 4 (P: 0 12 4). On phones the footer keeps 96 px free for the bottom nav.
- *
- * The stage persists across navigations in the same language (`transition:persist`), so the scene
- * plays once, like the reference; its state is `data-footer-scene` (pending → playing → done).
  */
 import type { Locale } from '@/i18n/locales';
 import Copyright from './Copyright.astro';
-import FooterPortrait from './FooterPortrait.astro';
+import FooterStage from './FooterStage.astro';
 import LocaleSwitch from './LocaleSwitch.astro';
-import SocialLinks from './SocialLinks.astro';
 
 interface Props {
   locale: Locale;
@@ -26,14 +23,7 @@ const { locale } = Astro.props;
 ---
 
 <footer class="site-footer">
-  <div
-    class="site-footer__stage"
-    data-footer-scene="pending"
-    transition:persist={`pf-footer-stage-${locale}`}
-  >
-    <FooterPortrait locale={locale} />
-    <SocialLinks locale={locale} />
-  </div>
+  <FooterStage locale={locale} />
   <div class="site-footer__strip">
     <div class="site-footer__strip-inner">
       <Copyright locale={locale} />
@@ -43,8 +33,8 @@ const { locale } = Astro.props;
 </footer>
 
 <script>
-  // SH-09…SH-17 and the copyright year; binds on astro:page-load.
-  import '@/components/portfolio/shell/footer-portrait.client';
+  // SH-09…SH-16 and the copyright year; binds on astro:page-load.
+  import '@/components/portfolio/shell/footer-stage.client';
 </script>
 
 <style>
@@ -61,28 +51,6 @@ const { locale } = Astro.props;
       @media (max-width: 809.98px) {
         /* Room for the bottom pill nav. */
         padding-block-end: 96px;
-      }
-    }
-
-    .site-footer__stage {
-      position: relative;
-      display: flex;
-      flex: none;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      width: 100%;
-      aspect-ratio: 3.5;
-      min-height: 380px;
-      max-height: 700px;
-      padding: 0 20px 32px;
-      overflow: clip;
-
-      @media (max-width: 809.98px) {
-        aspect-ratio: 2.5;
-        min-height: 220px;
-        max-height: 324px;
-        padding: 0 12px 28px;
       }
     }
 

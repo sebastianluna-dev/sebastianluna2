@@ -262,6 +262,52 @@ export const BLUE_LAUNCHER_APPEAR = {
 } as const satisfies AppearSlot;
 
 /**
+ * Blue panel (BL-06…BL-09). The panel slide, the page push (BL-03…BL-05), the launcher hover and
+ * sweep (BL-02) and the thinking loop (BL-08) are CSS and live in the `--pf-blue-*` tokens.
+ */
+export const BLUE = {
+  /**
+   * BL-04, decisions 15 and 21: where the panel is a full-screen sheet instead of the 380 px
+   * sidebar (phones, and short touch screens such as a landscape phone). A sheet covers the page,
+   * so the page turns inert and stops scrolling. `blue-launcher.css` and `blue-panel.css` repeat it.
+   */
+  sheetQuery: '(max-width: 809.98px), (hover: none) and (max-height: 500px)',
+  /** BL-06: the visitor's message pops in from its bottom-right corner (ζ .83). */
+  userMessage: {
+    initial: { opacity: 0, y: 12, scale: 0.86 },
+    spring: { type: 'spring', stiffness: 520, damping: 34, mass: 0.8 },
+    origin: '100% 100%',
+  },
+  /** BL-07: Blue's answer rises 8 px, 40 ms later (ζ .93). */
+  assistantMessage: {
+    initial: { opacity: 0, y: 8 },
+    spring: { type: 'spring', stiffness: 260, damping: 30, mass: 1, delay: 0.04 },
+    origin: '0% 100%',
+  },
+  /**
+   * BL-07: the answer is revealed in chunks of at most `maxChunkChars`, cut after whitespace. An
+   * answer that is already whole shows one chunk every min(`maxStepMs`, `totalMs` / chunks waiting);
+   * while it streams, deltas arrive every ~35 ms, so the next chunk follows `streamStepMs` after the
+   * last one instead of trailing the stream. With reduced motion it shows at once.
+   */
+  reveal: { maxChunkChars: 220, totalMs: 700, maxStepMs: 160, streamStepMs: 40 },
+  /**
+   * BL-09: outline drawn around the section a link of Blue leads to, `delayMs` after the smooth
+   * scroll starts. Reduced motion: opacity only, in `reducedDurationMs`.
+   */
+  guide: {
+    delayMs: 460,
+    durationMs: 920,
+    reducedDurationMs: 520,
+    easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
+    opacity: [0, 1, 0],
+    scale: [0.985, 1, 1.008],
+    /** A target taller than this share of the viewport is outlined by its heading instead. */
+    maxViewportShare: 0.8,
+  },
+} as const;
+
+/**
  * CA-01: case hero blocks. In the meta only the row, the three labels and the year value animate
  * (the Service and Tools values ride on the row). Sections continue at `CASE_SECTION_STAGGER`.
  */
@@ -497,10 +543,11 @@ export const AQUA_MAGNETIC = {
 
 const FOOTER_EASE_OUT_EXPO = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const FOOTER_EASE_OUT_QUINT = 'cubic-bezier(0.22, 1, 0.36, 1)';
-/** Framer's `easeInOut`. */
-const FOOTER_EASE_IN_OUT = 'cubic-bezier(0.42, 0, 0.58, 1)';
 
-/** SH-09…SH-17: every timing of the footer scene, in ms from its start (componentes-js §8). */
+/**
+ * SH-09…SH-13, SH-16: every timing of the footer scene, in ms from its start (componentes-js §8).
+ * The reference's head, hands and duck (SH-14, SH-15, SH-17) are left out on purpose.
+ */
 export const FOOTER_SCENE = {
   /** SH-09 */
   trigger: {
@@ -527,63 +574,17 @@ export const FOOTER_SCENE = {
     scale: [0.985, 1.002, 1],
     offsets: [0, 0.76, 1],
   },
-  /** SH-14: y in shares of the head height (N .95, Q .58), then −4 px and rest. */
-  head: {
-    delayMs: 650,
-    durationMs: 1150,
-    rise: { shares: [0.95, 0.58, 0.58], overshootPx: -4, offsets: [0, 0.22, 0.38, 0.72, 1] },
-    riseEasings: [FOOTER_EASE_OUT_EXPO, 'linear', FOOTER_EASE_OUT_EXPO, FOOTER_EASE_OUT_QUINT],
-    sway: {
-      x: [0, -3, 3, -1, 0],
-      rotate: [-2.5, -2.5, 2, -0.8, 0],
-      offsets: [0, 0.38, 0.68, 0.87, 1],
-    },
-    swayEasing: FOOTER_EASE_IN_OUT,
-    scale: { from: 0.985, durationMs: 900, easing: FOOTER_EASE_OUT_EXPO },
-  },
   /**
-   * SH-15: each hand grips the edge (rises 16 px with a 2 px overshoot, fading in during the first
-   * 35 % of it), then gives a small pull (3 px down, 1.5 px up). The second hand 60 / 30 ms later.
+   * SH-16: button i starts at 1000 + i·100 ms. The reference starts them at 1950, after the head that
+   * peeks over the name (SH-14, until ~1.8 s); without the head they follow the name (done at 970 ms)
+   * instead of leaving a second with nothing under the divider.
    */
-  hands: {
-    grip: {
-      delaysMs: [420, 480],
-      durationMs: 480,
-      easing: 'cubic-bezier(0.2, 0.9, 0.3, 1)',
-      fadeShare: 0.35,
-      y: [16, -2, 0],
-      offsets: [0, 0.7, 1],
-    },
-    pull: {
-      delaysMs: [1000, 1030],
-      durationMs: 700,
-      easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-      y: [0, 3, -1.5, 0],
-      offsets: [0, 0.16, 0.62, 1],
-    },
-  },
-  /** SH-16: button i starts at 1950 + i·100 ms. */
   socials: {
-    startMs: 1950,
+    startMs: 1000,
     stepMs: 100,
     durationMs: 500,
     easing: FOOTER_EASE_OUT_EXPO,
     peakOffset: 0.72,
-  },
-  /** SH-17 */
-  duck: {
-    enableAfterMs: 2000,
-    minRadiusPx: 110,
-    radiusShare: 0.55,
-    anchorShare: 0.6,
-    depthShare: 0.13,
-    downMs: 240,
-    downEasing: 'cubic-bezier(0.4, 0, 0.6, 1)',
-    holdMs: 420,
-    upMs: 520,
-    upEasing: FOOTER_EASE_OUT_EXPO,
-    overshootPx: -3,
-    overshootOffset: 0.7,
   },
 } as const;
 

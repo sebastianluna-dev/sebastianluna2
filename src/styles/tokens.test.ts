@@ -7,6 +7,7 @@ import {
   REDUCED_HERO_FADE,
   SIDE_NOTES_CAROUSEL_QUERY,
 } from '@/components/motion/presets';
+import { HERO_AVATAR_PX } from '@/data/profile';
 import { CHAT_AVATAR } from '@/lib/chat-sequence';
 import { CASE_COL, GAP, GUTTER, PHONE_GAP, WIDE_MIN } from '@/lib/lightbox';
 
@@ -70,12 +71,15 @@ describe('tokens.css', () => {
     expect(phone).toContain(`--pf-gallery-gap: ${PHONE_GAP}px;`);
   });
 
-  it('keeps the chat avatar and its portrait crop in sync with lib/chat-sequence.ts', () => {
+  it('keeps the chat avatar size in sync with lib/chat-sequence.ts', () => {
     expect(css).toContain(`--pf-chat-avatar: ${CHAT_AVATAR.px}px;`);
+    expect(css).toContain(`--pf-chat-photo-zoom: ${CHAT_AVATAR.zoom};`);
     const phone = css.slice(css.indexOf(`@media (max-width: ${CHAT_AVATAR.phoneMax}px)`));
     expect(phone).toContain(`--pf-chat-avatar: ${CHAT_AVATAR.phonePx}px;`);
-    expect(CHAT_AVATAR.cropWidth).toBe(112 / 60);
-    expect(css).toContain('--pf-portrait-crop-width: calc(112 / 60);');
+  });
+
+  it('keeps the hero avatar size in sync with the size it is served at (HE-13)', () => {
+    expect(css).toContain(`--pf-hero-avatar: ${HERO_AVATAR_PX}px;`);
   });
 
   it('keeps the chat rain glyph in sync with its preset (CA-12)', () => {

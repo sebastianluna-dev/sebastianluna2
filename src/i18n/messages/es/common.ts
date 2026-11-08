@@ -10,7 +10,6 @@ export const common = {
   opensInNewTab: '(se abre en otra pestaña)',
   /** Accessible name of a link that opens in a new tab. */
   externalLink: '{label} (se abre en otra pestaña)',
-  portraitAlt: 'Retrato de Sebastian Luna',
   localeSwitch: {
     label: 'Idioma',
     /** Name of the other language, written in that language. */

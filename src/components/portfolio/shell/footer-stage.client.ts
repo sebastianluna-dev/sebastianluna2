@@ -1,31 +1,24 @@
 /**
- * Footer scene (SH-09…SH-17), vanilla WAAPI.
+ * Footer scene (SH-09…SH-16), vanilla WAAPI.
  *
  * - SH-09 trigger: an IntersectionObserver with a 240 px margin wakes the check; the scene starts
- *   once fonts and the head image are decoded and the portrait shows at least
- *   min(55 % of its height, 35 % of the viewport) at the same place for 240 ms (polled every 60 ms).
- *   It plays once per stage and announces itself with `pf:footer-enter { startedAt }`.
- * - SH-10…SH-16 run as WAAPI animations with `fill: backwards`: each holds its first
+ *   once fonts are ready and the stage shows at least min(55 % of its height, 35 % of the viewport)
+ *   at the same place for 240 ms (polled every 60 ms). It plays once per stage and announces itself
+ *   with `pf:footer-enter { startedAt }`.
+ * - SH-10…SH-13 and SH-16 run as WAAPI animations with `fill: backwards`: each holds its first
  *   keyframe through its delay and, when it ends, the element's own CSS (the end state) shows again.
  *   The first keyframes equal the `html.js [data-footer-scene=pending]` rules, so nothing jumps.
  * - Skip: focus anywhere in the footer, or reduced motion, puts the scene in its end state at once
  *   (accesibilidad D-18; the reference lets Tab land on invisible buttons).
- * - SH-17: two seconds after the start, a fine pointer near the head makes it duck.
  *
  * State on the stage: `data-footer-scene` = pending → playing → done.
  */
 import { FOOTER_SCENE } from '@/components/motion/presets';
-import {
-  handTracks,
-  headRiseKeyframes,
-  sceneShowsEnough,
-  socialEntranceDelay,
-} from '@/lib/footer-scene';
+import { sceneShowsEnough, socialEntranceDelay } from '@/lib/footer-scene';
 import { prefersReducedMotion, watchReducedMotion } from '@/lib/motion-policy';
 import { scriptsActive } from '@/lib/scripts-ready';
 
 export const FOOTER_ENTER_EVENT = 'pf:footer-enter';
-const DUCK_QUERY = '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)';
 
 type SceneState = 'pending' | 'playing' | 'done';
 
@@ -38,17 +31,11 @@ interface Controller {
 
 const controllers = new Map<HTMLElement, Controller>();
 
-function part<T extends Element = HTMLElement>(root: ParentNode, name: string): T | null {
-  return root.querySelector<T & Element>(`[data-footer-part="${name}"]`);
+function part(root: ParentNode, name: string): HTMLElement | null {
+  return root.querySelector<HTMLElement>(`[data-footer-part="${name}"]`);
 }
 
 function createScene(stage: HTMLElement): Controller {
-  const portrait = stage.querySelector<HTMLElement>('[data-footer-portrait]');
-  const head = portrait ? part<HTMLImageElement>(portrait, 'head') : null;
-  const duck = portrait ? part(portrait, 'duck') : null;
-  /** The head box (A × L of the reference); the image inside is our crop of the portrait. */
-  const headBox = portrait ? part(portrait, 'rise') : null;
-  const cleanups: (() => void)[] = [];
   const animations: Animation[] = [];
   let state = (stage.dataset.footerScene as SceneState | undefined) ?? 'pending';
   let startedAt = 0;
@@ -58,84 +45,9 @@ function createScene(stage: HTMLElement): Controller {
     stage.dataset.footerScene = next;
   };
 
-  // ---------------------------------------------------------------- SH-17 duck
-
-  const duckMedia = matchMedia(DUCK_QUERY);
-  let duckEnabled = false;
-  let ducked = false;
-  let duckAnimation: Animation | undefined;
-  let duckTimer = 0;
-  let duckFrame = 0;
-  let pointerX = 0;
-  let pointerY = 0;
-  let enableTimer = 0;
-
-  const animateDuck = (keyframes: Keyframe[], duration: number, easing: string) => {
-    if (!duck) return;
-    const from = getComputedStyle(duck).translate;
-    keyframes[0] = { ...keyframes[0], translate: from && from !== 'none' ? from : '0 0' };
-    duckAnimation?.cancel();
-    duckAnimation = duck.animate(keyframes, { duration, easing, fill: 'forwards' });
+  const announce = () => {
+    window.dispatchEvent(new CustomEvent(FOOTER_ENTER_EVENT, { detail: { startedAt } }));
   };
-
-  const checkDuck = () => {
-    duckFrame = 0;
-    if (!headBox) return;
-    const rect = headBox.getBoundingClientRect();
-    if (rect.bottom < 0 || rect.top > innerHeight) return;
-    const d = FOOTER_SCENE.duck;
-    const near =
-      Math.hypot(
-        pointerX - (rect.left + rect.width / 2),
-        pointerY - (rect.top + rect.height * d.anchorShare),
-      ) < Math.max(d.minRadiusPx, rect.width * d.radiusShare);
-    const depth = `0 ${(rect.height * d.depthShare).toFixed(1)}px`;
-    if (near && !ducked) {
-      window.clearTimeout(duckTimer);
-      ducked = true;
-      animateDuck([{ translate: '0 0' }, { translate: depth }], d.downMs, d.downEasing);
-    } else if (!near && ducked) {
-      window.clearTimeout(duckTimer);
-      duckTimer = window.setTimeout(() => {
-        ducked = false;
-        animateDuck(
-          [
-            { translate: depth },
-            { translate: `0 ${d.overshootPx}px`, offset: d.overshootOffset },
-            { translate: '0 0' },
-          ],
-          d.upMs,
-          d.upEasing,
-        );
-      }, d.holdMs);
-    }
-  };
-
-  const onPointerMove = (event: PointerEvent) => {
-    if (!duckEnabled || event.pointerType !== 'mouse' || !duckMedia.matches) return;
-    pointerX = event.clientX;
-    pointerY = event.clientY;
-    duckFrame ||= requestAnimationFrame(checkDuck);
-  };
-
-  const enableDuck = (afterMs: number) => {
-    window.clearTimeout(enableTimer);
-    enableTimer = window.setTimeout(
-      () => {
-        duckEnabled = true;
-      },
-      Math.max(0, afterMs),
-    );
-  };
-
-  window.addEventListener('pointermove', onPointerMove, { passive: true });
-  cleanups.push(() => {
-    window.removeEventListener('pointermove', onPointerMove);
-    window.clearTimeout(duckTimer);
-    window.clearTimeout(enableTimer);
-    cancelAnimationFrame(duckFrame);
-    duckAnimation?.cancel();
-  });
 
   // ---------------------------------------------------------------- SH-10…SH-16
 
@@ -163,12 +75,12 @@ function createScene(stage: HTMLElement): Controller {
   };
 
   const start = () => {
-    if (state !== 'pending' || !portrait) return;
+    if (state !== 'pending') return;
     stopTrigger();
     startedAt = performance.now();
     const t = FOOTER_SCENE;
 
-    portrait.querySelectorAll<HTMLElement>('[data-footer-part="edge"]').forEach((edge) => {
+    stage.querySelectorAll<HTMLElement>('[data-footer-part="edge"]').forEach((edge) => {
       const horizontal = /_side_(top|bottom)/.test(edge.className);
       play(edge, [{ scale: horizontal ? '0 1' : '1 0' }, { scale: '1 1' }], {
         duration: t.edges.durationMs,
@@ -177,12 +89,12 @@ function createScene(stage: HTMLElement): Controller {
     });
     // Keyframe arrays ease every segment, as Framer does with a single `ease`.
     play(
-      part(portrait, 'frame'),
+      part(stage, 'frame'),
       t.frame.scale.map((scale) => ({ scale: String(scale), easing: t.frame.easing })),
       { delay: t.frame.delayMs, duration: t.frame.durationMs },
     );
     play(
-      part(portrait, 'label'),
+      part(stage, 'label'),
       [
         { opacity: 0, translate: `0 ${t.label.y}px`, scale: String(t.label.scale) },
         { opacity: 1, translate: '0 0', scale: '1' },
@@ -190,11 +102,11 @@ function createScene(stage: HTMLElement): Controller {
       { delay: t.label.delayMs, duration: t.label.durationMs, easing: t.label.easing },
     );
     play(
-      part(portrait, 'reveal'),
+      part(stage, 'reveal'),
       [{ clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0% 0 0 0)' }],
       { delay: t.reveal.delayMs, duration: t.reveal.durationMs, easing: t.reveal.easing },
     );
-    const name = part(portrait, 'name');
+    const name = part(stage, 'name');
     play(name, [{ translate: `0 ${t.nameRise.y}px` }, { translate: '0 0' }], {
       delay: t.nameRise.delayMs,
       duration: t.nameRise.durationMs,
@@ -210,36 +122,9 @@ function createScene(stage: HTMLElement): Controller {
       { delay: t.nameScale.delayMs, duration: t.nameScale.durationMs },
     );
 
-    if (head && headBox) {
-      const timing = { delay: t.head.delayMs, duration: t.head.durationMs };
-      play(headBox, headRiseKeyframes(headBox.getBoundingClientRect().height), timing);
-      const { sway } = t.head;
-      play(
-        head,
-        sway.offsets.map((offset, i) => ({
-          translate: `${sway.x[i]}px 0`,
-          rotate: `${sway.rotate[i]}deg`,
-          offset,
-          easing: t.head.swayEasing,
-        })),
-        timing,
-      );
-      play(head, [{ scale: String(t.head.scale.from) }, { scale: '1' }], {
-        delay: t.head.delayMs,
-        duration: t.head.scale.durationMs,
-        easing: t.head.scale.easing,
-      });
-    }
-
-    // SH-15
-    portrait.querySelectorAll<SVGElement>('[data-footer-part="hand"]').forEach((hand, index) => {
-      for (const { keyframes, timing } of handTracks(index)) play(hand, keyframes, timing);
-    });
-
     playSocials();
     setState('playing');
-    enableDuck(t.duck.enableAfterMs);
-    window.dispatchEvent(new CustomEvent(FOOTER_ENTER_EVENT, { detail: { startedAt } }));
+    announce();
 
     const running = animations.slice();
     Promise.all(running.map((animation) => animation.finished)).then(
@@ -260,9 +145,8 @@ function createScene(stage: HTMLElement): Controller {
     setState('done');
     if (!wasPlaying) {
       startedAt = performance.now();
-      window.dispatchEvent(new CustomEvent(FOOTER_ENTER_EVENT, { detail: { startedAt } }));
+      announce();
     }
-    enableDuck(0);
   };
 
   // ---------------------------------------------------------------- SH-09 trigger
@@ -278,8 +162,8 @@ function createScene(stage: HTMLElement): Controller {
 
   const check = () => {
     frame = 0;
-    if (state !== 'pending' || !near || !ready || !portrait) return;
-    const rect = portrait.getBoundingClientRect();
+    if (state !== 'pending' || !near || !ready) return;
+    const rect = stage.getBoundingClientRect();
     if (!sceneShowsEnough(rect, innerHeight)) {
       stableSince = 0;
       return;
@@ -305,9 +189,8 @@ function createScene(stage: HTMLElement): Controller {
   const prepare = async () => {
     if (preparing) return;
     preparing = true;
-    if (head) head.loading = 'eager';
+    // The name is fitted in CSS with the font's metrics: wait for it, as the reference does.
     await document.fonts?.ready;
-    await head?.decode().catch(() => {});
     ready = true;
     schedule();
   };
@@ -330,9 +213,8 @@ function createScene(stage: HTMLElement): Controller {
     cancelAnimationFrame(frame);
     frame = 0;
   }
-  cleanups.push(stopTrigger);
 
-  if (state === 'pending' && portrait) {
+  if (state === 'pending') {
     // Reduced motion, or the no-JS rescue of theme.inline.ts already fired: the end state at once.
     if (prefersReducedMotion() || !scriptsActive()) {
       skip();
@@ -351,17 +233,14 @@ function createScene(stage: HTMLElement): Controller {
         },
         { rootMargin: `${FOOTER_SCENE.trigger.rootMarginPx}px` },
       );
-      observer.observe(portrait);
+      observer.observe(stage);
     }
-  } else if (state !== 'pending') {
-    // A retained stage that already played (bound again after a full reload is impossible).
-    enableDuck(0);
   }
 
   return {
     skip,
     destroy() {
-      for (const cleanup of cleanups) cleanup();
+      stopTrigger();
       for (const animation of animations) animation.cancel();
     },
   };

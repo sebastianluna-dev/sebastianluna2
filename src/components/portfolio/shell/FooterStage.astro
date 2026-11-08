@@ -1,0 +1,275 @@
+---
+/**
+ * Footer stage (SH-09…SH-13, SH-16; design-spec §2.2, §3.1, §8; home.md "Footer"; sin-js.md §3).
+ *
+ * A Figma-like selection frame with the giant name fitted to the width, a divider under it and the
+ * profile links below. Every size is CSS on the stage width W (`cqw`), with the reference formulas:
+ *
+ * - F = clamp(8, .018W, 24) side inset of the frame; name = (W − 2F − 20) / K (SH-13, no JS);
+ * - frame height = 1.04·name + 8 (16 below 600), its top at 24, the divider under it (b);
+ * - the social links 40 px under the divider, then the stage's bottom padding (32; 28 on phones).
+ *
+ * The stage is as tall as that content: b + 40 + 44 + 32 (362 at 1440, 299 at 1024, 207 at 390).
+ * The reference stage is `aspect-ratio 3.5` (2.5 on phones) with 380 / 220 minimums, sized for the
+ * portrait that peeks over the divider; without it that box would leave a gap, so only its rhythm is
+ * kept: divider → links is 40.1 px in the reference at 1440 and at 390 (recon home anatomy-*.json).
+ *
+ * The markup is the scene's END state: that is what shows without JS and with reduced motion
+ * (decisiones.md 28). The state before the scene lives under `html.js [data-footer-scene=pending]`
+ * and `footer-stage.client.ts` plays it (WAAPI). The stage persists across navigations in the same
+ * language (`transition:persist`), so the scene plays once, like the reference.
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import SocialLinks from './SocialLinks.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { footer } = getMessages(locale);
+
+/** SH-10: the frame is drawn as 8 half edges, each growing from its corner. */
+const EDGES = [
+  ['top', 'start'],
+  ['top', 'end'],
+  ['bottom', 'start'],
+  ['bottom', 'end'],
+  ['left', 'start'],
+  ['left', 'end'],
+  ['right', 'start'],
+  ['right', 'end'],
+] as const;
+---
+
+<div
+  class="footer-stage"
+  data-footer-scene="pending"
+  transition:persist={`pf-footer-stage-${locale}`}
+>
+  <div class="footer-stage__canvas">
+    <div class="footer-stage__divider" aria-hidden="true"></div>
+
+    <div class="footer-stage__frame" data-footer-part="frame">
+      {EDGES.map(([side, end]) => (
+        <span
+          class:list={[
+            'footer-stage__edge',
+            `footer-stage__edge_side_${side}`,
+            `footer-stage__edge_end_${end}`,
+          ]}
+          data-footer-part="edge"
+          aria-hidden="true"
+        />
+      ))}
+      <span class="footer-stage__label" data-footer-part="label" aria-hidden="true">
+        <span class="footer-stage__diamond"></span>
+        {footer.frameLabel}
+      </span>
+      <div class="footer-stage__reveal" data-footer-part="reveal">
+        <p class="footer-stage__name" data-footer-part="name">
+          {footer.name}
+        </p>
+      </div>
+    </div>
+
+    <SocialLinks locale={locale} />
+  </div>
+</div>
+
+<style>
+  @layer pf {
+    .footer-stage {
+      /* Measured constants of the reference scene (componentes-js §8). */
+      --fs-frame-color: var(--pf-frame-accent); /* Figma selection purple */
+      --fs-frame-top: 24px;
+      --fs-frame-line: 2px;
+      --fs-name-margin: 20px;
+      /* Divider → social links (recon home anatomy-*.json: 335.4 − 295.3 at 1440, 148 − 107.9 at 390). */
+      --fs-socials-gap: 40px;
+
+      position: relative;
+      flex: none;
+      width: 100%;
+      overflow: clip;
+      container: footer-stage / inline-size;
+    }
+
+    /* The sizes live on a child: `cqw` resolves against the stage where each one is used. */
+    .footer-stage__canvas {
+      --fs-inset: clamp(8px, 1.8cqw, 24px);
+      --fs-name-size: calc(
+        (100cqw - 2 * var(--fs-inset) - var(--fs-name-margin)) / var(--pf-footer-name-k)
+      );
+      --fs-frame-pad: 8px;
+      --fs-frame-height: calc(var(--fs-name-size) * 1.04 + var(--fs-frame-pad));
+      --fs-base: calc(var(--fs-frame-top) + var(--fs-frame-height));
+
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: calc(var(--fs-base) + var(--fs-socials-gap)) 20px 32px;
+
+      @container footer-stage (width < 600px) {
+        --fs-frame-pad: 16px;
+      }
+
+      @media (max-width: 809.98px) {
+        padding-inline: 12px;
+        padding-block-end: 28px;
+      }
+    }
+
+    .footer-stage__divider {
+      position: absolute;
+      inset: var(--fs-base) 0 0;
+      z-index: 0;
+      border-block-start: 1px solid var(--pf-footer-divider);
+    }
+
+    /* ---------- Frame (SH-10), label (SH-11) and name (SH-12, SH-13) ---------- */
+
+    .footer-stage__frame {
+      position: absolute;
+      inset-inline: var(--fs-inset);
+      inset-block-start: var(--fs-frame-top);
+      z-index: 2;
+      height: var(--fs-frame-height);
+      transform-origin: center;
+    }
+
+    .footer-stage__edge {
+      position: absolute;
+      background: var(--fs-frame-color);
+    }
+
+    .footer-stage__edge_side_top,
+    .footer-stage__edge_side_bottom {
+      width: 50%;
+      height: var(--fs-frame-line);
+    }
+
+    .footer-stage__edge_side_left,
+    .footer-stage__edge_side_right {
+      width: var(--fs-frame-line);
+      height: 50%;
+    }
+
+    .footer-stage__edge_side_top {
+      inset-block-start: 0;
+    }
+
+    .footer-stage__edge_side_bottom {
+      inset-block-end: 0;
+    }
+
+    .footer-stage__edge_side_left {
+      inset-inline-start: 0;
+    }
+
+    .footer-stage__edge_side_right {
+      inset-inline-end: 0;
+    }
+
+    .footer-stage__edge_side_top.footer-stage__edge_end_start,
+    .footer-stage__edge_side_bottom.footer-stage__edge_end_start {
+      inset-inline-start: 0;
+      transform-origin: left center;
+    }
+
+    .footer-stage__edge_side_top.footer-stage__edge_end_end,
+    .footer-stage__edge_side_bottom.footer-stage__edge_end_end {
+      inset-inline-end: 0;
+      transform-origin: right center;
+    }
+
+    .footer-stage__edge_side_left.footer-stage__edge_end_start,
+    .footer-stage__edge_side_right.footer-stage__edge_end_start {
+      inset-block-start: 0;
+      transform-origin: center top;
+    }
+
+    .footer-stage__edge_side_left.footer-stage__edge_end_end,
+    .footer-stage__edge_side_right.footer-stage__edge_end_end {
+      inset-block-end: 0;
+      transform-origin: center bottom;
+    }
+
+    .footer-stage__label {
+      position: absolute;
+      inset-inline-start: -2px;
+      inset-block-start: -19px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 4px;
+      color: var(--fs-frame-color);
+      font: 500 var(--pf-type-frame-label-size) / var(--pf-type-frame-label-lh) var(--pf-font-sans);
+      white-space: nowrap;
+    }
+
+    .footer-stage__diamond {
+      display: block;
+      width: 7px;
+      height: 7px;
+      border: 1.5px solid currentColor;
+      rotate: 45deg;
+    }
+
+    .footer-stage__reveal {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .footer-stage__name {
+      margin: 0;
+      color: var(--pf-text);
+      font-family: var(--pf-font-sans);
+      font-size: var(--fs-name-size);
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: var(--pf-type-fit-ls);
+      white-space: nowrap;
+    }
+
+    /* ---------- Before the scene: JS only, never with reduced motion (then it is its end state) ---------- */
+    /* Flat on purpose: Astro scopes only the outer selector of a nested rule. */
+
+    @media (prefers-reduced-motion: no-preference) {
+      :global(html.js) .footer-stage[data-footer-scene='pending'] .footer-stage__frame {
+        scale: 0.997;
+      }
+
+      :global(html.js) .footer-stage[data-footer-scene='pending'] .footer-stage__edge_side_top,
+      :global(html.js) .footer-stage[data-footer-scene='pending'] .footer-stage__edge_side_bottom {
+        scale: 0 1;
+      }
+
+      :global(html.js) .footer-stage[data-footer-scene='pending'] .footer-stage__edge_side_left,
+      :global(html.js) .footer-stage[data-footer-scene='pending'] .footer-stage__edge_side_right {
+        scale: 1 0;
+      }
+
+      :global(html.js) .footer-stage[data-footer-scene='pending'] .footer-stage__label {
+        opacity: 0;
+        translate: 0 5px;
+        scale: 0.98;
+      }
+
+      :global(html.js) .footer-stage[data-footer-scene='pending'] .footer-stage__reveal {
+        clip-path: inset(100% 0 0 0);
+      }
+
+      :global(html.js) .footer-stage[data-footer-scene='pending'] .footer-stage__name {
+        translate: 0 26px;
+        scale: 0.985;
+      }
+    }
+  }
+</style>

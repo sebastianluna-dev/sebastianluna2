@@ -2,7 +2,7 @@ import type { footer as reference } from '../es/footer';
 
 export const footer = {
   name: 'Sebastian Luna',
-  frameLabel: 'Portrait',
+  frameLabel: 'Signature',
   socialLabel: 'Profiles',
   social: {
     linkedin: 'LinkedIn',
