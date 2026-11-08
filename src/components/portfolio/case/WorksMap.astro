@@ -55,6 +55,30 @@ const copy = getMessages(locale).case;
       @media (min-width: 1200px) {
         display: block;
       }
+
+      /*
+       * With the Blue panel open the case column moves 190 px left; under ~1260 it would run beneath
+       * the map, so the map steps aside while the panel is open (the reference overlaps here).
+       */
+      @media (min-width: 1200px) and (max-width: 1259.98px) {
+        transition: opacity var(--pf-blue-panel-duration) var(--pf-ease-sheet);
+
+        /* Hidden (out of the Tab order) only once it has faded. */
+        :global(html[data-blue-open]) & {
+          opacity: 0;
+          visibility: hidden;
+          transition:
+            opacity var(--pf-blue-panel-duration) var(--pf-ease-sheet),
+            visibility 0s linear var(--pf-blue-panel-duration);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          &,
+          :global(html[data-blue-open]) & {
+            transition: none;
+          }
+        }
+      }
     }
 
     .works-map__list {

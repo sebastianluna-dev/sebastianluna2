@@ -356,17 +356,17 @@ const clipId = `pill-nav-clip-${locale}`;
         animation: pill-nav-sweep var(--pill-nav-bands-ms) ease-in-out infinite alternate paused;
       }
 
-      /* SH-07 */
+      /* SH-07. Centred in the area the Blue panel leaves visible, like the bar (decision 16). */
       .pill-nav__toast {
         position: fixed;
         top: var(--pf-nav-toast-top);
-        left: 50%;
+        left: calc((100% - var(--pf-blue-offset, 0px)) / 2);
         z-index: var(--pf-z-toast);
         display: inline-flex;
         align-items: center;
         gap: 8px;
         box-sizing: border-box;
-        max-width: calc(100vw - 32px);
+        max-width: calc(100vw - 32px - var(--pf-blue-offset, 0px));
         padding: 10px 14px;
         border-radius: var(--pf-radius-pill);
         background: var(--pf-nav-active-bg);
