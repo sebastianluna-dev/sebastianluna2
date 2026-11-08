@@ -16,8 +16,27 @@ export interface PseudoAnimation {
 export interface RoutePlan {
   /** Our animation replaces whatever the browser or Astro put on these. */
   replace: PseudoAnimation[];
-  /** The browser's own animation stays (the group morph), retimed. */
-  retime: Record<string, { duration: number; easing: string }>;
+  /**
+   * The group morph: replaced by our own animation that starts from the browser's `from` frame
+   * (`retimeKeyframes`). The curve goes on that frame and the effect runs `linear`, as in the
+   * reference: easing the effect on top of the browser's `ease` keyframes would compose both curves.
+   */
+  retime: Record<string, { duration: number; easing: 'linear'; keyframeEasing: string }>;
+}
+
+/** The `from` frame of the browser's keyframes of a retimed pseudo-element, carrying `easing` (RT-02). */
+export function retimeKeyframes(
+  keyframes: readonly (Keyframe & { computedOffset?: number })[],
+  easing: string,
+): Keyframe[] {
+  // Only the `from` frame: the end stays implicit, so it keeps following the live box of the new
+  // element (the UA updates the group's own style when the cover moves under the morph).
+  const [first] = keyframes;
+  if (!first) return [];
+  // `computedOffset` is read-only output of getKeyframes(), not a settable keyframe property.
+  const frame: Keyframe & { computedOffset?: number } = { ...first, offset: 0, easing };
+  delete frame.computedOffset;
+  return [frame];
 }
 
 export function pseudoElement(part: Part, name: string): string {
@@ -71,7 +90,11 @@ export function routePlan(config = ROUTE_TRANSITIONS): RoutePlan {
       },
     ],
     retime: {
-      [pseudoElement('group', cover.name)]: { duration: cover.durationMs, easing: cover.easing },
+      [pseudoElement('group', cover.name)]: {
+        duration: cover.durationMs,
+        easing: 'linear',
+        keyframeEasing: cover.easing,
+      },
     },
   };
 }

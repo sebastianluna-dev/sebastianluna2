@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ROUTE_TRANSITIONS } from '@/components/motion/presets';
-import { pseudoElement, routePlan } from './route-transitions';
+import { pseudoElement, retimeKeyframes, routePlan } from './route-transitions';
 
 describe('routePlan (RT-01, RT-02)', () => {
   const plan = routePlan();
@@ -41,7 +41,22 @@ describe('routePlan (RT-01, RT-02)', () => {
     expect(step(pseudoElement('new', name))?.keyframes[1]).toEqual({ opacity: 1, offset: 0.35 });
     expect(plan.retime[pseudoElement('group', name)]).toEqual({
       duration: 520,
-      easing: 'cubic-bezier(0.2, 0, 0, 1)',
+      easing: 'linear',
+      keyframeEasing: 'cubic-bezier(0.2, 0, 0, 1)',
     });
+  });
+
+  it('starts the group from the browser `from` frame, eased, with a linear effect', () => {
+    const frames = retimeKeyframes(
+      [
+        { offset: 0, computedOffset: 0, easing: 'ease', width: '469px' },
+        { offset: 1, computedOffset: 1, easing: 'ease', width: '720px' },
+      ],
+      'cubic-bezier(0.2, 0, 0, 1)',
+    );
+    // The end stays implicit, so the morph lands on the live box of the new cover.
+    expect(frames).toEqual([{ offset: 0, easing: 'cubic-bezier(0.2, 0, 0, 1)', width: '469px' }]);
+    expect(retimeKeyframes([], 'linear')).toEqual([]);
+    for (const retime of Object.values(plan.retime)) expect(retime.easing).toBe('linear');
   });
 });
