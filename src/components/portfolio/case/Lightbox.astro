@@ -1,0 +1,140 @@
+---
+/**
+ * The single lightbox of a case page (design-spec §4 case/, §7.3; case.md §3.6; CA-07, CA-08), mounted
+ * by WorkView. A `<dialog>` opened with `showModal()` (the rest of the page inert), padded by
+ * `--pf-lightbox-pad`, over the `--pf-lightbox-scrim` layer (both themes), `cursor: zoom-out`. It has a
+ * visible Close button that takes the initial focus (decisiones.md 25, D-24). The enlarged image goes in
+ * `[data-lightbox-stage]`, contained up to `min(1600px, 100%)`. `lightbox.client.ts` binds the figures
+ * and plays the FLIP (timings in `LIGHTBOX` / `REDUCED_LIGHTBOX_MS`). Without JS nothing opens it: each
+ * figure is a plain link to its large image.
+ */
+import { getMessages } from '@/i18n/t';
+import type { LightboxProps } from './types';
+
+type Props = LightboxProps;
+
+const { locale } = Astro.props;
+const copy = getMessages(locale).case;
+---
+
+<dialog class="lightbox" aria-label={copy.lightbox} data-lightbox>
+  <div class="lightbox__scrim" aria-hidden="true" data-lightbox-fade></div>
+  <div class="lightbox__stage" data-lightbox-stage></div>
+  <button class="lightbox__close" type="button" data-lightbox-close data-lightbox-fade>
+    {copy.close}
+  </button>
+</dialog>
+
+<script>
+  import { startLightbox } from './lightbox.client';
+
+  startLightbox();
+</script>
+
+<style>
+  @layer pf {
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: none;
+      height: 100%;
+      max-height: none;
+      margin: 0;
+      padding: var(--pf-lightbox-pad);
+      overflow: hidden;
+      border: 0;
+      background: transparent;
+      color: var(--pf-lightbox-close-ink);
+      cursor: zoom-out;
+      overscroll-behavior: contain;
+      /* No panning (the page is locked anyway), but pinch-zoom stays for the enlarged image (WCAG 1.4.4). */
+      touch-action: pinch-zoom;
+
+      &[open] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* The scrim is an element so it can fade with WAAPI (CA-07); the UA backdrop stays clear. */
+      &::backdrop {
+        background: transparent;
+      }
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
+
+    .lightbox__scrim {
+      position: absolute;
+      inset: 0;
+      background: var(--pf-lightbox-scrim);
+    }
+
+    .lightbox__stage {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+
+      /* The image is created by the script, outside this component's scope. */
+      & > :global(.lightbox__image) {
+        display: block;
+        width: auto;
+        max-width: min(var(--pf-lightbox-max), 100%);
+        height: auto;
+        max-height: 100%;
+        object-fit: contain;
+        transform-origin: 50% 50%;
+        user-select: none;
+        will-change: transform;
+      }
+
+      /* Hidden until the large source is decoded (CA-07). */
+      & > :global(.lightbox__image:not([data-ready])) {
+        opacity: 0;
+      }
+    }
+
+    .lightbox__close {
+      position: absolute;
+      top: var(--pf-lightbox-close-inset);
+      right: var(--pf-lightbox-close-inset);
+      z-index: 2;
+      height: var(--pf-back-height);
+      padding: 0 var(--pf-lightbox-close-pad);
+      border: 0;
+      border-radius: var(--pf-radius-pill);
+      background: var(--pf-lightbox-close-bg);
+      color: var(--pf-lightbox-close-ink);
+      font: inherit;
+      font-size: var(--pf-type-nav-size);
+      font-weight: 500;
+      line-height: var(--pf-type-nav-lh);
+      letter-spacing: var(--pf-type-nav-ls);
+      cursor: pointer;
+      transition: background-color var(--pf-back-bg-duration) ease-out;
+
+      &:focus-visible {
+        outline-color: var(--pf-lightbox-close-ink);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background: var(--pf-lightbox-close-bg-hover);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+  }
+</style>
