@@ -1,0 +1,221 @@
+---
+/**
+ * One note of a `<SideNotes>` row (case.md §3.5, design-spec §2 "Nota"): the mini illustration `art`
+ * (100 px box, 92 in the carousel; decorative), the title (Geist 500 14/20, `--pf-text-strong`) and
+ * the slot text (Geist 14/20, `--pf-text-secondary`, `pretty`).
+ *
+ * The illustrations live in `side-note-art/`, one component per `SideNoteArt`, drawn in SVG and CSS:
+ * monochrome on the `--note-*` palette below with one accent each, no words (visible copy only comes
+ * from the MDX), left-aligned and vertically centred in the box like the reference.
+ *
+ * CA-14: on hover of the whole note (fine pointer only) the parts of the illustration that carry a
+ * `pf-note-hv-*` class move. Those classes are the API of this block towards `side-note-art/`
+ * (global, so `pf-` prefixed; AGENTS.md): `-press` scale .96, `-lift` y −3, `-x` x `--x` (4),
+ * `-tilt` −6°, `-sp` to (`--dx`, `--dy`), `-up` y `--d` (−4), `-fan` to `--rh`, `-on` / `-off` fade
+ * in / out, `-run` x 24 while it fades in. Transforms take .26 s (.2,.8,.2,1), fades .3 s ease, the
+ * run .9 s (.3,.7,.3,1) with a .2 s fade. Reduced motion: no transitions (the end states still
+ * apply, instantly).
+ */
+import type { SideNoteArt, SideNoteProps } from './types';
+import BlocksArt from './side-note-art/BlocksArt.astro';
+import BoardArt from './side-note-art/BoardArt.astro';
+import CalendarArt from './side-note-art/CalendarArt.astro';
+import CompassArt from './side-note-art/CompassArt.astro';
+import GaugeArt from './side-note-art/GaugeArt.astro';
+import GlobeArt from './side-note-art/GlobeArt.astro';
+import MusicArt from './side-note-art/MusicArt.astro';
+import PaletteArt from './side-note-art/PaletteArt.astro';
+import PhoneArt from './side-note-art/PhoneArt.astro';
+import RolesArt from './side-note-art/RolesArt.astro';
+import ShieldArt from './side-note-art/ShieldArt.astro';
+import StethoscopeArt from './side-note-art/StethoscopeArt.astro';
+import TicketArt from './side-note-art/TicketArt.astro';
+import TrophyArt from './side-note-art/TrophyArt.astro';
+
+type Props = SideNoteProps;
+
+const ARTS = {
+  board: BoardArt,
+  trophy: TrophyArt,
+  calendar: CalendarArt,
+  ticket: TicketArt,
+  music: MusicArt,
+  stethoscope: StethoscopeArt,
+  palette: PaletteArt,
+  globe: GlobeArt,
+  roles: RolesArt,
+  shield: ShieldArt,
+  gauge: GaugeArt,
+  blocks: BlocksArt,
+  phone: PhoneArt,
+  compass: CompassArt,
+} satisfies Record<SideNoteArt, unknown>;
+
+const { title, art } = Astro.props;
+const Art = ARTS[art];
+---
+
+<div class="side-note" data-art={art}>
+  <div class="side-note__art" aria-hidden="true">
+    <Art />
+  </div>
+  <p class="side-note__title">{title}</p>
+  <div class="side-note__text">
+    <slot />
+  </div>
+</div>
+
+<style>
+  @layer pf {
+    .side-note {
+      /*
+       * Palette of the illustrations, the API the side-note-art components read (the reference's note
+       * palette, measured; light and dark values in tokens.css).
+       */
+      --note-ink: var(--pf-text-strong);
+      --note-ink-2: var(--pf-text-secondary);
+      --note-ink-3: var(--pf-note-ink-3);
+      --note-line: var(--pf-note-line);
+      --note-line-2: var(--pf-note-line-2);
+      --note-surface: var(--pf-note-surface);
+      --note-surface-2: var(--pf-note-surface-2);
+      --note-page: var(--pf-bg);
+      --note-inverse: var(--pf-note-inverse);
+      --note-inverse-ink: var(--pf-note-inverse-ink);
+      --note-shadow: var(--pf-note-shadow);
+      --note-accent: var(--pf-accent-blue);
+      --note-on-accent: var(--pf-text-inverse);
+      /* Type and rhythm of the note (measured). */
+      --side-note-title-gap: var(--pf-notes-title-gap);
+      --side-note-title-ls: var(--pf-type-note-title-ls);
+      --side-note-text-ls: var(--pf-type-note-ls);
+      --side-note-art-height: var(--pf-notes-art-height);
+      --side-note-art-gap: var(--pf-notes-art-gap);
+      /* CA-14 end states (measured). */
+      --note-press: var(--pf-notes-press);
+      --note-lift: var(--pf-notes-lift);
+      --note-nudge: var(--pf-notes-nudge);
+      --note-tilt: var(--pf-notes-tilt);
+      --note-rise: var(--pf-notes-rise);
+      --note-run: var(--pf-notes-run);
+
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-note-size);
+      line-height: var(--pf-type-note-lh);
+
+      @media (max-width: 599.98px) {
+        --side-note-art-height: var(--pf-notes-art-height-carousel);
+        --side-note-art-gap: var(--pf-notes-art-gap-carousel);
+      }
+
+      /* ---------- CA-14: hover micro-movements ---------- */
+
+      /* Reduced motion: no transitions, the end states still apply at once. */
+      @media (prefers-reduced-motion: no-preference) {
+        & :global(:is(.pf-note-hv-press, .pf-note-hv-lift, .pf-note-hv-x, .pf-note-hv-tilt)),
+        & :global(:is(.pf-note-hv-sp, .pf-note-hv-up, .pf-note-hv-fan)) {
+          transition: transform var(--pf-notes-move-duration) var(--pf-notes-ease);
+        }
+
+        & :global(:is(.pf-note-hv-on, .pf-note-hv-off)) {
+          transition: opacity var(--pf-notes-fade-duration) ease;
+        }
+
+        & :global(.pf-note-hv-run) {
+          transition:
+            transform var(--pf-notes-run-duration) var(--pf-notes-run-ease),
+            opacity var(--pf-notes-run-fade-duration);
+        }
+      }
+
+      & :global(.pf-note-hv-on) {
+        opacity: 0;
+      }
+
+      /* `.side-note:hover .x` (0,4,0 with the scope) beats the art's own `.x` rest state (0,2,0). */
+      @media (hover: hover) and (pointer: fine) {
+        &:hover :global(.pf-note-hv-press) {
+          transform: scale(var(--note-press));
+        }
+
+        &:hover :global(.pf-note-hv-lift) {
+          transform: translateY(var(--note-lift));
+        }
+
+        &:hover :global(.pf-note-hv-x) {
+          transform: translateX(var(--x, var(--note-nudge)));
+        }
+
+        &:hover :global(.pf-note-hv-tilt) {
+          transform: rotate(var(--note-tilt));
+        }
+
+        &:hover :global(.pf-note-hv-sp) {
+          transform: translate(var(--dx, 0), var(--dy, 0));
+        }
+
+        &:hover :global(.pf-note-hv-up) {
+          transform: translateY(var(--d, var(--note-rise)));
+        }
+
+        &:hover :global(.pf-note-hv-fan) {
+          transform: rotate(var(--rh, 0deg));
+        }
+
+        &:hover :global(.pf-note-hv-on) {
+          opacity: 1;
+        }
+
+        &:hover :global(.pf-note-hv-off) {
+          opacity: 0;
+        }
+
+        &:hover :global(.pf-note-hv-run) {
+          opacity: 1;
+          transform: translateX(var(--note-run));
+        }
+      }
+    }
+
+    .side-note__art {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      height: var(--side-note-art-height);
+      margin-block-end: var(--side-note-art-gap);
+      color: var(--note-ink);
+      pointer-events: none;
+
+      & :global(svg) {
+        display: block;
+        overflow: visible;
+      }
+    }
+
+    .side-note__title {
+      margin: 0 0 var(--side-note-title-gap);
+      color: var(--pf-text-strong);
+      font-weight: 500;
+      letter-spacing: var(--side-note-title-ls);
+      /* CA-14 label: `pretty`, like the text (measured on the reference). */
+      text-wrap: pretty;
+    }
+
+    .side-note__text {
+      color: var(--pf-text-secondary);
+      letter-spacing: var(--side-note-text-ls);
+      text-wrap: pretty;
+
+      & :global(p) {
+        margin: 0;
+      }
+
+      & :global(p + p) {
+        margin-block-start: var(--side-note-title-gap);
+      }
+    }
+  }
+</style>

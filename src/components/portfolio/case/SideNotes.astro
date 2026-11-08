@@ -1,0 +1,114 @@
+---
+/**
+ * Row of 2–3 notes with a mini illustration, inside the body of a section (design-spec §3.2, case.md
+ * §3.5; CA-14, CA-15). Children: `<SideNote>`. The whole row is in the SSR (the reference injects it
+ * after `requestIdleCallback`), so it takes its height from the first paint.
+ *
+ * - ≥600: a grid of `cols` columns, gap 32, `min(720px, 100vw − 40px)` wide, centred on the 560 text
+ *   column it breaks out of (margin-left −80 at 720); margins 36 / 40, which collapse with the prose.
+ * - ≤599 (CA-15, the reference's own threshold): a native carousel of 100vw (`margin-left:
+ *   calc((100% − 100vw) / 2)`, padding 0 20, gap 16), items at 76 % of the inner width, x mandatory
+ *   snap with `scroll-padding` 0 20, no scrollbar and a 4 px tail; margins 28 / 32. The page never
+ *   scrolls sideways: only the row does.
+ * - Accessibility (design-spec §7, D-29): a named `role="group"`; while it is a carousel the script
+ *   below turns it into a named `role="region"` with `tabindex=0`, so keyboard users can scroll it and
+ *   see the global focus ring. Without JS it stays a group (the content is all there either way).
+ */
+import type { SideNotesProps } from './types';
+
+type Props = SideNotesProps;
+
+const { label, cols = 3 } = Astro.props;
+---
+
+<div class="side-notes" role="group" aria-label={label} data-side-notes data-cols={cols}>
+  <slot />
+</div>
+
+<script>
+  // CA-15: name the carousel as a focusable region only while it scrolls (≤599, same query as the CSS).
+  import { SIDE_NOTES_CAROUSEL_QUERY as CAROUSEL_QUERY } from '@/components/motion/presets';
+
+  const ROOT_SELECTOR = '[data-side-notes]';
+
+  const carousel = matchMedia(CAROUSEL_QUERY);
+
+  const sync = () => {
+    for (const row of document.querySelectorAll<HTMLElement>(ROOT_SELECTOR)) {
+      if (carousel.matches) {
+        row.setAttribute('role', 'region');
+        row.tabIndex = 0;
+      } else {
+        row.setAttribute('role', 'group');
+        row.removeAttribute('tabindex');
+      }
+    }
+  };
+
+  carousel.addEventListener('change', sync);
+  // Every case page brings its own rows: sync them after each navigation of the router.
+  document.addEventListener('astro:page-load', sync);
+  sync();
+</script>
+
+<style>
+  @layer pf {
+    .side-notes {
+      --side-notes-width: min(var(--pf-case-col), 100vw - 2 * var(--pf-gutter-case));
+
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(var(--side-notes-cols, 3), minmax(0, 1fr));
+      column-gap: var(--pf-notes-gap);
+      width: var(--side-notes-width);
+      margin: var(--pf-notes-margin-top) 0 var(--pf-notes-margin-bottom)
+        calc((100% - var(--side-notes-width)) / 2);
+      color: var(--pf-text-strong);
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-note-size);
+      font-weight: 400;
+      line-height: var(--pf-type-note-lh);
+      letter-spacing: normal;
+      text-align: start;
+      white-space: normal;
+
+      &[data-cols='2'] {
+        --side-notes-cols: 2;
+      }
+
+      @media (max-width: 599.98px) {
+        display: flex;
+        gap: var(--pf-notes-carousel-gap);
+        width: 100vw;
+        margin: var(--pf-notes-carousel-margin-top) 0 var(--pf-notes-carousel-margin-bottom)
+          calc((100% - 100vw) / 2);
+        padding: 0 var(--pf-gutter-case);
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-padding: 0 var(--pf-gutter-case);
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        /* The row spans the viewport: draw the global ring inside it so no side is clipped. */
+        &:focus-visible {
+          outline-offset: calc(-1 * var(--pf-focus-width));
+        }
+
+        /* Trailing room after the last item, as in the reference. */
+        &::after {
+          flex: 0 0 var(--pf-notes-carousel-tail);
+          content: '';
+        }
+
+        & > :global(.side-note) {
+          flex: 0 0 var(--pf-notes-carousel-item);
+          scroll-snap-align: start;
+        }
+      }
+    }
+  }
+</style>
