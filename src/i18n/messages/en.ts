@@ -1,4 +1,4 @@
-import { blue } from './en/blue';
+import { blue, blueServer } from './en/blue';
 import { caseStudy } from './en/case';
 import { common } from './en/common';
 import { footer } from './en/footer';
@@ -20,6 +20,6 @@ export const en = {
   footer,
   theme,
   notFound,
-  blue,
+  blue: { ...blue, server: blueServer },
   case: caseStudy,
 } satisfies Messages;

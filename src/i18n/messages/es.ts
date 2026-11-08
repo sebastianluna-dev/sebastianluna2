@@ -1,4 +1,4 @@
-import { blue } from './es/blue';
+import { blue, blueServer } from './es/blue';
 import { caseStudy } from './es/case';
 import { common } from './es/common';
 import { footer } from './es/footer';
@@ -23,7 +23,7 @@ export const es = {
   footer,
   theme,
   notFound,
-  blue,
+  blue: { ...blue, server: blueServer },
   case: caseStudy,
 };
 
