@@ -38,19 +38,30 @@ export const GREETING_SOUND_DELAY_MS = 150;
 /** Every part starts with this attack (s) and decays exponentially to its end. */
 export const SOUND_ATTACK = 0.002;
 
-const pop = (at: number, from: number, to: number, duration: number, gain: number): SoundPart[] => [
-  // The bubble: a fast fall to its note, over a low body that gives it weight.
+/** A bubble: a fast fall to its note, with a click on top and, unless `body` is off, a low body. */
+const pop = (
+  at: number,
+  from: number,
+  to: number,
+  duration: number,
+  gain: number,
+  { body = true } = {},
+): SoundPart[] => [
   { kind: 'tone', at, duration, wave: 'sine', from, to, glide: duration * 0.25, gain },
-  {
-    kind: 'tone',
-    at,
-    duration,
-    wave: 'sine',
-    from: 260,
-    to: 180,
-    glide: duration,
-    gain: gain * 0.8,
-  },
+  ...(body
+    ? [
+        {
+          kind: 'tone',
+          at,
+          duration,
+          wave: 'sine',
+          from: 260,
+          to: 180,
+          glide: duration,
+          gain: gain * 0.8,
+        } satisfies SoundPart,
+      ]
+    : []),
   {
     kind: 'noise',
     at,
@@ -100,10 +111,18 @@ const chirp = (
   },
 ];
 
+/** Level of the open pops: a −15 dBFS peak, like the rest. */
+const OPEN_GAIN = 0.15;
+
 /** Each sound is a list of variants; one is picked at random each time (only `droid` has three). */
 export const SOUNDS: Record<SoundName, SoundPart[][]> = {
-  // Two quick bubble pops falling from ~2 kHz.
-  openChat: [[...pop(0, 1900, 560, 0.05, 0.1), ...pop(0.062, 2000, 640, 0.045, 0.09)]],
+  // "Pop and answer" (Sebastian's pick of ten): a low bubble, then a high one.
+  openChat: [
+    [
+      ...pop(0, 1400, 420, 0.055, OPEN_GAIN, { body: false }),
+      ...pop(0.07, 2200, 820, 0.05, OPEN_GAIN, { body: false }),
+    ],
+  ],
   // The same pops, the second one longer and lower.
   closeChat: [[...pop(0, 1800, 520, 0.05, 0.095), ...pop(0.065, 1700, 380, 0.085, 0.095)]],
   // Four key taps.
