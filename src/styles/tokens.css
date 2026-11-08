@@ -615,8 +615,7 @@
     --pf-blue-panel-width: 380px; /* BL-04 */
     --pf-blue-launcher-size: 88px; /* BL-01 */
     --pf-blue-launcher-inset: 56px; /* BL-03: right and bottom, plus the safe area */
-    --pf-blue-launcher-mark: 110px; /* drawn mark: ~92 px of bubble, the reference mascot's size */
-    --pf-blue-launcher-focus-offset: 16px; /* ring radius 60 px around the centred mark (bubble ≤ 54 px at hover scale) */
+    --pf-blue-launcher-focus-offset: 16px; /* ring radius 60 px around the bubble (~48 px, 50 at hover scale) */
     --pf-z-blue-guide: 9995; /* BL-09 */
     --pf-z-blue-launcher: 9999; /* BL-03 */
     --pf-z-blue-launcher-open: 9997; /* BL-03 */
@@ -625,9 +624,6 @@
     --pf-blue-hover-duration: 180ms; /* BL-02, with --pf-ease-enter */
     --pf-blue-hover-scale: 1.035; /* BL-02 */
     --pf-blue-press-scale: 0.97; /* BL-02 */
-    --pf-blue-sweep-duration: 977.5ms; /* BL-02, with --pf-ease-material */
-    --pf-blue-sweep-angle: 18deg; /* BL-02 */
-    --pf-blue-sweep-travel: 140%; /* BL-02: −140 % → 140 % */
     --pf-blue-thinking-duration: 1.4s; /* BL-08, easeInOut */
     --pf-blue-thinking-dim: 0.45; /* BL-08 */
     --pf-blue-control-fade: 120ms; /* decision 19: subtle hover */
@@ -648,12 +644,42 @@
     --pf-blue-guide-inset: 8px; /* BL-09: the outline keeps this far from the viewport edges */
     --pf-blue-guide-shadow:
       0 0 0 4px rgb(74 151 255 / 0.08), 0 18px 52px rgb(45 118 255 / 0.12); /* BL-09 */
-    --pf-blue-mark-top: #8fd0ff;
-    --pf-blue-mark-mid: #2f8bff;
-    --pf-blue-mark-bottom: #1450d8;
-    --pf-blue-mark-rim: rgb(10 50 140 / 0.35);
+    /* BL-01, BL-13: Blue's figure (blue-mark.ts), the reference mascot's colours in both themes */
+    --pf-blue-mark-top: #6fa9ff;
+    --pf-blue-mark-bottom: #2a7dff;
+    --pf-blue-mark-rim: #c2f3ff;
+    --pf-blue-mark-tail-start: rgb(95 180 255 / 0);
+    --pf-blue-mark-tail-mid: #7fd0ff;
+    --pf-blue-mark-tail-tip: #9eeeff;
     --pf-blue-mark-eye: #fff;
-    --pf-blue-mark-shadow: drop-shadow(0 10px 16px rgb(31 103 232 / 0.32));
+    --pf-blue-figure-perspective: 320px; /* BL-13: depth of the figure's turn */
+    --pf-blue-figure-follow: 480ms; /* BL-13: the bubble turns after the pointer, with --pf-ease-out-quint */
+    --pf-blue-eyes-follow: 170ms; /* BL-13: the eyes follow quicker, with --pf-ease-out-quint */
+    --pf-blue-eyes-blink: 60ms; /* BL-13: closing or opening an eye */
+    --pf-blue-eyes-hover-scale: 1.1 1.18; /* BL-13: wide eyes with the pointer on Blue */
+    --pf-blue-eyes-closed-scale: 1 0.045; /* BL-13 */
+    --pf-blue-bob-duration: 3.4s; /* BL-13: idle float, alternate (6.8 s round trip) */
+    --pf-blue-bob-y: 1.9px; /* BL-13 */
+    --pf-blue-breathe-duration: 2.75s; /* BL-13: idle squash, alternate (5.5 s round trip) */
+    --pf-blue-breathe-scale: 1.011 0.989; /* BL-13 */
+    /* Panel header icon (38 px tile) */
+    --pf-blue-avatar-size: 38px;
+    --pf-blue-avatar-radius: 13px;
+    --pf-blue-avatar-fill: linear-gradient(#1fc2fb 0%, #0a9aee 50%, #0879d4 100%);
+    --pf-blue-avatar-shadow:
+      inset 0 1px 1px rgb(255 255 255 / 0.72), inset 0 -5px 9px rgb(0 81 183 / 0.28),
+      0 6px 16px rgb(16 129 237 / 0.22);
+    --pf-blue-avatar-gloss: linear-gradient(rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.04));
+    --pf-blue-avatar-face: radial-gradient(
+      at 50% 8%,
+      #bdf4ff 0%,
+      #5bdaff 27%,
+      #17b8f5 61%,
+      #0785de 100%
+    );
+    --pf-blue-avatar-face-shadow:
+      inset 0 2px 5px rgb(255 255 255 / 0.68), inset 0 -5px 8px rgb(0 99 193 / 0.24);
+    --pf-blue-avatar-eye: linear-gradient(#fff, #e4f8ff);
   }
 
   @supports (corner-shape: superellipse(2)) {
@@ -816,7 +842,6 @@
     --pf-blue-send-ink: #0f0f0f;
     --pf-blue-icon-muted: rgb(255 255 255 / 0.4);
     --pf-blue-text-muted: rgb(255 255 255 / 0.55);
-    --pf-blue-mark-shadow: drop-shadow(0 10px 18px rgb(47 139 255 / 0.28));
   }
 
   /* ---------- Dark theme without JS: follow the system (keep identical to the block above) ---------- */
@@ -928,7 +953,6 @@
       --pf-blue-send-ink: #0f0f0f;
       --pf-blue-icon-muted: rgb(255 255 255 / 0.4);
       --pf-blue-text-muted: rgb(255 255 255 / 0.55);
-      --pf-blue-mark-shadow: drop-shadow(0 10px 18px rgb(47 139 255 / 0.28));
     }
   }
 }

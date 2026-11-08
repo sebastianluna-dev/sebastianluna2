@@ -1,15 +1,17 @@
 ---
 /**
  * Blue launcher (design-spec §4 blue/, §7.3; BL-01…BL-03; decisiones.md 4, 15, 24): a fixed 88 × 88
- * button at the bottom right with Blue's own mark, last in the Tab order, plus the empty host the
+ * button at the bottom right with Blue's figure, last in the Tab order, plus the empty host the
  * panel mounts into. Rendered once per page by BaseLayout (last thing in <body>) when `FEATURES.blue`
  * is on, and persisted across navigations, so an open conversation survives them.
  *
  * - No JS: nothing is painted (`html.no-js`), since the button would do nothing.
  * - Phone (≤809) and touch landscape (decision 15): the button is hidden; "Ask Blue" in the hero and
  *   the shortcut still open the panel (full screen from the bottom on phones, decision 21).
- * - BL-01: S2 appear on mount, without the reference's .8 s delay. BL-02: CSS hover, press and sweep.
+ * - BL-01: S2 appear on mount, without the reference's .8 s delay. BL-02: CSS hover and press.
  *   BL-03: it moves left with the page while the panel is open (`--pf-blue-offset`).
+ * - BL-13: the figure (`blue-mark.ts`) floats, turns to the pointer and blinks
+ *   (`blue-eyes.client.ts`); with reduced motion it stays still.
  * - `blue-launcher.client.ts` loads `BluePanel` with `import()` on first use, so neither React nor
  *   motion travel with any page (hueco-6 §6.3).
  */
@@ -30,10 +32,13 @@ const { locale } = Astro.props;
 const { blue } = getMessages(locale);
 // One launcher per document, so fixed ids are unique.
 const ids = {
-  body: 'pf-blue-launcher-body',
-  clip: 'pf-blue-launcher-clip',
-  sweep: 'pf-blue-launcher-sweep',
+  body: 'pf-blue-figure-body',
+  tail: 'pf-blue-figure-tail',
+  clip: 'pf-blue-figure-clip',
+  soften: 'pf-blue-figure-soften',
+  rim: 'pf-blue-figure-rim',
 };
+const { tail, rim } = BLUE_MARK;
 ---
 
 <div class="pf-blue" data-blue transition:persist="pf-blue">
@@ -42,51 +47,71 @@ const ids = {
       <span class="sr-only" data-blue-launcher-label>
         {blue.launcher}
       </span>
-      <svg
-        class="pf-blue-launcher__mark"
-        viewBox={BLUE_MARK.viewBox}
-        aria-hidden="true"
-        focusable="false"
-      >
-        <defs>
-          <linearGradient id={ids.body} x1="0" y1="0" x2="0" y2="1">
-            {BLUE_MARK.stops.map((stop) => (
-              <stop offset={stop.offset} style={`stop-color: ${stop.color}`} />
-            ))}
-          </linearGradient>
-          <linearGradient id={ids.sweep} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#fff" stop-opacity="0" />
-            <stop offset="0.5" stop-color="#fff" stop-opacity="0.55" />
-            <stop offset="1" stop-color="#fff" stop-opacity="0" />
-          </linearGradient>
-          <clipPath id={ids.clip}>
-            <path d={BLUE_MARK.body} />
-          </clipPath>
-        </defs>
-        <path class="pf-blue-launcher__body" d={BLUE_MARK.body} fill={`url(#${ids.body})`} />
-        <path class="pf-blue-launcher__gloss" d={BLUE_MARK.gloss} />
-        <g clip-path={`url(#${ids.clip})`}>
-          <rect
-            class="pf-blue-launcher__sweep"
-            x="16"
-            y="-8"
-            width="32"
-            height="80"
-            fill={`url(#${ids.sweep})`}
-          />
-        </g>
-        {BLUE_MARK.eyes.map((eye) => (
-          <rect class="pf-blue-launcher__eye" {...eye} />
-        ))}
-        <path class="pf-blue-launcher__rim" d={BLUE_MARK.body} />
-      </svg>
+      <span class="pf-blue-launcher__figure" data-blue-figure aria-hidden="true">
+        <span class="pf-blue-launcher__float">
+          <svg class="pf-blue-launcher__mark" viewBox={BLUE_MARK.viewBox} focusable="false">
+            <defs>
+              <linearGradient
+                id={ids.body}
+                gradientUnits="userSpaceOnUse"
+                x1="0"
+                y1={BLUE_MARK.gradient.y1}
+                x2="0"
+                y2={BLUE_MARK.gradient.y2}
+              >
+                <stop offset="0" style="stop-color: var(--pf-blue-mark-top)" />
+                <stop offset="1" style="stop-color: var(--pf-blue-mark-bottom)" />
+              </linearGradient>
+              <linearGradient
+                id={ids.tail}
+                gradientUnits="userSpaceOnUse"
+                x1={tail.x1}
+                y1={tail.y1}
+                x2={tail.x2}
+                y2={tail.y2}
+              >
+                <stop offset="0" style="stop-color: var(--pf-blue-mark-tail-start)" />
+                <stop offset="0.45" style="stop-color: var(--pf-blue-mark-tail-mid)" />
+                <stop offset="1" style="stop-color: var(--pf-blue-mark-tail-tip)" />
+              </linearGradient>
+              <filter id={ids.soften} x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation={BLUE_MARK.soften} />
+              </filter>
+              <filter id={ids.rim} x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation={rim.blur} />
+              </filter>
+              <clipPath id={ids.clip}>
+                <path d={BLUE_MARK.body} />
+              </clipPath>
+            </defs>
+            <g filter={`url(#${ids.soften})`}>
+              <path d={BLUE_MARK.body} fill={`url(#${ids.body})`} />
+              <g clip-path={`url(#${ids.clip})`}>
+                <rect {...tail.rect} fill={`url(#${ids.tail})`} />
+                <path
+                  class="pf-blue-launcher__rim"
+                  d={BLUE_MARK.body}
+                  stroke-width={rim.width}
+                  filter={`url(#${ids.rim})`}
+                />
+              </g>
+            </g>
+          </svg>
+          <span class="pf-blue-launcher__eyes" data-blue-eyes>
+            <span class="pf-blue-launcher__eye"></span>
+            <span class="pf-blue-launcher__eye pf-blue-launcher__eye_side_right"></span>
+          </span>
+        </span>
+      </span>
     </button>
   </AppearMotion>
   <div class="pf-blue__host" data-blue-host></div>
 </div>
 
 <script>
+  import { startBlueEyes } from './blue-eyes.client';
   import { startBlueLauncher } from './blue-launcher.client';
 
   startBlueLauncher();
+  startBlueEyes();
 </script>

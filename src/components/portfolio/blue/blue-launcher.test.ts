@@ -29,9 +29,12 @@ describe('BlueLauncher', () => {
     expect(html).toContain('data-appear="popInS093SpringB020028"');
   });
 
-  it('keeps the mark out of the accessibility tree', async () => {
-    expect(await render('es')).toMatch(
-      /<svg class="pf-blue-launcher__mark"[^>]*aria-hidden="true"/,
+  it('keeps the figure out of the accessibility tree, with both eyes for BL-13', async () => {
+    const html = await render('es');
+    expect(html).toMatch(
+      /<span class="pf-blue-launcher__figure"[^>]*data-blue-figure[^>]*aria-hidden="true"/,
     );
+    expect(html).toContain('data-blue-eyes');
+    expect(html.match(/class="pf-blue-launcher__eye[ "]/g)).toHaveLength(2);
   });
 });

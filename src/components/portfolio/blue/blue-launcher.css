@@ -68,10 +68,7 @@
   }
 
   .pf-blue-launcher__button {
-    display: grid;
-    /* One 100 % cell: the 110 px mark overflows the 88 px button evenly on all four sides. */
-    grid-template: 100% / 100%;
-    place-items: center;
+    display: block;
     width: 100%;
     height: 100%;
     padding: 0;
@@ -81,6 +78,7 @@
     color: inherit;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    perspective: var(--pf-blue-figure-perspective);
     transition: scale var(--pf-blue-hover-duration) var(--pf-ease-enter);
 
     /* BL-02 */
@@ -103,51 +101,95 @@
     }
   }
 
-  .pf-blue-launcher__mark {
+  /*
+   * BL-13: the figure. `__figure` turns to the pointer (transform written by blue-eyes.client.ts),
+   * `__float` bobs and breathes on its own, `__eyes` look further and each `__eye` blinks. Every
+   * layer moves with a composited transform, so the blurred SVG is painted once.
+   */
+  .pf-blue-launcher__figure {
+    position: relative;
     display: block;
-    width: var(--pf-blue-launcher-mark);
+    width: 100%;
+    height: 100%;
+    transition: transform var(--pf-blue-figure-follow) var(--pf-ease-out-quint);
+    will-change: transform;
+  }
+
+  .pf-blue-launcher__float {
+    position: absolute;
+    inset: 0;
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation:
+        pf-blue-bob var(--pf-blue-bob-duration) ease-in-out infinite alternate,
+        pf-blue-breathe var(--pf-blue-breathe-duration) ease-in-out infinite alternate;
+    }
+  }
+
+  .pf-blue-launcher__mark {
+    position: absolute;
+    top: -6px;
+    left: -8px;
+    width: 104px;
     max-width: none;
-    height: var(--pf-blue-launcher-mark);
+    height: 114px;
     overflow: visible;
-    filter: var(--pf-blue-mark-shadow);
-  }
-
-  .pf-blue-launcher__gloss {
-    fill: #fff;
-    opacity: 0.5;
-  }
-
-  .pf-blue-launcher__eye {
-    fill: var(--pf-blue-mark-eye);
   }
 
   .pf-blue-launcher__rim {
     fill: none;
     stroke: var(--pf-blue-mark-rim);
-    stroke-width: 1;
   }
 
-  /* BL-02: a sheen crosses the mark once per hover (the reference's non-mascot launcher). */
-  .pf-blue-launcher__sweep {
-    transform-box: fill-box;
-    transform-origin: center;
-    translate: calc(-1 * var(--pf-blue-sweep-travel)) 0;
-    rotate: var(--pf-blue-sweep-angle);
+  .pf-blue-launcher__eyes {
+    position: absolute;
+    inset: 0;
+    transition: translate var(--pf-blue-eyes-follow) var(--pf-ease-out-quint);
+  }
+
+  .pf-blue-launcher__eye {
+    position: absolute;
+    top: 27.5px;
+    left: 23.3px;
+    width: 10px;
+    height: 27px;
+    border-radius: 50%;
+    background: var(--pf-blue-mark-eye);
+    transition: scale var(--pf-blue-eyes-blink) linear;
 
     @media (hover: hover) and (prefers-reduced-motion: no-preference) {
       .pf-blue-launcher__button:hover & {
-        animation: pf-blue-sweep var(--pf-blue-sweep-duration) var(--pf-ease-material) both;
+        scale: var(--pf-blue-eyes-hover-scale);
       }
+    }
+
+    /* After the hover, so a blink also closes wide eyes. */
+    .pf-blue-launcher__figure[data-blink] & {
+      scale: var(--pf-blue-eyes-closed-scale);
     }
   }
 
-  @keyframes pf-blue-sweep {
+  .pf-blue-launcher__eye_side_right {
+    left: 54.3px;
+  }
+
+  @keyframes pf-blue-bob {
     from {
-      translate: calc(-1 * var(--pf-blue-sweep-travel)) 0;
+      translate: 0 calc(-1 * var(--pf-blue-bob-y));
     }
 
     to {
-      translate: var(--pf-blue-sweep-travel) 0;
+      translate: 0 var(--pf-blue-bob-y);
+    }
+  }
+
+  @keyframes pf-blue-breathe {
+    from {
+      scale: 1;
+    }
+
+    to {
+      scale: var(--pf-blue-breathe-scale);
     }
   }
 }

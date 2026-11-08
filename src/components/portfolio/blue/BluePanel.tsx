@@ -54,10 +54,11 @@ import {
 } from '@/lib/blue/client/markdown';
 import { nextRevealEnd, pendingChunks, revealStepMs } from '@/lib/blue/client/reveal';
 import { NAV_SYNC_EVENT } from '@/lib/pill-nav';
-import { BLUE_MARK } from './blue-mark';
 import { BLUE_PANEL_ID } from './blue-dom';
 import { guideTo } from './guide';
 import { useChat } from './useChat';
+import { GREETING_SOUND_DELAY_MS } from '@/lib/sound/recipes';
+import { playInterfaceSound } from '@/lib/sound/interface-sound';
 
 type BlueCopy = typeof blueEs;
 const COPY: Record<Locale, { blue: BlueCopy; newTab: string }> = {
@@ -131,30 +132,15 @@ const ICONS = {
     'M9.5 2.5H4A1.5 1.5 0 0 0 2.5 4v8A1.5 1.5 0 0 0 4 13.5h8a1.5 1.5 0 0 0 1.5-1.5V6.5M7 9l.5-2 5-5 1.5 1.5-5 5z',
 };
 
-function BlueMark() {
-  const id = useId();
-  const gradient = `${id}-body`;
+/** Blue's app icon in the header: a glossy blue tile with a light face and two eyes (CSS only). */
+function BlueAvatar() {
   return (
-    <svg
-      className="pf-blue-panel__mark"
-      viewBox={BLUE_MARK.viewBox}
-      aria-hidden="true"
-      focusable="false"
-    >
-      <defs>
-        <linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1">
-          {BLUE_MARK.stops.map((stop) => (
-            <stop key={stop.offset} offset={stop.offset} style={{ stopColor: stop.color }} />
-          ))}
-        </linearGradient>
-      </defs>
-      <path d={BLUE_MARK.body} fill={`url(#${gradient})`} />
-      <path className="pf-blue-panel__mark-gloss" d={BLUE_MARK.gloss} />
-      {BLUE_MARK.eyes.map((eye) => (
-        <rect key={eye.x} className="pf-blue-panel__mark-eye" {...eye} />
-      ))}
-      <path className="pf-blue-panel__mark-rim" d={BLUE_MARK.body} />
-    </svg>
+    <span className="pf-blue-panel__avatar" aria-hidden="true">
+      <span className="pf-blue-panel__avatar-gloss" />
+      <span className="pf-blue-panel__avatar-face" />
+      <span className="pf-blue-panel__avatar-eye" />
+      <span className="pf-blue-panel__avatar-eye pf-blue-panel__avatar-eye_side_right" />
+    </span>
   );
 }
 
@@ -390,6 +376,10 @@ function BluePanel({ store, onClose }: BluePanelProps) {
   // Open: focus the question box. Close: stop the answer in progress (useChat keeps what arrived).
   const onOpenChange = useEffectEvent((isOpen: boolean) => {
     if (isOpen) {
+      // A new conversation: Blue greets with a chirp once the open pops are over.
+      if (messages.length === 0) {
+        window.setTimeout(() => playInterfaceSound('droid'), GREETING_SOUND_DELAY_MS);
+      }
       pinned.current = true;
       const log = logRef.current;
       if (log) log.scrollTop = log.scrollHeight;
@@ -504,9 +494,7 @@ function BluePanel({ store, onClose }: BluePanelProps) {
     >
       {/* A div, not <header>: inside the dialog it would read as a second banner. */}
       <div className="pf-blue-panel__header">
-        <span className="pf-blue-panel__avatar">
-          <BlueMark />
-        </span>
+        <BlueAvatar />
         <div className="pf-blue-panel__heading">
           <h2 id={titleId} className="pf-blue-panel__title">
             {copy.title}
