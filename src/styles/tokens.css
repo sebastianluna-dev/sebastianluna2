@@ -449,6 +449,168 @@
     --pf-dur-link: 180ms;
     --pf-dur-link-reduced: 90ms;
     --pf-link-active-opacity: 0.72;
+
+    /* ---------- Case study (phase 4; design-spec §3.2, case.md §2–3, §5.1) ---------- */
+    /* Column and rhythm (columns, section and block gaps are in "Layout" above) */
+    --pf-case-text-gap: 16px; /* kicker → h2 → body, title block */
+    --pf-case-para-gap: 12px; /* paragraph → paragraph */
+    --pf-case-h3-before: 16px;
+    --pf-case-h3-after: 12px;
+    --pf-case-body-h2-before: 24px; /* h2 inside the body (ez-wallet) */
+    --pf-case-h2-max: 480px;
+    --pf-case-hero-gap: 32px; /* title → cover → meta */
+    --pf-case-meta-stack-gap: 40px; /* meta columns when stacked (P) */
+    --pf-case-meta-values-gap: 4px;
+    --pf-case-scroll-margin: 196px;
+    --pf-case-scroll-margin-design: 266px;
+    --pf-figure-ratio: 4 / 3;
+    --pf-radius-figure: var(--pf-radius-md); /* 16; the case cover uses --pf-radius-cover (20) */
+    /* Other pages (prev / next, CA-16) */
+    --pf-case-other-gap: 24px; /* divider → cards */
+    --pf-case-prevnext-gap: 10px;
+    --pf-case-prevnext-card: 250px;
+    --pf-case-divider: var(--pf-divider-case);
+    --pf-case-divider-width: 1px;
+    /* Works Map (CA-02, CA-03; D only) */
+    --pf-map-top: 164px;
+    --pf-map-left: 20px;
+    --pf-map-gap: 8px;
+    --pf-map-spy-duration: 200ms;
+    --pf-map-hover-duration: 100ms;
+    --pf-z-map: 1;
+    /* Back pill (CA-04…CA-06) */
+    --pf-back-top: 72px;
+    --pf-back-left: 20px;
+    --pf-back-height: 40px;
+    --pf-back-pad: 0 16px 0 12px;
+    --pf-back-gap: 6px;
+    --pf-back-icon: 16px;
+    --pf-z-back: 30;
+    --pf-back-in-duration: 300ms; /* CA-04 */
+    --pf-back-in-y: -8px;
+    --pf-back-in-blur: 4px;
+    --pf-back-hide-y: -10px; /* CA-05 */
+    --pf-back-hide-fade: 150ms;
+    --pf-back-hide-move: 300ms;
+    --pf-back-arrow-shift: -2px; /* CA-06 */
+    --pf-back-arrow-duration: 220ms;
+    --pf-back-bg-duration: 150ms;
+    /* Lightbox (CA-07, CA-08; WAAPI timings in LIGHTBOX, presets.ts) */
+    --pf-lightbox-pad: clamp(16px, 4vw, 48px);
+    --pf-lightbox-max: 1600px;
+    /* Chat aside (CA-09…CA-13; WAAPI timings in CHAT_ASIDE, presets.ts) */
+    --pf-chat-margin-top: 30px;
+    --pf-chat-margin-bottom: 34px;
+    --pf-chat-out-bg: #0b84fe;
+    --pf-chat-out-text: #fff;
+    --pf-chat-in-bg: #e9e9eb;
+    --pf-chat-in-text: var(--pf-text);
+    --pf-chat-bubble-radius: 18px;
+    --pf-chat-bubble-pad: 7px 12px 8px;
+    --pf-chat-bubble-max: 70%;
+    --pf-chat-avatar: 28px;
+    --pf-type-chat-status-size: 11px;
+    --pf-chat-dots-duration: 1.1s; /* CA-13 */
+    --pf-chat-dots-stagger: 0.16s;
+    --pf-chat-dots-ease: cubic-bezier(0.45, 0, 0.55, 1);
+    /* Side notes (CA-14, CA-15) */
+    --pf-notes-gap: 32px;
+    --pf-notes-margin-top: 36px;
+    --pf-notes-margin-bottom: 40px;
+    --pf-notes-art-height: 100px; /* 92 in the ≤599 carousel */
+    --pf-notes-art-gap: 14px;
+    --pf-notes-move-duration: 0.26s;
+    --pf-notes-fade-duration: 0.3s;
+    --pf-notes-run-duration: 0.9s;
+    --pf-notes-run-fade-duration: 0.2s;
+    --pf-notes-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --pf-notes-run-ease: cubic-bezier(0.3, 0.7, 0.3, 1);
+    /* Lightbox Close button (decisiones.md 25): the scrim is always dark, so one value for both themes */
+    --pf-lightbox-close-bg: rgb(255 255 255 / 0.14);
+    --pf-lightbox-close-bg-hover: rgb(255 255 255 / 0.22);
+    --pf-lightbox-close-ink: #fff;
+    --pf-lightbox-close-inset: max(8px, calc((var(--pf-lightbox-pad) - var(--pf-back-height)) / 2));
+    --pf-lightbox-close-pad: 16px;
+    /* Prev / next cards (CA-16, measured) */
+    --pf-case-prevnext-pad: 8px; /* block padding of a card */
+    --pf-case-prevnext-text-gap: 4px;
+    --pf-case-prevnext-name-lh: 1.2;
+    --pf-case-prevnext-name-lines: 2;
+    --pf-case-prevnext-arrow: 20px;
+    --pf-case-prevnext-arrow-top: -18px; /* reference box −28 with its glyph ~10 px below it */
+    --pf-back-hit: -2px; /* back pill hit area beyond the pill */
+    /* Chat aside, measured (case.md §3.4) */
+    --pf-chat-avatar-gap: 10px;
+    --pf-chat-visitor-avatar-bg: linear-gradient(180deg, #a5abb8, #858994);
+    --pf-chat-visitor-avatar-text: #fff;
+    --pf-chat-visitor-avatar-size: 11px;
+    --pf-chat-who-gap: 2px;
+    --pf-chat-row-gap: 2px;
+    --pf-chat-group-gap: 10px;
+    --pf-chat-meta-gap: 9px;
+    --pf-chat-typing-height: 36px;
+    --pf-chat-typing-pad: 13px;
+    --pf-chat-typing-gap: 5px;
+    --pf-chat-dot: 8px;
+    --pf-chat-dot-out: rgb(255 255 255 / 0.72);
+    --pf-chat-tapback-size: 30px;
+    --pf-chat-tapback-offset: -12px;
+    --pf-chat-tapback-top: -14px;
+    --pf-chat-tapback-shadow: 0 1px 3px rgb(0 0 0 / 0.18);
+    --pf-chat-rain-glyph: 24px;
+    --pf-chat-rain-bleed: 8px;
+    --pf-chat-who-indent: 12px;
+    --pf-chat-emoji-pad-top: 2px;
+    --pf-chat-tail-offset: -6px;
+    --pf-chat-tapback-pad: 6px;
+    --pf-chat-tapback-glyph: 16px;
+    --pf-chat-status-gap: 4px;
+    --pf-chat-status-inset: 2px;
+    --pf-chat-initial-ls: 0.02em;
+    /* Tail of the typing bubble: a big and a small dot off its bottom outer corner. */
+    --pf-chat-typing-tail-big: 11px;
+    --pf-chat-typing-tail-big-x: -3px;
+    --pf-chat-typing-tail-big-y: -2px;
+    --pf-chat-typing-tail-small: 5px;
+    --pf-chat-typing-tail-small-x: -8px;
+    --pf-chat-typing-tail-small-y: -7px;
+    /* CA-13 dots: rest and peak of the loop (the 28 % / 60 % stops live in the keyframes). */
+    --pf-chat-dot-rest-opacity: 0.4;
+    --pf-chat-dot-rest-scale: 0.84;
+    --pf-chat-dot-lift: -3px;
+    --pf-chat-dot-reduced-opacity: 0.7;
+    /* Face crop of the 900×1200 portrait as a share of the avatar (HeroAvatar: 112, −26, −5 on 60). */
+    --pf-portrait-crop-width: calc(112 / 60);
+    --pf-portrait-crop-x: calc(-26 / 60);
+    --pf-portrait-crop-y: calc(-5 / 60);
+    --pf-type-chat-status-lh: 14px;
+    /* Side notes: ≤599 carousel (CA-15), type and hover end states (CA-14), measured */
+    --pf-notes-carousel-gap: 16px;
+    --pf-notes-carousel-item: 76%;
+    --pf-notes-carousel-margin-top: 28px;
+    --pf-notes-carousel-margin-bottom: 32px;
+    --pf-notes-carousel-tail: 4px;
+    --pf-notes-art-height-carousel: 92px;
+    --pf-notes-art-gap-carousel: 12px;
+    --pf-notes-title-gap: 3px;
+    --pf-type-note-title-ls: -0.005em;
+    --pf-type-note-ls: -0.003em;
+    --pf-notes-press: 0.96;
+    --pf-notes-lift: -3px;
+    --pf-notes-nudge: 4px;
+    --pf-notes-tilt: -6deg;
+    --pf-notes-rise: -4px;
+    --pf-notes-run: 24px;
+    /* Side note illustration palette (light; dark below) */
+    --pf-note-ink-3: rgb(0 0 0 / 0.32);
+    --pf-note-line: rgb(0 0 0 / 0.08);
+    --pf-note-line-2: rgb(0 0 0 / 0.12);
+    --pf-note-surface: #fff;
+    --pf-note-surface-2: #f2f2f4;
+    --pf-note-inverse: #111214;
+    --pf-note-inverse-ink: #fff;
+    --pf-note-shadow:
+      0 0 0 1px rgb(0 0 0 / 0.05), 0 2px 4px rgb(0 0 0 / 0.04), 0 8px 20px rgb(0 0 0 / 0.07);
   }
 
   @supports (corner-shape: superellipse(2)) {
@@ -488,6 +650,16 @@
       --pf-case-section-gap: 96px;
       --pf-case-block-gap: 48px;
       --pf-gallery-gap: 12px;
+      --pf-case-prevnext-gap: 16px;
+      --pf-back-top: calc(12px + env(safe-area-inset-top, 0px));
+      --pf-back-left: 12px;
+      --pf-chat-margin-top: 24px;
+      --pf-chat-margin-bottom: 28px;
+      --pf-chat-bubble-max: 78%;
+      --pf-chat-avatar: 24px;
+      --pf-chat-avatar-gap: 8px;
+      --pf-chat-visitor-avatar-size: 10px;
+      --pf-chat-typing-height: 35px;
       --pf-nav-height: 52px;
       --pf-toggle-right: 24px;
     }
@@ -580,6 +752,17 @@
     --pf-aqua-shadow-hover-left: 3px;
     --pf-aqua-shadow-hover-right: 2px;
     --pf-logo-idle-opacity: 0.76;
+    --pf-chat-in-bg: #262628;
+    --pf-chat-visitor-avatar-bg: linear-gradient(180deg, #7d818b, #5c6069);
+    --pf-note-ink-3: rgb(255 255 255 / 0.36);
+    --pf-note-line: rgb(255 255 255 / 0.1);
+    --pf-note-line-2: rgb(255 255 255 / 0.16);
+    --pf-note-surface: #1c1c1e;
+    --pf-note-surface-2: #2a2a2d;
+    --pf-note-inverse: #fff;
+    --pf-note-inverse-ink: #0a0a0a;
+    --pf-note-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.08), 0 2px 4px transparent, 0 8px 20px rgb(0 0 0 / 0.5);
   }
 
   /* ---------- Dark theme without JS: follow the system (keep identical to the block above) ---------- */
@@ -670,6 +853,17 @@
       --pf-aqua-shadow-hover-left: 3px;
       --pf-aqua-shadow-hover-right: 2px;
       --pf-logo-idle-opacity: 0.76;
+      --pf-chat-in-bg: #262628;
+      --pf-chat-visitor-avatar-bg: linear-gradient(180deg, #7d818b, #5c6069);
+      --pf-note-ink-3: rgb(255 255 255 / 0.36);
+      --pf-note-line: rgb(255 255 255 / 0.1);
+      --pf-note-line-2: rgb(255 255 255 / 0.16);
+      --pf-note-surface: #1c1c1e;
+      --pf-note-surface-2: #2a2a2d;
+      --pf-note-inverse: #fff;
+      --pf-note-inverse-ink: #0a0a0a;
+      --pf-note-shadow:
+        0 0 0 1px rgb(255 255 255 / 0.08), 0 2px 4px transparent, 0 8px 20px rgb(0 0 0 / 0.5);
     }
   }
 }
