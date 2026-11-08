@@ -1,0 +1,205 @@
+---
+/**
+ * Meta of the case hero (case.md §2.1, design-spec §2.2 "Ficha"): Service, Tools and Year in a 560
+ * row with `space-between`, each column as tall as its own content (a column 40 apart on phones).
+ * Each label in ink and its values below at `--pf-meta-dim`, one per line, 4 apart; Geist 16/16
+ * −0.04em with ss03 + ss08, as in the reference.
+ *
+ * The live site, when there is one, is an extra line under the year (the reference has no such link,
+ * docs/decisiones.md phase 4): same type in ink, a small arrow and the SH-18 underline of the footer
+ * text links on hover, so it reads as the only link of the meta without a new style.
+ *
+ * CA-01: the meta row (.15), then only the labels (.2 / .3 / .4) and the year value (.45, ends at .4),
+ * as in the reference: the Service and Tools values ride on the row, so they come in at .15 with its
+ * 20 px, and the year value (not nested in an animated column) adds its own 20 to the row's.
+ */
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { CASE_APPEAR } from '@/components/motion/presets';
+import { format, getMessages } from '@/i18n/t';
+import type { CaseMetaProps } from './types';
+
+type Props = CaseMetaProps;
+
+const { service, tools, year, url, locale } = Astro.props;
+const { case: copy, common } = getMessages(locale);
+---
+
+<AppearMotion appear={CASE_APPEAR.meta} class="case-meta" role="group" aria-label={copy.meta.label}>
+  <dl class="case-meta__list">
+    <div class="case-meta__column">
+      <AppearMotion as="dt" appear={CASE_APPEAR.metaServices} class="case-meta__label">
+        {copy.meta.service}
+      </AppearMotion>
+      {service.map((item) => (
+        <dd class="case-meta__value">{item}</dd>
+      ))}
+    </div>
+    <div class="case-meta__column">
+      <AppearMotion as="dt" appear={CASE_APPEAR.metaTools} class="case-meta__label">
+        {copy.meta.tools}
+      </AppearMotion>
+      {tools.map((item) => (
+        <dd class="case-meta__value">{item}</dd>
+      ))}
+    </div>
+    <div class="case-meta__column">
+      <AppearMotion as="dt" appear={CASE_APPEAR.metaYear} class="case-meta__label">
+        {copy.meta.year}
+      </AppearMotion>
+      <AppearMotion as="dd" appear={CASE_APPEAR.metaYearValue} class="case-meta__value">
+        {year}
+      </AppearMotion>
+      {url && (
+        <dd class="case-meta__site">
+          <a
+            class="case-meta__link"
+            href={url}
+            target="_blank"
+            rel="noopener"
+            aria-label={format(common.externalLink, { label: copy.meta.visit })}
+          >
+            {copy.meta.visit}
+            <svg
+              class="case-meta__arrow"
+              viewBox="0 0 12 12"
+              fill="none"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+        </dd>
+      )}
+    </div>
+  </dl>
+</AppearMotion>
+
+<style>
+  @layer pf {
+    .case-meta {
+      width: min(var(--pf-text-col), 100%);
+      margin-inline: auto;
+    }
+
+    .case-meta__list {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--pf-case-text-gap);
+      margin: 0;
+      color: var(--pf-text);
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-meta-size);
+      line-height: var(--pf-type-meta-lh);
+      letter-spacing: var(--pf-type-meta-ls);
+      font-feature-settings: var(--pf-ffs-alt);
+
+      @media (max-width: 809.98px) {
+        flex-direction: column;
+        gap: var(--pf-case-meta-stack-gap);
+      }
+    }
+
+    .case-meta__column {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-meta-values-gap);
+      min-width: 0;
+    }
+
+    .case-meta__label,
+    .case-meta__value,
+    .case-meta__site {
+      margin: 0;
+    }
+
+    .case-meta__value {
+      opacity: var(--pf-meta-dim);
+    }
+
+    /* A paragraph gap above the link keeps it (and its focus ring) clear of the year. */
+    .case-meta__site {
+      margin-block-start: calc(var(--pf-case-para-gap) - var(--pf-case-meta-values-gap));
+    }
+
+    /* ---------- Live site link (own; SH-18 underline) ---------- */
+
+    .case-meta__link {
+      --meta-link-duration: var(--pf-dur-link);
+
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--pf-case-meta-values-gap);
+      color: inherit;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset-inline: 0;
+        inset-block-end: calc(-1 * var(--pf-case-meta-values-gap));
+        height: 1px;
+        background: currentColor;
+        pointer-events: none;
+        transform: scaleX(0);
+        transform-origin: left center;
+        opacity: 0;
+      }
+
+      &:focus-visible {
+        border-radius: var(--pf-radius-xs);
+      }
+
+      &:focus-visible::after {
+        transform: scaleX(1);
+        opacity: 1;
+      }
+
+      &:active::after {
+        opacity: var(--pf-link-active-opacity);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        &::after {
+          transition:
+            transform var(--meta-link-duration) var(--pf-ease-enter),
+            opacity var(--meta-link-duration) var(--pf-ease-enter);
+        }
+
+        &:hover::after {
+          transform: scaleX(1);
+          opacity: 1;
+        }
+
+        &:focus-visible::after {
+          transition: none;
+        }
+      }
+
+      /* Reduced motion: the line is already drawn and only its opacity fades. */
+      @media (prefers-reduced-motion: reduce) and (hover: hover) and (pointer: fine) {
+        --meta-link-duration: var(--pf-dur-link-reduced);
+
+        &::after {
+          transform: scaleX(1);
+          transition: opacity var(--meta-link-duration) var(--pf-ease-enter);
+        }
+      }
+    }
+
+    .case-meta__arrow {
+      flex: none;
+      width: 0.75em;
+      height: 0.75em;
+    }
+  }
+</style>

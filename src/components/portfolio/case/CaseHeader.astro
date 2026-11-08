@@ -1,0 +1,70 @@
+---
+/**
+ * Hero of a case (design-spec §3.2, case.md §2.1): the title block in the 560 column (badge chip with
+ * the frontmatter `kicker`, then the page's only h1, the `title`, 16 apart), the 720 cover (4:3,
+ * radius 20, `Figure variant="hero"`) and the meta; 32 between the three.
+ *
+ * - CA-01: `CASE_APPEAR`, absolute delays: title block 0, h1 +.05 (opacity only, nested in the
+ *   title block as in the reference), cover .1, meta .15 and its labels (CaseMeta).
+ * - RT-02: the cover frame (`[data-hero-image]`) is the destination of `pf-work-cover`. The cover
+ *   appear may run under the morph: the new snapshot ignores the figure's opacity and the group keeps
+ *   tracking its live box, so the morph lands where the cover is (measured, no end jump).
+ * - RT-06: the h1 has `tabindex=-1` so the focus can land on it after a navigation.
+ */
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { CASE_APPEAR } from '@/components/motion/presets';
+import Chip from '@/components/portfolio/ui/Chip.astro';
+import CaseMeta from './CaseMeta.astro';
+import Figure from './Figure.astro';
+import type { CaseHeaderProps } from './types';
+
+type Props = CaseHeaderProps;
+
+const { work, locale } = Astro.props;
+const { title, kicker, cover, service, tools, year, url } = work.data;
+---
+
+<header class="case-header">
+  <AppearMotion appear={CASE_APPEAR.title} class="case-header__title">
+    <Chip>{kicker}</Chip>
+    <AppearMotion as="h1" appear={CASE_APPEAR.heading} tabindex="-1" class="case-header__heading">
+      {title}
+    </AppearMotion>
+  </AppearMotion>
+  <Figure src={cover.src} alt={cover.alt} variant="hero" />
+  <CaseMeta service={service} tools={tools} year={year} url={url} locale={locale} />
+</header>
+
+<style>
+  @layer pf {
+    .case-header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-hero-gap);
+    }
+
+    .case-header__title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--pf-case-text-gap);
+      width: min(var(--pf-text-col), 100%);
+      margin-inline: auto;
+    }
+
+    /* Geist 500 48/52.8 (40/44 below 1200), −0.04em, ss03 + ss08, balanced (design-spec §2.2). */
+    .case-header__heading {
+      max-width: 100%;
+      margin: 0;
+      color: var(--pf-text);
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-case-title-size);
+      font-weight: 500;
+      line-height: var(--pf-type-case-title-lh);
+      letter-spacing: var(--pf-type-case-title-ls);
+      font-feature-settings: var(--pf-ffs-alt);
+      text-wrap: balance;
+      overflow-wrap: break-word;
+    }
+  }
+</style>
