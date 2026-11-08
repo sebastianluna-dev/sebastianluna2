@@ -1,0 +1,76 @@
+---
+/**
+ * A gallery row of Figures (case.md §2.3, design-spec §3.2), all 4:3 with gap 16 (12 on phones):
+ * - `lead`: one figure at 720.
+ * - `pair`: two at 352; stacked at the column width on phones.
+ * - `pair-2col-phone`: two at 352 that stay in two columns on phones, (col − 12) / 2 (Visual Direction).
+ * - `composition`: 469.3 (2/3) plus a column of two at 234.7 (1/3), the main one top-aligned in the
+ *   368 row; stacked on phones (Outcome).
+ * Consecutive Gallery elements are one gallery: the second and later ones sit at the gallery gap
+ * instead of the section block gap. The `sizes` of each figure follows its slot (`applyGallerySizes`).
+ */
+import { applyGallerySizes } from '@/lib/lightbox';
+import type { GalleryProps } from './types';
+
+type Props = GalleryProps;
+
+const { variant } = Astro.props;
+const figures = applyGallerySizes(await Astro.slots.render('default'), variant);
+---
+
+<div
+  class:list={['gallery', `gallery_variant_${variant}`]}
+  data-case-block
+  data-gallery={variant}
+  set:html={figures}
+/>
+
+<style>
+  @layer pf {
+    .gallery {
+      display: grid;
+      gap: var(--pf-gallery-gap);
+
+      /* One gallery: rows after the first close up to the gallery gap. */
+      & + & {
+        margin-block-start: calc(var(--pf-gallery-gap) - var(--pf-case-block-gap));
+      }
+    }
+
+    .gallery_variant_lead {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .gallery_variant_pair-2col-phone {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .gallery_variant_pair {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      @media (max-width: 809.98px) {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    /* 2fr 1fr of the 720 row minus the gap: 469.3 + 234.7; the main figure spans both rows and keeps
+       its own 4:3 box at the top (352 of the 368 row). */
+    .gallery_variant_composition {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      align-items: start;
+
+      @media (max-width: 809.98px) {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      /* The figures carry their own scope, so the child selector is global. */
+      & > :global(figure:first-of-type) {
+        grid-row: span 2;
+
+        @media (max-width: 809.98px) {
+          grid-row: auto;
+        }
+      }
+    }
+  }
+</style>

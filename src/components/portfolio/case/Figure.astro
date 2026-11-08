@@ -1,0 +1,142 @@
+---
+/**
+ * 4:3 figure of a case (design-spec §3.2, §4 case/, §7.3, §8.2; case.md §2.3): squircle radius 16
+ * (20 for the hero cover), `object-fit: cover`, box reserved by the ratio and the `width`/`height` of
+ * `astro:assets`, responsive `srcset` (the gallery rewrites `sizes` per slot, `applyGallerySizes`).
+ * Without JS the frame is a plain link to the original image; `lightbox.client.ts` turns it into a
+ * button (`aria-haspopup="dialog"`) that opens the lightbox (CA-07). Without `src` it paints a neutral
+ * placeholder of the same box, named by `alt`.
+ *
+ * - `variant="hero"`: the case cover; eager + high priority, `data-hero-image` on the frame is the
+ *   destination of the `pf-work-cover` shared element (RT-02), appear `CASE_APPEAR.cover`.
+ * - `appear="<role>"`: CA-01 appear of `CASE_FIGURE_APPEAR[role]`; other figures are static.
+ * - Standalone figures are case blocks (`data-case-block`); inside a Gallery the gallery is the block.
+ */
+import { Image } from 'astro:assets';
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { CASE_APPEAR, CASE_FIGURE_APPEAR } from '@/components/motion/presets';
+import { format, getMessages } from '@/i18n/t';
+import { splitLocale } from '@/lib/i18n-paths';
+import { FIGURE_SIZES, FIGURE_WIDTHS } from '@/lib/lightbox';
+import type { FigureProps } from './types';
+
+type Props = FigureProps;
+
+const { src, alt, caption, variant = 'default', placeholderLabel, appear } = Astro.props;
+const { locale } = splitLocale(Astro.url.pathname);
+const copy = getMessages(locale).case;
+const hero = variant === 'hero';
+const slot = hero ? CASE_APPEAR.cover : appear ? CASE_FIGURE_APPEAR[appear] : undefined;
+const classes = ['figure', `figure_variant_${variant}`];
+const trigger = src
+  ? {
+      href: src.src,
+      'aria-label': format(copy.enlargeImage, { alt }),
+      'data-lightbox-trigger': '',
+      'data-hero-image': hero ? '' : undefined,
+      // The router must never fetch the image as a page when the script does not take the click.
+      'data-astro-reload': '',
+    }
+  : undefined;
+const image = src
+  ? {
+      src,
+      alt,
+      widths: [...FIGURE_WIDTHS],
+      sizes: FIGURE_SIZES,
+      loading: hero ? ('eager' as const) : ('lazy' as const),
+      fetchpriority: hero ? ('high' as const) : undefined,
+      decoding: 'async' as const,
+    }
+  : undefined;
+const placeholder = placeholderLabel ?? copy.figure.placeholder;
+---
+
+{slot ? (
+  <AppearMotion as="figure" appear={slot} class:list={classes} data-case-block>
+    {trigger && image ? (
+      <a class="figure__frame" {...trigger}>
+        <Image class="figure__image" {...image} />
+      </a>
+    ) : (
+      <div class="figure__frame figure__frame_placeholder" role="img" aria-label={alt}>
+        <span class="figure__placeholder" aria-hidden="true">
+          {placeholder}
+        </span>
+      </div>
+    )}
+    {caption && <figcaption class="figure__caption pf-prose">{caption}</figcaption>}
+  </AppearMotion>
+) : (
+  <figure class:list={classes} data-case-block>
+    {trigger && image ? (
+      <a class="figure__frame" {...trigger}>
+        <Image class="figure__image" {...image} />
+      </a>
+    ) : (
+      <div class="figure__frame figure__frame_placeholder" role="img" aria-label={alt}>
+        <span class="figure__placeholder" aria-hidden="true">
+          {placeholder}
+        </span>
+      </div>
+    )}
+    {caption && <figcaption class="figure__caption pf-prose">{caption}</figcaption>}
+  </figure>
+)}
+
+<style>
+  @layer pf {
+    .figure {
+      --figure-radius: var(--pf-radius-figure);
+
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-text-gap);
+      min-width: 0;
+      margin: 0;
+    }
+
+    .figure_variant_hero {
+      --figure-radius: var(--pf-radius-cover);
+    }
+
+    /* Squircle as in the reference (superellipse 1.2), reduced radius without corner-shape. */
+    .figure__frame {
+      display: block;
+      overflow: hidden;
+      aspect-ratio: var(--pf-figure-ratio);
+      border-radius: calc(var(--figure-radius) * var(--pf-has-corner-shape));
+      corner-shape: var(--pf-squircle);
+      background: var(--pf-media-placeholder);
+      color: inherit;
+
+      &[data-lightbox-trigger] {
+        cursor: zoom-in;
+      }
+    }
+
+    .figure__image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .figure__frame_placeholder {
+      display: grid;
+      place-items: center;
+    }
+
+    .figure__placeholder {
+      color: var(--pf-text-neutral);
+      font-size: var(--pf-type-kicker-size);
+      line-height: var(--pf-type-kicker-lh);
+      letter-spacing: var(--pf-type-kicker-ls);
+    }
+
+    .figure__caption {
+      width: min(var(--pf-text-col), 100%);
+      margin-inline: auto;
+    }
+  }
+</style>
