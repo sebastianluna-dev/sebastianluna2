@@ -4,15 +4,20 @@
  * (design-spec §2.2, §6.1). Geist 14/1 with ss03 + ss08 and tabular figures, padding 4 10, radius 8,
  * a 12 px backdrop blur and a 1 px hairline drawn over the background (it adds no size: 22 px tall,
  * as measured). The text never wraps inside a chip.
+ *
+ * `variant="plain"`: the reference's "text background" chip of the case section kickers, the badge fill
+ * only, without hairline, shadow or blur, ink text and Geist without the alternates (case.md §2.2).
  */
 import type { HTMLTag, Polymorphic } from 'astro/types';
 
-type Props<Tag extends HTMLTag = 'span'> = Polymorphic<{ as: Tag }>;
+type Props<Tag extends HTMLTag = 'span'> = Polymorphic<{ as: Tag }> & {
+  variant?: 'glass' | 'plain';
+};
 
-const { as: Tag = 'span', class: className, ...attrs } = Astro.props;
+const { as: Tag = 'span', variant = 'glass', class: className, ...attrs } = Astro.props;
 ---
 
-<Tag class:list={['chip', className]} {...attrs}>
+<Tag class:list={['chip', variant === 'plain' && 'chip_variant_plain', className]} {...attrs}>
   <slot />
 </Tag>
 
@@ -42,6 +47,14 @@ const { as: Tag = 'span', class: className, ...attrs } = Astro.props;
       font-variant-numeric: tabular-nums;
       text-align: center;
       white-space: nowrap;
+    }
+
+    .chip_variant_plain {
+      box-shadow: none;
+      backdrop-filter: none;
+      color: var(--pf-text);
+      font-feature-settings: normal;
+      font-variant-numeric: normal;
     }
   }
 </style>
