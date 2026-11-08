@@ -1,0 +1,223 @@
+---
+/**
+ * Other pages of a case (design-spec §3.2, §7.3; case.md §2.4): a 1 px divider and the previous /
+ * next cards in the 560 column, by `order` and without wrapping. Nothing renders when both
+ * neighbours are null.
+ *
+ * - Desktop and tablet: two cards of 250 with a flexible spacer between them (gap 10), so a lone
+ *   next card stays on the right. Phone: the cards share the row (gap 16, no spacer) and a lone card
+ *   takes the whole column; a 20 px arrow sits 28 px above each label.
+ * - CA-16: each `<a>` IS the visible card (the reference stacks an invisible link over it), so the
+ *   press .98 (150 ms ease-out), the hover (label to ink) and the focus ring actually show (D-19).
+ *   No "Case Preview" (decisiones.md).
+ */
+import { format, getMessages } from '@/i18n/t';
+import type { PrevNextProps } from './types';
+
+type Props = PrevNextProps;
+
+const { previous, next, locale } = Astro.props;
+const copy = getMessages(locale).case;
+
+const cards = [
+  previous && {
+    dir: 'previous',
+    href: previous.href,
+    title: previous.title,
+    label: copy.previous,
+    name: format(copy.previousLabel, { name: previous.title }),
+  },
+  next && {
+    dir: 'next',
+    href: next.href,
+    title: next.title,
+    label: copy.next,
+    name: format(copy.nextLabel, { name: next.title }),
+  },
+] as const;
+const [previousCard, nextCard] = cards;
+---
+
+{(previousCard || nextCard) && (
+  <nav class="prev-next" aria-label={copy.otherCases}>
+    <div class="prev-next__divider" aria-hidden="true" />
+    <div class="prev-next__row">
+      {previousCard && (
+        <a
+          class="prev-next__card prev-next__card_dir_previous"
+          href={previousCard.href}
+          aria-label={previousCard.name}
+        >
+          <svg
+            class="prev-next__arrow"
+            viewBox="0 0 20 20"
+            width="20"
+            height="20"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M16 10H4.5M9 5 4 10l5 5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span class="prev-next__label">{previousCard.label}</span>
+          <span class="prev-next__name">{previousCard.title}</span>
+        </a>
+      )}
+      <span class="prev-next__spacer" aria-hidden="true" />
+      {nextCard && (
+        <a
+          class="prev-next__card prev-next__card_dir_next"
+          href={nextCard.href}
+          aria-label={nextCard.name}
+        >
+          <svg
+            class="prev-next__arrow"
+            viewBox="0 0 20 20"
+            width="20"
+            height="20"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M4 10h11.5M11 5l5 5-5 5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span class="prev-next__label">{nextCard.label}</span>
+          <span class="prev-next__name">{nextCard.title}</span>
+        </a>
+      )}
+    </div>
+  </nav>
+)}
+
+<style>
+  @layer pf {
+    .prev-next {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-other-gap);
+      width: min(var(--pf-text-col), 100%);
+      margin-inline: auto;
+    }
+
+    .prev-next__divider {
+      height: var(--pf-case-divider-width);
+      border-radius: var(--pf-radius-md);
+      background: var(--pf-case-divider);
+    }
+
+    .prev-next__row {
+      display: flex;
+      align-items: center;
+      gap: var(--pf-case-prevnext-gap);
+    }
+
+    .prev-next__spacer {
+      flex: 1;
+
+      @media (max-width: 809.98px) {
+        display: none;
+      }
+    }
+
+    .prev-next__card {
+      position: relative;
+      display: flex;
+      flex: none;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--pf-case-prevnext-text-gap);
+      box-sizing: border-box;
+      width: var(--pf-case-prevnext-card);
+      min-width: 0;
+      padding: var(--pf-case-prevnext-pad) 0;
+      border-radius: var(--pf-radius-md);
+      color: var(--pf-text);
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-meta-size);
+      letter-spacing: var(--pf-type-meta-ls);
+      font-feature-settings: var(--pf-ffs-alt);
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+      /* CA-16: press. */
+      transition: scale var(--pf-dur-press) ease-out;
+
+      &:active {
+        scale: var(--pf-press-scale-card);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+
+      @media (max-width: 809.98px) {
+        flex: 1 1 0;
+        width: auto;
+      }
+    }
+
+    .prev-next__card_dir_next {
+      align-items: flex-end;
+      text-align: end;
+    }
+
+    .prev-next__label {
+      color: var(--pf-prevnext-label);
+      line-height: var(--pf-type-meta-lh);
+      transition: color var(--pf-dur-press) ease-out;
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
+    /* Our hover (the reference shows none): the label takes the ink. */
+    .prev-next__card:hover .prev-next__label {
+      @media (hover: hover) {
+        color: var(--pf-text);
+      }
+    }
+
+    .prev-next__name {
+      display: -webkit-box;
+      overflow: hidden;
+      width: 100%;
+      line-height: var(--pf-case-prevnext-name-lh);
+      overflow-wrap: break-word;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: var(--pf-case-prevnext-name-lines);
+      line-clamp: var(--pf-case-prevnext-name-lines);
+    }
+
+    /* Phone only: the arrow above the label, at the outer edge of each card. */
+    .prev-next__arrow {
+      position: absolute;
+      top: var(--pf-case-prevnext-arrow-top);
+      left: 0;
+      display: none;
+      width: var(--pf-case-prevnext-arrow);
+      height: var(--pf-case-prevnext-arrow);
+      pointer-events: none;
+
+      @media (max-width: 809.98px) {
+        display: block;
+      }
+    }
+
+    .prev-next__card_dir_next .prev-next__arrow {
+      right: 0;
+      left: auto;
+    }
+  }
+</style>
