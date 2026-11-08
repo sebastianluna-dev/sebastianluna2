@@ -71,3 +71,63 @@ export function counterpart<T extends WorkLike>(
 export function workHref(slug: string, locale: Locale): string {
   return localizePath(`/works/${slug}`, locale);
 }
+
+/** `getStaticPaths` of a case route: one page per published work of the language, in list order. */
+export function workStaticPaths<T extends WorkLike>(
+  entries: readonly T[],
+  locale: Locale,
+): { params: { slug: string }; props: { entry: T } }[] {
+  return worksForLocale(entries, locale).map((entry) => ({
+    params: { slug: workSlug(entry) },
+    props: { entry },
+  }));
+}
+
+/** A neighbour case as the prev/next cards need it. */
+export interface CaseNeighbour {
+  title: string;
+  href: string;
+}
+
+/** Previous and next case of `slug` as links (by `order`, without wrapping; CA-16). */
+export function caseNeighbours<T extends WorkLike & { data: { title: string } }>(
+  ordered: readonly T[],
+  slug: string,
+  locale: Locale,
+): { previous: CaseNeighbour | null; next: CaseNeighbour | null } {
+  const { previous, next } = prevNext(ordered, slug);
+  const link = (entry: T | null): CaseNeighbour | null =>
+    entry ? { title: entry.data.title, href: workHref(workSlug(entry), locale) } : null;
+  return { previous: link(previous), next: link(next) };
+}
+
+/**
+ * Attribute on the root element of every case block that leaves the text column (Figure, Gallery,
+ * DemoSlot, CaseSubsection). Chat asides and side notes do not carry it: they sit inside the body.
+ */
+export const CASE_BLOCK_ATTR = 'data-case-block';
+
+/**
+ * Splits the rendered HTML of a case section (or subsection) at its first block: the prose before it
+ * is the body (one appear, in the 560 text column, CA-01), the rest are the blocks of the section
+ * (scenes, galleries, subsections), laid out with the block gap. The marker is matched only as an
+ * attribute of an opening tag, so the same words in a text node never split.
+ */
+export function splitLeadingProse(
+  html: string,
+  attr: string = CASE_BLOCK_ATTR,
+): { prose: string; rest: string } {
+  const escaped = attr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const opening = new RegExp(`<[a-zA-Z][\\w:-]*(?:\\s[^<>]*?)?\\s${escaped}(?=[\\s=/>])`);
+  const match = opening.exec(html);
+  if (!match) return { prose: html.trim(), rest: '' };
+  return { prose: html.slice(0, match.index).trim(), rest: html.slice(match.index).trim() };
+}
+
+/** Search engines cut a meta description at about this many characters. */
+export const META_DESCRIPTION_MAX = 160;
+
+/** Meta description of a case: its own `description`, else the `summary` (both ≤ 160 in the MDX). */
+export function metaDescription(data: { summary: string; description?: string }): string {
+  return data.description ?? data.summary;
+}
