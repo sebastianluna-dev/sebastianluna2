@@ -1,0 +1,518 @@
+---
+/**
+ * Messaging-style aside inside the body of a section (design-spec §4 case/, case.md §3.4): the width of
+ * the 560 text column, the visitor on the left (grey, `--pf-chat-in-*`) and Sebastian on the right
+ * (blue, `--pf-chat-out-*`), with a tail and an avatar on the last bubble of each run, the author label
+ * on top of each visitor run, an optional meta line ("Hoy 10:30") and "Entregado" after a last message
+ * of Sebastian. One to three emoji alone are drawn large without a bubble. A tapback sits on the bubble
+ * that `tapbackTarget` picks (the closest earlier bubble of the other speaker).
+ *
+ * The whole conversation is in the SSR, in its final state, as a list whose items start with the
+ * author's name for screen readers; that is what shows without JS and with reduced motion, so the
+ * height never changes. `chat-aside.client.ts` hides it and plays CA-09…CA-12 once in view; the
+ * typing dots are CSS (CA-13). Every row carries an avatar, visible only at the end of its run, so the
+ * columns line up and the script can slide it from one message to the next.
+ */
+import { getImage } from 'astro:assets';
+import { PROFILE } from '@/data/profile';
+import { format, getMessages } from '@/i18n/t';
+import { splitLocale } from '@/lib/i18n-paths';
+import { CHAT_PORTRAIT, chatRows, splitChatMeta, tapbacksByTarget } from '@/lib/chat-sequence';
+import type { ChatAsideProps, ChatSpeaker } from './types';
+
+type Props = ChatAsideProps;
+
+const { meta, messages, delivered = false } = Astro.props;
+const { locale } = splitLocale(Astro.url.pathname);
+const copy = getMessages(locale).case.chat;
+const names: Record<ChatSpeaker, string> = {
+  visitor: copy.visitor,
+  sebastian: copy.sebastian,
+};
+const rows = chatRows(messages);
+const tapbacks = tapbacksByTarget(messages);
+const metaParts = meta ? splitChatMeta(meta) : null;
+const showStatus = delivered && messages.at(-1)?.from === 'sebastian';
+// 1x/2x/3x of the face crop as drawn (lib/chat-sequence.ts), not the 224 px of the home avatar.
+const portrait = await getImage({ src: PROFILE.portrait, ...CHAT_PORTRAIT });
+// What the script needs to rebuild the calendar (chat-sequence.ts), without re-reading the DOM text.
+const script = JSON.stringify(
+  messages.map(({ from, text, fx, rain, tapback }) => ({ from, text, fx, rain, tapback })),
+);
+---
+
+<div
+  class="chat-aside"
+  role="group"
+  aria-label={copy.label}
+  data-chat-aside
+  data-chat-messages={script}
+>
+  {meta && (
+    <p class="chat-aside__meta" aria-hidden="true" data-chat-meta>
+      {metaParts ? (
+        <>
+          <b class="chat-aside__meta-day">{metaParts.day}</b> {metaParts.time}
+        </>
+      ) : (
+        meta
+      )}
+    </p>
+  )}
+  <ol class="chat-aside__messages">
+    {messages.map((message, index) => {
+      const row = rows[index]!;
+      const tapback = tapbacks[index];
+      return (
+        <li
+          class:list={[
+            'chat-aside__row',
+            `chat-aside__row_from_${message.from}`,
+            { 'chat-aside__row_group_start': row.groupStart },
+            { 'chat-aside__row_group_end': row.groupEnd },
+            { 'chat-aside__row_kind_emoji': row.emojiOnly },
+          ]}
+          data-chat-row
+        >
+          <div class="chat-aside__column">
+            {message.from === 'visitor' && !row.continues && (
+              <p class="chat-aside__who" aria-hidden="true" data-chat-who>
+                {names.visitor}
+              </p>
+            )}
+            <div class="chat-aside__bubble-wrap" data-chat-bubble>
+              <p
+                class="chat-aside__bubble"
+                data-chat-text
+                data-fx={message.fx}
+                data-rain={message.rain}
+                data-tapback={message.tapback}
+              >
+                <span class="sr-only">{names[message.from]}:</span>
+                {message.text}
+                {row.groupEnd && !row.emojiOnly && (
+                  <svg
+                    class="chat-aside__tail"
+                    viewBox="0 0 20 18.5"
+                    width="20"
+                    height="18.5"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path d="M0 0H14C14 7.6 15.8 13.6 20 18C16.1 18.3 12.7 17.3 10 15.3C7.4 16.8 4.2 17.5 0 17.5Z" />
+                  </svg>
+                )}
+              </p>
+              {tapback && (
+                <>
+                  <span class="sr-only">{format(copy.reaction, { emoji: tapback })}</span>
+                  <span class="chat-aside__tapback" aria-hidden="true" data-chat-tapback>
+                    {tapback}
+                  </span>
+                </>
+              )}
+              <span class="chat-aside__typing" aria-hidden="true" data-chat-typing>
+                <span class="chat-aside__dot" />
+                <span class="chat-aside__dot" />
+                <span class="chat-aside__dot" />
+              </span>
+            </div>
+          </div>
+          {message.from === 'sebastian' ? (
+            <span class="chat-aside__avatar" aria-hidden="true" data-chat-avatar>
+              <img
+                class="chat-aside__portrait"
+                src={portrait.src}
+                srcset={portrait.srcSet.attribute}
+                sizes={CHAT_PORTRAIT.sizes}
+                width={portrait.attributes.width}
+                height={portrait.attributes.height}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+              />
+            </span>
+          ) : (
+            <span
+              class="chat-aside__avatar chat-aside__avatar_kind_initial"
+              aria-hidden="true"
+              data-chat-avatar
+            >
+              {copy.visitorInitial}
+            </span>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+  {showStatus && (
+    <p class="chat-aside__status" aria-hidden="true" data-chat-status>
+      {copy.delivered}
+    </p>
+  )}
+</div>
+
+<script>
+  import { startChatAsides } from './chat-aside.client';
+
+  startChatAsides();
+</script>
+
+<style>
+  @layer pf {
+    .chat-aside {
+      /* Face crop of the 900×1200 portrait, the HeroAvatar ratios. */
+      --chat-portrait-width: calc(var(--pf-chat-avatar) * var(--pf-portrait-crop-width));
+      --chat-portrait-x: calc(var(--pf-chat-avatar) * var(--pf-portrait-crop-x));
+      --chat-portrait-y: calc(var(--pf-chat-avatar) * var(--pf-portrait-crop-y));
+
+      position: relative;
+      width: 100%;
+      margin: var(--pf-chat-margin-top) 0 var(--pf-chat-margin-bottom);
+      padding: 0;
+      color: var(--pf-text);
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-chat-size);
+      font-weight: 400;
+      line-height: var(--pf-type-chat-lh);
+      letter-spacing: var(--pf-type-chat-ls);
+      text-align: left;
+      white-space: normal;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .chat-aside__meta {
+      margin: 0 0 var(--pf-chat-meta-gap);
+      color: var(--pf-chat-meta);
+      font-size: var(--pf-type-chat-meta-size);
+      line-height: var(--pf-type-chat-meta-lh);
+      letter-spacing: 0;
+      text-align: center;
+    }
+
+    .chat-aside__meta-day {
+      color: inherit;
+      font-weight: 600;
+    }
+
+    .chat-aside__messages {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .chat-aside__row {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: flex-end;
+      margin: var(--pf-chat-row-gap) 0 0;
+      padding: 0;
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    .chat-aside__row_group_start {
+      margin-top: var(--pf-chat-group-gap);
+    }
+
+    .chat-aside__row_from_visitor {
+      justify-content: flex-start;
+    }
+
+    .chat-aside__column {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      min-width: 0;
+      max-width: var(--pf-chat-bubble-max);
+    }
+
+    .chat-aside__row_from_visitor .chat-aside__column {
+      align-items: flex-start;
+    }
+
+    .chat-aside__who {
+      margin: 0 0 var(--pf-chat-who-gap) var(--pf-chat-who-indent);
+      color: var(--pf-chat-meta);
+      font-size: var(--pf-type-chat-meta-size);
+      line-height: var(--pf-type-chat-meta-lh);
+      letter-spacing: 0;
+    }
+
+    .chat-aside__bubble-wrap {
+      position: relative;
+      max-width: 100%;
+      transform-origin: 100% 100%;
+    }
+
+    .chat-aside__row_from_visitor .chat-aside__bubble-wrap {
+      transform-origin: 0 100%;
+    }
+
+    .chat-aside__bubble {
+      position: relative;
+      isolation: isolate;
+      margin: 0;
+      padding: var(--pf-chat-bubble-pad);
+      border-radius: var(--pf-chat-bubble-radius);
+      background: var(--pf-chat-out-bg);
+      color: var(--pf-chat-out-text);
+      overflow-wrap: break-word;
+      hyphens: manual;
+    }
+
+    .chat-aside__row_from_visitor .chat-aside__bubble {
+      background: var(--pf-chat-in-bg);
+      color: var(--pf-chat-in-text);
+    }
+
+    .chat-aside__row_kind_emoji .chat-aside__bubble {
+      padding: var(--pf-chat-emoji-pad-top) 0 0;
+      background: none;
+      color: inherit;
+      font-size: var(--pf-type-chat-emoji-size);
+      line-height: var(--pf-type-chat-emoji-lh);
+      letter-spacing: var(--pf-type-chat-emoji-ls);
+    }
+
+    .chat-aside__tail {
+      position: absolute;
+      z-index: -1;
+      right: var(--pf-chat-tail-offset);
+      bottom: 0;
+      display: block;
+      fill: var(--pf-chat-out-bg);
+    }
+
+    .chat-aside__row_from_visitor .chat-aside__tail {
+      right: auto;
+      left: var(--pf-chat-tail-offset);
+      transform: scaleX(-1);
+      fill: var(--pf-chat-in-bg);
+    }
+
+    /* CA-11: the reaction of the other speaker, in its colour, on the outer top corner. */
+    .chat-aside__tapback {
+      position: absolute;
+      z-index: 2;
+      top: var(--pf-chat-tapback-top);
+      left: var(--pf-chat-tapback-offset);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--pf-chat-tapback-size);
+      height: var(--pf-chat-tapback-size);
+      padding: 0 var(--pf-chat-tapback-pad);
+      border-radius: calc(var(--pf-chat-tapback-size) / 2);
+      background: var(--pf-chat-in-bg);
+      box-shadow: var(--pf-chat-tapback-shadow);
+      font-size: var(--pf-chat-tapback-glyph);
+      line-height: 1;
+      transform-origin: 50% 100%;
+    }
+
+    .chat-aside__row_from_visitor .chat-aside__tapback {
+      right: var(--pf-chat-tapback-offset);
+      left: auto;
+      background: var(--pf-chat-out-bg);
+    }
+
+    /* "Typing…" bubble (CA-09) with the CA-13 dots; only shown by the script. */
+    .chat-aside__typing {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: none;
+      align-items: center;
+      gap: var(--pf-chat-typing-gap);
+      height: var(--pf-chat-typing-height);
+      padding: 0 var(--pf-chat-typing-pad);
+      border-radius: var(--pf-chat-bubble-radius);
+      background: var(--pf-chat-out-bg);
+      transform-origin: 100% 100%;
+
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        background: inherit;
+      }
+
+      &::before {
+        right: var(--pf-chat-typing-tail-big-x);
+        bottom: var(--pf-chat-typing-tail-big-y);
+        width: var(--pf-chat-typing-tail-big);
+        height: var(--pf-chat-typing-tail-big);
+      }
+
+      &::after {
+        right: var(--pf-chat-typing-tail-small-x);
+        bottom: var(--pf-chat-typing-tail-small-y);
+        width: var(--pf-chat-typing-tail-small);
+        height: var(--pf-chat-typing-tail-small);
+      }
+    }
+
+    .chat-aside__typing_state_on {
+      display: flex;
+    }
+
+    .chat-aside__row_from_visitor .chat-aside__typing {
+      right: auto;
+      left: 0;
+      background: var(--pf-chat-in-bg);
+      transform-origin: 0 100%;
+
+      &::before {
+        right: auto;
+        left: var(--pf-chat-typing-tail-big-x);
+      }
+
+      &::after {
+        right: auto;
+        left: var(--pf-chat-typing-tail-small-x);
+      }
+    }
+
+    .chat-aside__dot {
+      width: var(--pf-chat-dot);
+      height: var(--pf-chat-dot);
+      border-radius: 50%;
+      background: var(--pf-chat-dot-out);
+      animation: chat-aside-dot var(--pf-chat-dots-duration) var(--pf-chat-dots-ease) infinite;
+      will-change: transform, opacity;
+
+      &:nth-child(2) {
+        animation-delay: var(--pf-chat-dots-stagger);
+      }
+
+      &:nth-child(3) {
+        animation-delay: calc(2 * var(--pf-chat-dots-stagger));
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        opacity: var(--pf-chat-dot-reduced-opacity);
+        animation: none;
+      }
+    }
+
+    .chat-aside__row_from_visitor .chat-aside__dot {
+      background: var(--pf-chat-meta);
+    }
+
+    /* CA-13: rest (tokens) at 0 %, 60 % and 100 %, peak at 28 % of the loop (measured stops). */
+    @keyframes chat-aside-dot {
+      0%,
+      60%,
+      100% {
+        opacity: var(--pf-chat-dot-rest-opacity);
+        transform: translateY(0) scale(var(--pf-chat-dot-rest-scale));
+      }
+
+      28% {
+        opacity: 1;
+        transform: translateY(var(--pf-chat-dot-lift)) scale(1);
+      }
+    }
+
+    .chat-aside__avatar {
+      position: relative;
+      display: block;
+      flex: none;
+      width: var(--pf-chat-avatar);
+      height: var(--pf-chat-avatar);
+      margin-left: var(--pf-chat-avatar-gap);
+      overflow: hidden;
+      border-radius: 50%;
+      background: var(--pf-surface);
+      visibility: hidden;
+      transform-origin: 50% 100%;
+    }
+
+    .chat-aside__row_from_visitor .chat-aside__avatar {
+      order: -1;
+      margin-right: var(--pf-chat-avatar-gap);
+      margin-left: 0;
+    }
+
+    .chat-aside__row_group_end .chat-aside__avatar {
+      visibility: visible;
+    }
+
+    .chat-aside__portrait {
+      position: absolute;
+      top: var(--chat-portrait-y);
+      left: var(--chat-portrait-x);
+      width: var(--chat-portrait-width);
+      max-width: none;
+      height: auto;
+      margin: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .chat-aside__avatar_kind_initial {
+      background: var(--pf-chat-visitor-avatar-bg);
+      color: var(--pf-chat-visitor-avatar-text);
+      font-size: var(--pf-chat-visitor-avatar-size);
+      font-weight: 600;
+      line-height: var(--pf-chat-avatar);
+      letter-spacing: var(--pf-chat-initial-ls);
+      text-align: center;
+    }
+
+    .chat-aside__status {
+      margin: var(--pf-chat-status-gap)
+        calc(var(--pf-chat-avatar) + var(--pf-chat-avatar-gap) + var(--pf-chat-status-inset)) 0 0;
+      color: var(--pf-chat-meta);
+      font-size: var(--pf-type-chat-status-size);
+      font-weight: 500;
+      line-height: var(--pf-type-chat-status-lh);
+      letter-spacing: 0;
+      text-align: right;
+    }
+
+    /* Emoji rain layer (CA-12), added by the script while it rains. */
+    .chat-aside :global(.chat-aside__fx) {
+      position: absolute;
+      z-index: 3;
+      inset: calc(-1 * var(--pf-chat-rain-bleed)) 0;
+      overflow: hidden;
+      pointer-events: none;
+      contain: strict;
+    }
+
+    .chat-aside :global(.chat-aside__particle) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: var(--pf-chat-rain-glyph);
+      font-style: normal;
+      line-height: 1;
+      will-change: transform, opacity;
+    }
+
+    /* Waiting state of the sequence (CA-09): set by the script only, never without JS. */
+    /* Flat on purpose: Astro scopes only the outer selector of a nested rule. */
+    .chat-aside_state_waiting .chat-aside__meta,
+    .chat-aside_state_waiting .chat-aside__status,
+    .chat-aside_state_waiting .chat-aside__who,
+    .chat-aside_state_waiting .chat-aside__bubble-wrap,
+    .chat-aside_state_waiting .chat-aside__tapback {
+      opacity: 0;
+    }
+
+    .chat-aside_state_waiting .chat-aside__avatar {
+      visibility: hidden;
+    }
+
+    .chat-aside_state_waiting .chat-aside__avatar_state_on {
+      visibility: visible;
+    }
+  }
+</style>
