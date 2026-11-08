@@ -1,16 +1,298 @@
 ---
 title: 'Vallarta TOURS'
 kicker: 'Turismo · tours en barco'
-summary: 'Vallarta TOURS es la marca ficticia con la que presento un sitio que desarrollé para una operadora de tours en barco en Puerto Vallarta.'
+summary: 'Diseñé y desarrollé el sitio de una operadora de tours en barco en Puerto Vallarta, con reservas en Shopify, y en 2025 lo reconstruí como muestra bilingüe bajo la marca ficticia Vallarta TOURS: cinco salidas, direcciones traducidas y una reserva que llega a WhatsApp ya escrita.'
+description: 'Sitio de una operadora de tours en barco en Puerto Vallarta y su reconstrucción bilingüe de 2025: cinco salidas y una reserva que llega a WhatsApp ya escrita.'
 role: 'Diseñador y desarrollador'
-service: ['Producto', 'Diseño en Figma', 'Desarrollo', 'Pruebas']
-tools: ['Figma', 'Next.js', 'React', 'TypeScript', 'next-intl', 'Vitest', 'Vercel']
-year: '2020–2021'
+service: ['Investigación con el cliente', 'Diseño UI/UX en Figma', 'Desarrollo frontend', 'Pruebas']
+tools:
+  [
+    'Figma',
+    'Next.js',
+    'React',
+    'TypeScript',
+    'next-intl',
+    'Radix UI',
+    'React Day Picker',
+    'Vitest',
+    'Vercel',
+  ]
+year: '2020–2021 · 2025'
 url: 'https://vallartatours.vercel.app'
 order: 4
 cover:
   src: '../../../assets/works/vallarta-tours/cover.jpg'
-  alt: 'Captura del sitio de Vallarta TOURS'
+  alt: 'Página de inicio de Vallarta TOURS con el titular «Tres días de bahía, cero logística» sobre una playa de la bahía y la barra para buscar salida'
+zones:
+  - src: '../../../assets/works/vallarta-tours/detalle-ballenas.jpg'
+    alt: 'Página del avistamiento de ballenas con la tarjeta de reserva a la derecha'
+  - src: '../../../assets/works/vallarta-tours/carrusel-escritorio.jpg'
+    alt: 'Carrusel de salidas del inicio con las tarjetas apiladas en diagonal'
+  - src: '../../../assets/works/vallarta-tours/incluido-y-que-llevar.jpg'
+    alt: 'Sección «Lo que va incluido y lo que no» con la lista de qué llevar'
+demos: ['localized-routes', 'tour-booking', 'service-deck']
 ---
 
-Vallarta TOURS es la marca ficticia con la que presento un sitio que desarrollé para una operadora de tours en barco en Puerto Vallarta. Construido con Next.js, React, TypeScript y next-intl, reúne cinco rutas, detalles de las experiencias, un recorrido de reserva y contacto en español e inglés, con las direcciones de las páginas traducidas para no perder el contexto al cambiar de idioma.
+import {
+  CaseSection,
+  CaseSubsection,
+  ChatAside,
+  DemoSlot,
+  Figure,
+  Gallery,
+  SideNote,
+  SideNotes,
+} from '@/components/portfolio/case';
+import serviciosBallenas from '@/assets/works/vallarta-tours/servicios-ballenas.jpg';
+import tresPasos from '@/assets/works/vallarta-tours/tres-pasos.jpg';
+import incluido from '@/assets/works/vallarta-tours/incluido-y-que-llevar.jpg';
+import inicioCalendario from '@/assets/works/vallarta-tours/inicio-calendario.jpg';
+import inicioPersonas from '@/assets/works/vallarta-tours/inicio-personas.jpg';
+import detalleBallenas from '@/assets/works/vallarta-tours/detalle-ballenas.jpg';
+import tarjetaEstados from '@/assets/works/vallarta-tours/tarjeta-reserva-estados.jpg';
+import itinerarioCharter from '@/assets/works/vallarta-tours/itinerario-charter.jpg';
+import carruselEscritorio from '@/assets/works/vallarta-tours/carrusel-escritorio.jpg';
+import inicioIngles from '@/assets/works/vallarta-tours/inicio-ingles.jpg';
+import telefonoIdiomas from '@/assets/works/vallarta-tours/telefono-espanol-ingles.jpg';
+import telefonoCarrusel from '@/assets/works/vallarta-tours/telefono-carrusel-menu.jpg';
+
+<CaseSection id="overview" title="Un sitio para elegir salida y reservar en dos idiomas">
+
+Vallarta TOURS es la marca ficticia con la que presento el sitio que diseñé y desarrollé para una operadora de tours en barco en Puerto Vallarta. El sitio original estuvo en línea y se dio de baja; esta versión de muestra conserva el trabajo con una marca ficticia, y sus precios, reseñas, datos de contacto y textos legales son de relleno. La muestra presenta cinco salidas en Bahía de Banderas: Arcos – Ánimas – Quimixto, Yelapa – Majahuitas, Islas Marietas, avistamiento de ballenas y un charter privado.
+
+El proyecto nació en Proficient Systems. Hice la investigación con el cliente, los wireframes y los diseños de alta fidelidad en Figma, participé en la definición del lenguaje del sitio y de la experiencia, y construí el frontend, con reservas, pagos y disponibilidad integrados mediante Shopify. La versión que presento aquí la reconstruí en 2025 con Next.js, React, TypeScript y next-intl: seis rutas en español y en inglés, con las direcciones traducidas.
+
+<ChatAside
+  meta="sáb 9:00"
+  delivered
+  messages={[
+    { from: 'visitor', text: '¿Qué parte hiciste tú?' },
+    { from: 'sebastian', text: 'La investigación con el cliente y el diseño en Figma.' },
+    {
+      from: 'sebastian',
+      text: 'Y todo el frontend; la reconstrucción, en español e inglés ⛵',
+      fx: 'gentle',
+    },
+  ]}
+/>
+
+</CaseSection>
+
+<CaseSection id="challenge" title="Cinco salidas, cada una con sus reglas">
+
+Ninguna salida se parece a otra. En la muestra, cada una tiene su precio por persona, su duración, sus horarios, su cupo por barco y su muelle, en Puerto Vallarta o en Nuevo Vallarta. Las ballenas solo salen de diciembre a marzo, y el charter privado no tiene precio fijo ni itinerario a hora fija: se cotiza.
+
+Todo eso tenía que leerse igual de claro en español y en inglés, incluidas las direcciones de las páginas, y llevar a quien visita de la idea a la reserva sin pasos de más.
+
+### Del inicio a la reserva
+
+La barra del inicio pide experiencia, fecha y personas. Al buscar, lleva a la página de esa salida y la tarjeta de reserva ya llega llena con lo que se eligió arriba.
+
+<Gallery variant="lead">
+  <Figure
+    src={serviciosBallenas}
+    alt="Panel del avistamiento de ballenas en la página de servicios: duración de 4 horas, precio desde $799 por persona y la lista de lo que incluye"
+  />
+</Gallery>
+
+</CaseSection>
+
+<CaseSection id="approach" title="Primero el contenido, después las páginas">
+
+Separé el contenido en dos lugares. Todo lo que se lee vive en dos catálogos, uno por idioma, con las mismas claves; el español es el catálogo de referencia y define el tipo de cada texto que usa el código. Lo que no cambia con el idioma, como precios, horarios, cupos, muelles y temporadas, vive en constantes.
+
+Agregar una salida es una entrada en la lista maestra y su bloque en los dos catálogos. Las páginas de detalle, el mapa del sitio, los paneles de servicios y el carrusel salen de esa misma lista.
+
+### Direcciones traducidas
+
+Las rutas también se traducen: `/servicios` es `/en/services`, y una salida con nombre descriptivo cambia de dirección, como `avistamiento-de-ballenas` y `whale-watching`. Cada idioma responde solo a la suya, el selector de idioma te deja en la misma página y, en la primera visita, el sitio te lleva al inglés si tu navegador lo prefiere.
+
+<SideNotes label="Cómo ordené el contenido" cols={3}>
+  <SideNote title="Una lista maestra" art="blocks">
+    Las cinco salidas, en el orden en que el sitio las muestra.
+  </SideNote>
+  <SideNote title="Dos catálogos" art="globe">
+    Mismas claves en los dos idiomas; el español define los tipos.
+  </SideNote>
+  <SideNote title="Lo que no se traduce" art="compass">
+    Precios, horarios, cupos, muelles y temporadas, en constantes.
+  </SideNote>
+</SideNotes>
+
+<DemoSlot
+  name="localized-routes"
+  caption="Cambiar de idioma te deja en la misma página, con su dirección traducida."
+/>
+
+<CaseSubsection kicker="Dirección visual" appear>
+
+Azul marino de fondo, verde lima para botones y acentos, y azul cielo para los paneles que agrupan, con una ola dibujada como adorno. La tipografía es Poppins, del 400 al 800, servida desde el propio sitio. El sitio vive de sus fotos, así que se sirven en AVIF o WebP a la calidad más alta.
+
+<Gallery variant="pair-2col-phone">
+  <Figure
+    src={tresPasos}
+    alt="Panel azul cielo «Del mensaje al muelle en tres pasos» con tres tarjetas azul marino numeradas en verde lima y la ola dibujada"
+    appear="approachGallery"
+  />
+  <Figure
+    src={incluido}
+    alt="Sección «Lo que va incluido y lo que no» con tres columnas: lo que incluye, lo que no y qué llevar en píldoras verde lima"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="research" title="Lo que hay que saber antes de subir al barco">
+
+En el proyecto original empecé con la investigación con el cliente y de ahí pasé a los wireframes y a los diseños en Figma. En la muestra, cada página de detalle contesta lo necesario antes de reservar: duración, precio, horarios, tamaño del grupo, muelle de salida, qué incluye, qué no, qué llevar y las preguntas frecuentes.
+
+### Cuidar cada línea
+
+Las etiquetas de «Qué llevar» no pasan de 20 caracteres, lo que cabe en una línea de su píldora, y ninguna salida pide más de seis cosas. Cuando el nombre completo de una salida ocuparía tres líneas en el titular grande, la página usa una versión más corta.
+
+<CaseSubsection kicker="Campos propios">
+
+La fecha y el tamaño del grupo se eligen con los mismos dos campos en la barra del inicio y en la tarjeta de cada salida. Dejé de usar la lista y el calendario nativos, porque cada navegador los dibuja a su manera: la fecha es un mes de React Day Picker que se abre sobre la página y las personas, una lista de Radix. De Radix tomé el comportamiento (teclado, foco y una capa que no se recorta dentro del hero); el diseño es mío.
+
+<Gallery variant="pair">
+  <Figure
+    src={inicioCalendario}
+    alt="Barra de búsqueda del inicio con el calendario de noviembre abierto y el sábado 21 elegido"
+    appear="researchFirst"
+  />
+  <Figure
+    src={inicioPersonas}
+    alt="Barra de búsqueda del inicio con la lista de personas abierta y 4 adultos marcados"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="design" title="Una reserva que cabe en un mensaje">
+
+La reserva no pide cuenta ni formulario largo. La tarjeta de cada salida reúne lo que la tripulación necesita y lo convierte en un mensaje de WhatsApp ya escrito, en el idioma de quien visita.
+
+<ChatAside
+  meta="dom 11:20"
+  delivered
+  messages={[
+    { from: 'visitor', text: '¿Qué pasa cuando toco «Reservar»?' },
+    { from: 'sebastian', text: 'Se abre WhatsApp con el mensaje ya escrito.' },
+    { from: 'sebastian', text: 'Salida, fecha, hora y personas, en tu idioma.' },
+    { from: 'visitor', text: '¿Y si elijo junio para ver ballenas?' },
+    {
+      from: 'sebastian',
+      text: 'La tarjeta te avisa: la temporada va de diciembre a marzo 🐋',
+      fx: 'slam',
+      tapback: '😅',
+    },
+  ]}
+/>
+
+<SideNotes label="Reglas que la tarjeta respeta" cols={3}>
+  <SideNote title="Temporada" art="calendar">
+    Si la fecha cae fuera de la temporada, la tarjeta lo dice antes de reservar.
+  </SideNote>
+  <SideNote title="Cotización" art="ticket">
+    El charter no tiene precio fijo: la tarjeta pide cotizar en vez de sumar.
+  </SideNote>
+  <SideNote title="Cupo por barco" art="gauge">
+    La lista de personas llega hasta lo que cabe en el barco de esa salida.
+  </SideNote>
+</SideNotes>
+
+<CaseSubsection kicker="Tarjeta de reserva">
+
+Eliges hora de salida, fecha y personas, y la tarjeta suma el total y calcula el anticipo del 30 %. «Reservar» abre WhatsApp con la salida, la fecha, la hora y el número de personas ya escritos.
+
+El charter tiene tres horas de salida y ninguna hora fija para sus paradas: se guardan como minutos desde la salida, así que el itinerario muestra la hora real de la salida que eliges en la tarjeta. Las dos secciones comparten esa hora.
+
+<DemoSlot
+  name="tour-booking"
+  caption="Elige hora, fecha y personas: la tarjeta suma, calcula el anticipo y arma el mensaje en tu idioma."
+/>
+
+<Gallery variant="lead">
+  <Figure
+    src={detalleBallenas}
+    alt="Página del avistamiento de ballenas: titular, descripción y datos de la salida a la izquierda, y la tarjeta de reserva con 4 adultos, total de $3,196 y el anticipo a la derecha"
+    appear="designLead"
+  />
+</Gallery>
+
+<Gallery variant="pair">
+  <Figure
+    src={tarjetaEstados}
+    alt="Tres estados de la tarjeta de reserva: una fecha dentro de temporada con su total, una fecha de junio con el aviso de fuera de temporada y el charter privado que pide cotización"
+    appear="designRowFirst"
+  />
+  <Figure
+    src={itinerarioCharter}
+    alt="Itinerario del charter privado dos veces: con salida a las 8:00 am y con salida a las 12:00 pm, con todas las horas de las paradas recorridas"
+    appear="designRowSecond"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Carrusel de salidas">
+
+Un solo marcado sirve para las dos maquetas. En escritorio, la foto de la salida activa llena el escenario y las siguientes se apilan en diagonal; cada salida se pinta tres veces para que el mazo avance siempre hacia la izquierda, sin que ninguna tarjeta cruce hacia atrás. En el teléfono las tarjetas se abren en abanico y se deslizan con el dedo. Con la mitad de la sección en pantalla, las flechas del teclado mueven el mazo, y de las cinco fotos grandes solo se cargan dos al principio; las demás llegan conforme avanzas.
+
+<DemoSlot
+  name="service-deck"
+  caption="El mazo avanza siempre hacia la izquierda; en el teléfono se abre en abanico."
+/>
+
+<Gallery variant="lead">
+  <Figure
+    src={carruselEscritorio}
+    alt="Carrusel del inicio en escritorio: Arcos – Ánimas – Quimixto con su descripción, duración y precio, y las tarjetas de Yelapa, Islas Marietas y Ballenas apiladas en diagonal"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="outcome" title="Seis rutas en dos idiomas, servidas estáticas">
+
+El sitio tiene seis rutas en cada idioma (diez páginas, con el detalle de cada salida): inicio, servicios, el detalle de cada salida, contacto, términos y aviso de privacidad. El contenido vive en el repositorio y todo se sirve estático. El mismo proyecto genera el mapa del sitio con las páginas de los dos idiomas enlazadas entre sí, el `robots.txt` y una tarjeta para redes sociales por idioma.
+
+La lógica que se puede probar sin React es una función pura con su prueba al lado: precios, horas, meses, temporadas, totales, mensajes de WhatsApp y de correo, y los movimientos del carrusel. Son 67 pruebas en 17 archivos, y la integración continua revisa el estilo y los tipos, corre las pruebas y compila el sitio con cada cambio. Está publicado en Vercel.
+
+<ChatAside
+  meta="lun 18:40"
+  delivered
+  messages={[
+    { from: 'visitor', text: '¿Cómo sabes que el anticipo sale bien?' },
+    { from: 'sebastian', text: 'Totales, temporadas y mensajes son funciones con su prueba.' },
+    {
+      from: 'sebastian',
+      text: 'Son 67 pruebas y corren con cada cambio 🌊',
+      fx: 'rain',
+      rain: '🐋🌊',
+    },
+  ]}
+/>
+
+<Gallery variant="composition">
+  <Figure
+    src={inicioIngles}
+    alt="Inicio en inglés con el titular «Three days on the bay, zero logistics» y la barra de búsqueda con «Marietas Islands» y «Check availability»"
+  />
+  <Figure
+    src={telefonoIdiomas}
+    alt="Dos teléfonos con la tarjeta de reserva de las ballenas: en español «sáb 16 de ene» y «Reservar 2 lugares», en inglés «Sat, Jan 16» y «Book 2 spots»"
+  />
+  <Figure
+    src={telefonoCarrusel}
+    alt="Dos teléfonos: el carrusel de salidas abierto en abanico y el menú con Inicio, Servicios, Contacto y el botón «Reservar ahora»"
+  />
+</Gallery>
+
+</CaseSection>

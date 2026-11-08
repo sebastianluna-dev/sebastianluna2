@@ -1,16 +1,295 @@
 ---
 title: 'Vallarta TOURS'
 kicker: 'Tourism · boat tours'
-summary: 'Vallarta TOURS is the fictional brand I use to showcase a website I originally built for a boat tour operator in Puerto Vallarta.'
+summary: 'I designed and built the site of a boat tour operator in Puerto Vallarta, with bookings in Shopify, and in 2025 I rebuilt it as a bilingual sample under the fictional brand Vallarta TOURS: five trips, translated URLs and a booking that reaches WhatsApp already written.'
+description: 'Site of a boat tour operator in Puerto Vallarta and its bilingual 2025 rebuild: five trips and a booking that reaches WhatsApp already written.'
 role: 'Designer and developer'
-service: ['Product', 'Design in Figma', 'Development', 'Testing']
-tools: ['Figma', 'Next.js', 'React', 'TypeScript', 'next-intl', 'Vitest', 'Vercel']
-year: '2020–2021'
+service: ['Client research', 'UI/UX design in Figma', 'Frontend development', 'Testing']
+tools:
+  [
+    'Figma',
+    'Next.js',
+    'React',
+    'TypeScript',
+    'next-intl',
+    'Radix UI',
+    'React Day Picker',
+    'Vitest',
+    'Vercel',
+  ]
+year: '2020–2021 · 2025'
 url: 'https://vallartatours.vercel.app'
 order: 4
 cover:
   src: '../../../assets/works/vallarta-tours/cover.jpg'
-  alt: 'Screenshot of the Vallarta TOURS site'
+  alt: 'Vallarta TOURS home page with the headline “Tres días de bahía, cero logística” over a beach on the bay and the bar to search for a trip'
+zones:
+  - src: '../../../assets/works/vallarta-tours/detalle-ballenas.jpg'
+    alt: 'Whale watching page with the booking card on the right'
+  - src: '../../../assets/works/vallarta-tours/carrusel-escritorio.jpg'
+    alt: 'Trip carousel on the home page with the cards stacked diagonally'
+  - src: '../../../assets/works/vallarta-tours/incluido-y-que-llevar.jpg'
+    alt: 'The “what is and is not included” section with the list of things to bring'
+demos: ['localized-routes', 'tour-booking', 'service-deck']
 ---
 
-Vallarta TOURS is the fictional brand I use to showcase a website I originally built for a boat tour operator in Puerto Vallarta. Built with Next.js, React, TypeScript, and next-intl, it presents five tours, experience details, a booking flow, and contact information in Spanish and English, with localized page URLs so visitors keep their place when they switch languages.
+import {
+  CaseSection,
+  CaseSubsection,
+  ChatAside,
+  DemoSlot,
+  Figure,
+  Gallery,
+  SideNote,
+  SideNotes,
+} from '@/components/portfolio/case';
+import serviciosBallenas from '@/assets/works/vallarta-tours/servicios-ballenas.jpg';
+import tresPasos from '@/assets/works/vallarta-tours/tres-pasos.jpg';
+import incluido from '@/assets/works/vallarta-tours/incluido-y-que-llevar.jpg';
+import inicioCalendario from '@/assets/works/vallarta-tours/inicio-calendario.jpg';
+import inicioPersonas from '@/assets/works/vallarta-tours/inicio-personas.jpg';
+import detalleBallenas from '@/assets/works/vallarta-tours/detalle-ballenas.jpg';
+import tarjetaEstados from '@/assets/works/vallarta-tours/tarjeta-reserva-estados.jpg';
+import itinerarioCharter from '@/assets/works/vallarta-tours/itinerario-charter.jpg';
+import carruselEscritorio from '@/assets/works/vallarta-tours/carrusel-escritorio.jpg';
+import inicioIngles from '@/assets/works/vallarta-tours/inicio-ingles.jpg';
+import telefonoIdiomas from '@/assets/works/vallarta-tours/telefono-espanol-ingles.jpg';
+import telefonoCarrusel from '@/assets/works/vallarta-tours/telefono-carrusel-menu.jpg';
+
+<CaseSection id="overview" title="A site to pick a trip and book it in two languages">
+
+Vallarta TOURS is the fictional brand I use to show the site I designed and built for a boat tour operator in Puerto Vallarta. The original site was live and has been taken offline; this sample version keeps the work under a fictional brand, and its prices, reviews, contact details and legal texts are filler. The sample presents five trips on Banderas Bay: Arcos – Ánimas – Quimixto, Yelapa – Majahuitas, the Marietas Islands, whale watching and a private charter.
+
+The project started at Proficient Systems. I ran the research with the client, drew the wireframes and the high-fidelity designs in Figma, helped define the site’s voice and experience, and built the frontend, with bookings, payments and availability integrated through Shopify. The version shown here is one I rebuilt in 2025 with Next.js, React, TypeScript and next-intl: six routes in Spanish and English, with translated URLs.
+
+<ChatAside
+  meta="Sat 9:00"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'Which part did you do?' },
+    { from: 'sebastian', text: 'The research with the client and the design in Figma.' },
+    {
+      from: 'sebastian',
+      text: 'And the whole frontend; the rebuild, in Spanish and English ⛵',
+      fx: 'gentle',
+    },
+  ]}
+/>
+
+</CaseSection>
+
+<CaseSection id="challenge" title="Five trips, each with its own rules">
+
+No two trips are alike. In the sample, each one has its own price per person, length, departure times, group size per boat and dock, in Puerto Vallarta or Nuevo Vallarta. The whales only run from December to March, and the private charter has no fixed price and no itinerary at fixed times: it is quoted.
+
+All of that had to read just as clearly in Spanish as in English, page addresses included, and take visitors from an idea to a booking without extra steps.
+
+### From the home page to the booking
+
+The home page bar asks for the experience, the date and the group size. The search lands on that trip’s page, where the booking card is already filled in with what was chosen above.
+
+<Gallery variant="lead">
+  <Figure
+    src={serviciosBallenas}
+    alt="Whale watching panel on the services page: a 4-hour trip, from $799 per person, and the list of what it includes"
+  />
+</Gallery>
+
+</CaseSection>
+
+<CaseSection id="approach" title="Content first, pages second">
+
+I split the content into two places. Everything a visitor reads lives in two catalogs, one per language, with the same keys; Spanish is the reference catalog and defines the type of every string the code uses. What does not change with the language, such as prices, departure times, group sizes, docks and seasons, lives in constants.
+
+Adding a trip means one entry in the master list and its block in both catalogs. The detail pages, the sitemap, the services panels and the carousel all come from that same list.
+
+### Translated URLs
+
+The routes are translated too: `/servicios` is `/en/services`, and a trip with a descriptive name changes its address, like `avistamiento-de-ballenas` and `whale-watching`. Each language answers only to its own, the language switch keeps you on the same page and, on a first visit, the site sends you to English if your browser prefers it.
+
+<SideNotes label="How I organized the content" cols={3}>
+  <SideNote title="One master list" art="blocks">
+    The five trips, in the order the site shows them.
+  </SideNote>
+  <SideNote title="Two catalogs" art="globe">
+    The same keys in both languages; Spanish defines the types.
+  </SideNote>
+  <SideNote title="What stays untranslated" art="compass">
+    Prices, times, group sizes, docks and seasons, kept in constants.
+  </SideNote>
+</SideNotes>
+
+<DemoSlot
+  name="localized-routes"
+  caption="Switching languages keeps you on the same page, at its translated address."
+/>
+
+<CaseSubsection kicker="Visual direction" appear>
+
+Navy for the background, lime for buttons and accents, and sky blue for the panels that group things, with a hand-drawn wave as an ornament. The typeface is Poppins, from 400 to 800, served from the site itself. The site lives on its photos, so they are served as AVIF or WebP at the highest quality.
+
+<Gallery variant="pair-2col-phone">
+  <Figure
+    src={tresPasos}
+    alt="Sky blue panel “Del mensaje al muelle en tres pasos” with three navy cards numbered in lime and the drawn wave"
+    appear="approachGallery"
+  />
+  <Figure
+    src={incluido}
+    alt="The “what is and is not included” section in three columns: what is included, what is not, and what to bring in lime pills"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="research" title="What you need to know before boarding">
+
+On the original project I started with research alongside the client, and moved from there to wireframes and designs in Figma. In the sample, every detail page answers what you need before booking: length, price, departure times, group size, departure dock, what is included, what is not, what to bring and the FAQ.
+
+### Minding every line
+
+The “what to bring” labels never run past 20 characters, which is what fits on one line of their pill, and no trip asks for more than six things. When a trip’s full name would take three lines in the large headline, the page uses a shorter version.
+
+<CaseSubsection kicker="Custom fields">
+
+The date and the group size are picked with the same two fields in the home page bar and in the card of each trip. I dropped the native list and date picker, because every browser draws them its own way: the date is a month of React Day Picker that opens over the page, and the group size is a Radix list. From Radix I took the behavior (keyboard, focus and a layer that is not clipped inside the hero); the design is mine.
+
+<Gallery variant="pair">
+  <Figure
+    src={inicioCalendario}
+    alt="Home page search bar with the November calendar open and Saturday the 21st selected"
+    appear="researchFirst"
+  />
+  <Figure
+    src={inicioPersonas}
+    alt="Home page search bar with the group size list open and 4 adults selected"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="design" title="A booking that fits in a message">
+
+Booking asks for no account and no long form. The card of each trip gathers what the crew needs and turns it into a WhatsApp message that is already written, in the visitor’s language.
+
+<ChatAside
+  meta="Sun 11:20"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'What happens when I tap “Book”?' },
+    { from: 'sebastian', text: 'WhatsApp opens with the message already written.' },
+    { from: 'sebastian', text: 'Trip, date, time and group size, in your language.' },
+    { from: 'visitor', text: 'What if I pick June for the whales?' },
+    {
+      from: 'sebastian',
+      text: 'The card tells you: the season runs December to March 🐋',
+      fx: 'slam',
+      tapback: '😅',
+    },
+  ]}
+/>
+
+<SideNotes label="Rules the card follows" cols={3}>
+  <SideNote title="Season" art="calendar">
+    If the date falls outside the season, the card says so before you book.
+  </SideNote>
+  <SideNote title="Quote" art="ticket">
+    The charter has no fixed price: the card asks for a quote instead of adding up.
+  </SideNote>
+  <SideNote title="Seats per boat" art="gauge">
+    The group size list goes only as high as that trip’s boat holds.
+  </SideNote>
+</SideNotes>
+
+<CaseSubsection kicker="Booking card">
+
+You pick a departure time, a date and a group size, and the card adds up the total and works out the 30% deposit. “Book” opens WhatsApp with the trip, the date, the time and the number of people already written.
+
+The charter has three departure times and no fixed time for its stops: they are stored as minutes from departure, so the itinerary shows the real time of the departure you pick in the card. Both sections share that time.
+
+<DemoSlot
+  name="tour-booking"
+  caption="Pick a time, a date and a group: the card adds up, works out the deposit and writes the message in your language."
+/>
+
+<Gallery variant="lead">
+  <Figure
+    src={detalleBallenas}
+    alt="Whale watching page: headline, description and trip details on the left, and the booking card with 4 adults, a $3,196 total and the deposit on the right"
+    appear="designLead"
+  />
+</Gallery>
+
+<Gallery variant="pair">
+  <Figure
+    src={tarjetaEstados}
+    alt="Three states of the booking card: a date in season with its total, a June date with the out-of-season notice, and the private charter asking for a quote"
+    appear="designRowFirst"
+  />
+  <Figure
+    src={itinerarioCharter}
+    alt="The private charter itinerary twice: departing at 8:00 am and departing at 12:00 pm, with every stop moved to its new time"
+    appear="designRowSecond"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Trip carousel">
+
+One piece of markup serves both layouts. On desktop, the photo of the active trip fills the stage and the next ones stack diagonally; each trip is drawn three times so the deck always moves to the left, and no card ever slides back across the others. On phones the cards fan out and follow your finger. While half the section is on screen, the arrow keys move the deck, and only two of the five large photos load at first; the rest arrive as you go.
+
+<DemoSlot name="service-deck" caption="The deck always moves to the left; on phones it fans out." />
+
+<Gallery variant="lead">
+  <Figure
+    src={carruselEscritorio}
+    alt="Home page carousel on desktop: Arcos – Ánimas – Quimixto with its description, length and price, and the Yelapa, Marietas Islands and Whales cards stacked diagonally"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="outcome" title="Six routes in two languages, served static">
+
+The site has six routes in each language (ten pages, with the detail of each trip): home, services, the detail of each trip, contact, terms and the privacy notice. The content lives in the repository and everything is served static. The same project generates the sitemap with the pages of both languages linked to each other, the `robots.txt` and a social card per language.
+
+Any logic that can be tested without React is a pure function with its test beside it: prices, times, months, seasons, totals, WhatsApp and email messages, and the carousel’s moves. That makes 67 tests in 17 files, and continuous integration checks style and types, runs the tests and builds the site on every change. It is deployed on Vercel.
+
+<ChatAside
+  meta="Mon 18:40"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'How do you know the deposit comes out right?' },
+    { from: 'sebastian', text: 'Totals, seasons and messages are functions with their tests.' },
+    {
+      from: 'sebastian',
+      text: 'That is 67 tests, and they run on every change 🌊',
+      fx: 'rain',
+      rain: '🐋🌊',
+    },
+  ]}
+/>
+
+<Gallery variant="composition">
+  <Figure
+    src={inicioIngles}
+    alt="English home page with the headline “Three days on the bay, zero logistics” and the search bar showing “Marietas Islands” and “Check availability”"
+  />
+  <Figure
+    src={telefonoIdiomas}
+    alt="Two phones with the whale watching booking card: in Spanish “sáb 16 de ene” and “Reservar 2 lugares”, in English “Sat, Jan 16” and “Book 2 spots”"
+  />
+  <Figure
+    src={telefonoCarrusel}
+    alt="Two phones: the trip carousel fanned out and the menu with Inicio, Servicios, Contacto and the “Reservar ahora” button"
+  />
+</Gallery>
+
+</CaseSection>
