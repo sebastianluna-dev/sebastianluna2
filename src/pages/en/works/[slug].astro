@@ -1,0 +1,17 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import WorkView from '@/views/WorkView.astro';
+import { workStaticPaths } from '@/lib/works';
+
+export async function getStaticPaths() {
+  return workStaticPaths(await getCollection('works'), 'en');
+}
+
+interface Props {
+  entry: CollectionEntry<'works'>;
+}
+
+const { entry } = Astro.props;
+---
+
+<WorkView locale="en" entry={entry} />

@@ -1,0 +1,97 @@
+---
+/**
+ * Case study page of either language (design-spec §3.2, case.md §1): the back pill and the Works Map
+ * right after the header, then the 720 column (hero, the six sections of the MDX body, other pages)
+ * inside `main` (padding 120 20 40), and the page's single lightbox.
+ *
+ * The twin in the other language must exist (works.test.ts enforces it): the alternates of
+ * BaseLayout and the footer LocaleSwitch derive it from the URL, since slugs are not translated.
+ */
+import { getImage } from 'astro:assets';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { format, getMessages } from '@/i18n/t';
+import type { Locale } from '@/i18n/locales';
+import {
+  caseNeighbours,
+  counterpart,
+  metaDescription,
+  workSlug,
+  worksForLocale,
+} from '@/lib/works';
+import { BackPill, CaseHeader, Lightbox, PrevNext, WorksMap } from '@/components/portfolio/case';
+import '@/styles/prose.css';
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<'works'>;
+}
+
+/** Width of the share image (og:image), the size social previews ask for. */
+const OG_IMAGE_WIDTH = 1200;
+
+const { locale, entry } = Astro.props;
+const all = await getCollection('works');
+const slug = workSlug(entry);
+const twinLocale: Locale = locale === 'es' ? 'en' : 'es';
+if (!counterpart(all, entry, twinLocale)) {
+  throw new Error(
+    `Case "${entry.id}" has no ${twinLocale} twin (src/content/works/${twinLocale}/${slug}.mdx)`,
+  );
+}
+const { previous, next } = caseNeighbours(worksForLocale(all, locale), slug, locale);
+const { Content } = await render(entry);
+const { common, case: copy } = getMessages(locale);
+const title = format(copy.documentTitle, { title: entry.data.title, site: common.siteName });
+// Share card: the cover as a 1200 px JPEG (what social previews read best).
+const { cover } = entry.data;
+const share = await getImage({ src: cover.src, width: OG_IMAGE_WIDTH, format: 'jpeg' });
+const ogImage = {
+  src: share.src,
+  alt: cover.alt,
+  width: Number(share.attributes.width),
+  height: Number(share.attributes.height),
+};
+---
+
+<BaseLayout
+  locale={locale}
+  title={title}
+  description={metaDescription(entry.data)}
+  image={ogImage}
+  ogType="article"
+>
+  <BackPill slot="after-header" locale={locale} />
+  <WorksMap slot="after-header" locale={locale} />
+  <div class="case-page">
+    <article class="case" data-case={slug}>
+      <CaseHeader work={entry} locale={locale} />
+      <div class="case__sections">
+        <Content />
+      </div>
+      <PrevNext previous={previous} next={next} locale={locale} />
+    </article>
+  </div>
+  <Lightbox locale={locale} />
+</BaseLayout>
+
+<style>
+  @layer pf {
+    .case-page {
+      padding: var(--pf-case-pad-top) var(--pf-gutter-case) var(--pf-case-pad-bottom);
+    }
+
+    .case {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-section-gap);
+      width: min(var(--pf-case-col), 100%);
+      margin-inline: auto;
+    }
+
+    /* The sections of the MDX body are items of the column, so they sit at the section gap. */
+    .case__sections {
+      display: contents;
+    }
+  }
+</style>
