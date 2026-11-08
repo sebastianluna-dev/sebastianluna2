@@ -5,7 +5,7 @@
  * has no ⌘ / ⌥); any other symbol is drawn as text. The spoken name comes from the messages.
  */
 interface Props {
-  /** Symbol drawn on the key (⌘, ⌥, /). */
+  /** Symbol drawn on the key (⌘, ⌥, /), or a short legend (Ctrl, Alt). */
   symbol: string;
   /** Spoken name of the key, from the messages. */
   label: string;
@@ -27,7 +27,14 @@ const glyph = GLYPHS[symbol];
       <path d={glyph} />
     </svg>
   ) : (
-    <span class="kbd__glyph kbd__glyph_kind_text" aria-hidden="true">
+    <span
+      class:list={[
+        'kbd__glyph',
+        'kbd__glyph_kind_text',
+        { kbd__glyph_kind_word: [...symbol].length > 1 },
+      ]}
+      aria-hidden="true"
+    >
       {symbol}
     </span>
   )}
@@ -69,6 +76,14 @@ const glyph = GLYPHS[symbol];
       font-size: var(--kbd-glyph-size);
       line-height: 1;
       text-align: center;
+    }
+
+    /* A legend (Ctrl, Alt) keeps the 12 px height and takes the width it needs. */
+    .kbd__glyph_kind_word {
+      width: auto;
+      padding: 0 2px;
+      font-size: 10px;
+      line-height: var(--kbd-glyph-size);
     }
   }
 </style>

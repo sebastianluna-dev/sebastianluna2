@@ -40,8 +40,15 @@ export const hero = {
     keys: {
       command: 'Comando',
       option: 'Opción',
+      ctrl: 'Control',
+      alt: 'Alt',
       plus: 'más',
       slash: 'barra',
+    },
+    /** Legends of the keycaps outside Apple platforms, where the shortcut is Ctrl + Alt + /. */
+    caps: {
+      ctrl: 'Ctrl',
+      alt: 'Alt',
     },
   },
 };

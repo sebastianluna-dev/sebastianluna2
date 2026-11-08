@@ -35,8 +35,14 @@ export const hero = {
     keys: {
       command: 'Command',
       option: 'Option',
+      ctrl: 'Control',
+      alt: 'Alt',
       plus: 'plus',
       slash: 'slash',
+    },
+    caps: {
+      ctrl: 'Ctrl',
+      alt: 'Alt',
     },
   },
 } satisfies typeof reference;
