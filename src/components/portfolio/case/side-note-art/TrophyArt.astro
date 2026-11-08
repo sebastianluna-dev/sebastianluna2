@@ -1,0 +1,83 @@
+---
+/**
+ * Side note art `trophy`: a cup on the top step of a three-step podium. On hover the cup rises
+ * (`pf-note-hv-up`) and two sparkles fade in (`pf-note-hv-on`). CA-14.
+ */
+---
+
+<div class="trophy-art">
+  <svg class="trophy-art__svg" width="112" height="80" viewBox="0 0 112 80" focusable="false">
+    <rect class="trophy-art__step" x="0" y="54" width="36" height="26" rx="5"></rect>
+    <rect
+      class="trophy-art__step trophy-art__step_top"
+      x="38"
+      y="44"
+      width="36"
+      height="36"
+      rx="5"
+    ></rect>
+    <rect class="trophy-art__step" x="76" y="62" width="36" height="18" rx="5"></rect>
+    <g class="trophy-art__cup pf-note-hv-up">
+      <path
+        class="trophy-art__handles"
+        d="M45 12h-4.5a4.5 4.5 0 0 0 0 9H46M67 12h4.5a4.5 4.5 0 0 1 0 9H66"
+      ></path>
+      <path class="trophy-art__bowl" d="M45 8h22v10a11 11 0 0 1-22 0Z"></path>
+      <path class="trophy-art__shine" d="M50 11v7"></path>
+      <path
+        class="trophy-art__stem"
+        d="M54 29h4v5h4.5a2 2 0 0 1 2 2v4h-17v-4a2 2 0 0 1 2-2H54Z"
+      ></path>
+    </g>
+    <path
+      class="trophy-art__spark pf-note-hv-on"
+      d="M30 10l1.6 4.4L36 16l-4.4 1.6L30 22l-1.6-4.4L24 16l4.4-1.6Z"
+    ></path>
+    <path
+      class="trophy-art__spark pf-note-hv-on"
+      d="M84 22l1 2.8 2.8 1-2.8 1-1 2.8-1-2.8-2.8-1 2.8-1Z"
+    ></path>
+  </svg>
+</div>
+
+<style>
+  @layer pf {
+    .trophy-art {
+      --note-accent: var(--pf-accent-amber);
+    }
+
+    .trophy-art__step {
+      fill: var(--note-surface-2);
+    }
+
+    .trophy-art__step_top {
+      fill: var(--note-line-2);
+    }
+
+    .trophy-art__cup {
+      --d: -6px;
+    }
+
+    .trophy-art__handles {
+      fill: none;
+      stroke: var(--note-accent);
+      stroke-width: 2.4;
+    }
+
+    .trophy-art__bowl,
+    .trophy-art__stem {
+      fill: var(--note-accent);
+    }
+
+    .trophy-art__shine {
+      stroke: var(--note-surface);
+      stroke-linecap: round;
+      stroke-opacity: 0.7;
+      stroke-width: 2;
+    }
+
+    .trophy-art__spark {
+      fill: var(--note-accent);
+    }
+  }
+</style>

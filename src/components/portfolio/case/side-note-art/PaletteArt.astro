@@ -1,0 +1,86 @@
+---
+/**
+ * Side note art `palette`: three colour tokens, each a light / dark pair in one swatch; the middle
+ * one nudges sideways on hover (`pf-note-hv-x`). CA-14.
+ */
+const tokens = [
+  { tone: 'ink', bar: 52, value: 14 },
+  { tone: 'accent', bar: 40, value: 18, nudge: true },
+  { tone: 'soft', bar: 46, value: 12 },
+];
+---
+
+<div class="palette-art">
+  {tokens.map((token) => (
+    <span
+      class:list={['palette-art__token', { 'pf-note-hv-x': token.nudge }]}
+      style={token.nudge ? '--x:6px' : undefined}
+    >
+      <span class:list={['palette-art__swatch', `palette-art__swatch_tone_${token.tone}`]} />
+      <span class="palette-art__name" style={`width:${token.bar}px`} />
+      <span class="palette-art__value" style={`width:${token.value}px`} />
+    </span>
+  ))}
+</div>
+
+<style>
+  @layer pf {
+    .palette-art {
+      --note-accent: var(--pf-accent-blue);
+
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .palette-art__token {
+      display: inline-flex;
+      gap: 7px;
+      align-items: center;
+      width: max-content;
+      height: 24px;
+      padding: 0 9px 0 6px;
+      border-radius: 7px;
+      background: var(--note-surface-2);
+    }
+
+    /* Half light, half dark: every colour is a pair. */
+    .palette-art__swatch {
+      --palette-art-light: var(--note-ink);
+      --palette-art-dark: var(--note-surface);
+
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      background: linear-gradient(
+        135deg,
+        var(--palette-art-light) 50%,
+        var(--palette-art-dark) 50%
+      );
+      box-shadow: inset 0 0 0 1px var(--note-line);
+    }
+
+    .palette-art__swatch_tone_accent {
+      --palette-art-light: var(--note-accent);
+      --palette-art-dark: color-mix(in oklab, var(--note-accent) 45%, var(--note-surface));
+    }
+
+    .palette-art__swatch_tone_soft {
+      --palette-art-light: var(--note-ink-3);
+      --palette-art-dark: var(--note-line-2);
+    }
+
+    .palette-art__name {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--note-ink-3);
+    }
+
+    .palette-art__value {
+      height: 6px;
+      margin-inline-start: 4px;
+      border-radius: 3px;
+      background: var(--note-line-2);
+    }
+  }
+</style>

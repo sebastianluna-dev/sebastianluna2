@@ -1,0 +1,110 @@
+---
+/**
+ * Side note art `stethoscope`: a stethoscope that tilts on hover (`pf-note-hv-tilt`) beside a heart-rate
+ * card where a pulse runs along the trace (`pf-note-hv-run`). CA-14.
+ */
+---
+
+<div class="stethoscope-art">
+  <svg
+    class="stethoscope-art__scope pf-note-hv-tilt"
+    width="50"
+    height="66"
+    viewBox="0 0 50 66"
+    focusable="false"
+  >
+    <path class="stethoscope-art__tube" d="M8 4v18a12 12 0 0 0 24 0V4"></path>
+    <path class="stethoscope-art__tube" d="M20 34v12a10 10 0 0 0 20 0v-7"></path>
+    <circle class="stethoscope-art__tip" cx="8" cy="4" r="3"></circle>
+    <circle class="stethoscope-art__tip" cx="32" cy="4" r="3"></circle>
+    <circle class="stethoscope-art__chest" cx="40" cy="33" r="7"></circle>
+    <circle class="stethoscope-art__chest-core" cx="40" cy="33" r="3"></circle>
+  </svg>
+  <div class="stethoscope-art__card">
+    <svg
+      class="stethoscope-art__trace"
+      width="76"
+      height="28"
+      viewBox="0 0 76 28"
+      focusable="false"
+    >
+      <path d="M0 16h18l4-8 5 16 5-20 4 12h40"></path>
+    </svg>
+    <span class="stethoscope-art__pulse pf-note-hv-run"></span>
+    <span class="stethoscope-art__bar"></span>
+  </div>
+</div>
+
+<style>
+  @layer pf {
+    .stethoscope-art {
+      --note-accent: var(--pf-accent-red);
+
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .stethoscope-art__scope {
+      transform-origin: 50% 0;
+    }
+
+    .stethoscope-art__tube {
+      fill: none;
+      stroke: var(--note-ink);
+      stroke-linecap: round;
+      stroke-width: 2.6;
+    }
+
+    .stethoscope-art__tip {
+      fill: var(--note-ink);
+    }
+
+    .stethoscope-art__chest {
+      fill: var(--note-accent);
+    }
+
+    .stethoscope-art__chest-core {
+      fill: var(--note-surface);
+      opacity: 0.6;
+    }
+
+    .stethoscope-art__card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: var(--note-surface);
+      box-shadow: var(--note-shadow);
+    }
+
+    .stethoscope-art__trace path {
+      fill: none;
+      stroke: var(--note-accent);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 2;
+    }
+
+    .stethoscope-art__pulse {
+      position: absolute;
+      top: 23px;
+      left: 50px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--note-accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--note-accent) 25%, transparent);
+      opacity: 0;
+    }
+
+    .stethoscope-art__bar {
+      width: 44px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--note-line-2);
+    }
+  }
+</style>

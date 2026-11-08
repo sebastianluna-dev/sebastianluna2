@@ -1,0 +1,136 @@
+---
+/**
+ * Side note art `phone`: a phone whose bottom sheet slides up on hover (`pf-note-hv-up`) with its button
+ * pressed (`pf-note-hv-press`), beside a toast card that lifts (`pf-note-hv-lift`). CA-14.
+ */
+---
+
+<div class="phone-art">
+  <span class="phone-art__device">
+    <span class="phone-art__island"></span>
+    <span class="phone-art__line phone-art__line_strong"></span>
+    <span class="phone-art__line"></span>
+    <span class="phone-art__line phone-art__line_short"></span>
+    <span class="phone-art__sheet pf-note-hv-up">
+      <span class="phone-art__grip"></span>
+      <span class="phone-art__button pf-note-hv-press"></span>
+    </span>
+  </span>
+  <span class="phone-art__toast pf-note-hv-lift">
+    <span class="phone-art__toast-dot"></span>
+    <span class="phone-art__toast-lines">
+      <span class="phone-art__line phone-art__line_strong"></span>
+      <span class="phone-art__line phone-art__line_short"></span>
+    </span>
+  </span>
+</div>
+
+<style>
+  @layer pf {
+    .phone-art {
+      --note-accent: var(--pf-accent-blue);
+
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .phone-art__device {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 50px;
+      height: 84px;
+      padding: 14px 7px 0;
+      overflow: hidden;
+      border-radius: 12px;
+      background: var(--note-surface);
+      box-shadow:
+        inset 0 0 0 2px var(--note-ink),
+        var(--note-shadow);
+    }
+
+    .phone-art__island {
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      width: 14px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--note-ink);
+      translate: -50% 0;
+    }
+
+    .phone-art__line {
+      width: 28px;
+      height: 5px;
+      border-radius: 3px;
+      background: var(--note-line-2);
+    }
+
+    .phone-art__line_strong {
+      width: 36px;
+      background: var(--note-ink-3);
+    }
+
+    .phone-art__line_short {
+      width: 20px;
+    }
+
+    .phone-art__sheet {
+      --d: -12px;
+
+      position: absolute;
+      right: 2px;
+      bottom: -12px;
+      left: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: center;
+      height: 40px;
+      padding-top: 4px;
+      border-radius: 9px 9px 0 0;
+      background: var(--note-surface-2);
+      box-shadow: 0 -1px 0 var(--note-line);
+    }
+
+    .phone-art__grip {
+      width: 12px;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--note-ink-3);
+    }
+
+    .phone-art__button {
+      width: 34px;
+      height: 10px;
+      border-radius: 5px;
+      background: var(--note-accent);
+    }
+
+    .phone-art__toast {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 9px 10px;
+      border-radius: 12px;
+      background: var(--note-surface);
+      box-shadow: var(--note-shadow);
+    }
+
+    .phone-art__toast-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--note-accent);
+    }
+
+    .phone-art__toast-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+  }
+</style>

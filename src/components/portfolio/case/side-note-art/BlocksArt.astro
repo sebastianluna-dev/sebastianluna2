@@ -1,0 +1,64 @@
+---
+/**
+ * Side note art `blocks`: a bento of four pieces that spread apart on hover (`pf-note-hv-sp`, each away
+ * from the centre by its own `--dx` / `--dy`). CA-14.
+ */
+const blocks = [
+  { x: 0, y: 0, w: 40, h: 30, dx: -3, dy: -3 },
+  { x: 46, y: 0, w: 52, h: 30, dx: 3, dy: -3, accent: true },
+  { x: 0, y: 36, w: 28, h: 36, dx: -3, dy: 3 },
+  { x: 34, y: 36, w: 64, h: 36, dx: 3, dy: 3 },
+];
+---
+
+<div class="blocks-art">
+  <svg class="blocks-art__svg" width="98" height="72" viewBox="0 0 98 72" focusable="false">
+    {blocks.map((block) => (
+      <g
+        class:list={[
+          'blocks-art__block pf-note-hv-sp',
+          { 'blocks-art__block_accent': block.accent },
+        ]}
+        style={`--dx:${block.dx}px;--dy:${block.dy}px`}
+      >
+        <rect x={block.x} y={block.y} width={block.w} height={block.h} rx="7" />
+        <rect
+          class="blocks-art__line"
+          x={block.x + 8}
+          y={block.y + block.h - 13}
+          width={Math.min(28, block.w - 16)}
+          height="5"
+          rx="2.5"
+        />
+      </g>
+    ))}
+  </svg>
+</div>
+
+<style>
+  @layer pf {
+    .blocks-art {
+      --note-accent: var(--pf-accent-blue);
+    }
+
+    .blocks-art__block {
+      fill: var(--note-surface-2);
+      stroke: var(--note-line);
+    }
+
+    .blocks-art__block_accent {
+      fill: var(--note-accent);
+      stroke: none;
+    }
+
+    .blocks-art__line {
+      fill: var(--note-line-2);
+      stroke: none;
+    }
+
+    .blocks-art__block_accent .blocks-art__line {
+      fill: var(--note-on-accent);
+      opacity: 0.6;
+    }
+  }
+</style>

@@ -1,0 +1,94 @@
+---
+/**
+ * Side note art `gauge`: a speedometer whose needle swings into the green on hover (`pf-note-hv-fan`, from
+ * `--r` to `--rh`), beside three metric rows. CA-14.
+ */
+const metrics = [44, 32, 38];
+---
+
+<div class="gauge-art">
+  <svg class="gauge-art__dial" width="92" height="56" viewBox="0 0 92 56" focusable="false">
+    <path class="gauge-art__track" d="M8 50a38 38 0 0 1 76 0"></path>
+    <path class="gauge-art__value" d="M8 50a38 38 0 0 1 76 0" pathLength="100"></path>
+    <g class="gauge-art__needle pf-note-hv-fan">
+      <path d="M44.6 50 46 20l1.4 30Z"></path>
+    </g>
+    <circle class="gauge-art__hub" cx="46" cy="50" r="5"></circle>
+  </svg>
+  <span class="gauge-art__metrics">
+    {metrics.map((width) => (
+      <span class="gauge-art__metric">
+        <span class="gauge-art__dot" />
+        <span class="gauge-art__bar" style={`width:${width}px`} />
+      </span>
+    ))}
+  </span>
+</div>
+
+<style>
+  @layer pf {
+    .gauge-art {
+      --note-accent: var(--pf-accent-teal);
+
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .gauge-art__track,
+    .gauge-art__value {
+      fill: none;
+      stroke-linecap: round;
+      stroke-width: 7;
+    }
+
+    .gauge-art__track {
+      stroke: var(--note-line-2);
+    }
+
+    .gauge-art__value {
+      stroke: var(--note-accent);
+      stroke-dasharray: 92 100;
+    }
+
+    .gauge-art__needle {
+      --rh: 62deg;
+
+      fill: var(--note-ink);
+      transform: rotate(-38deg);
+      transform-box: view-box;
+      transform-origin: 46px 50px;
+    }
+
+    .gauge-art__hub {
+      fill: var(--note-ink);
+      stroke: var(--note-page);
+      stroke-width: 2;
+    }
+
+    .gauge-art__metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .gauge-art__metric {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .gauge-art__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--note-accent);
+    }
+
+    .gauge-art__bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--note-line-2);
+    }
+  }
+</style>

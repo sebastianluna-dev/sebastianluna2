@@ -1,0 +1,91 @@
+---
+/**
+ * Side note art `music`: a play button (`pf-note-hv-press`) next to a staff whose notes drift apart on
+ * hover (`pf-note-hv-sp`, each with its own `--dx` / `--dy`). CA-14.
+ */
+const LINE_GAP = 7;
+const STAFF_TOP = 12;
+const lines = Array.from({ length: 5 }, (_, index) => STAFF_TOP + index * LINE_GAP);
+// Head centre (x, y) and the drift of each note on hover.
+const notes = [
+  { x: 14, y: 36.5, dx: -3, dy: 2 },
+  { x: 36, y: 29.5, dx: -1, dy: -2 },
+  { x: 58, y: 33, dx: 1, dy: 2 },
+  { x: 80, y: 22.5, dx: 3, dy: -3 },
+];
+---
+
+<div class="music-art">
+  <span class="music-art__play pf-note-hv-press">
+    <svg width="12" height="14" viewBox="0 0 12 14" focusable="false">
+      <path d="M2 1.4v11.2a1 1 0 0 0 1.5.9l8.6-5.6a1 1 0 0 0 0-1.8L3.5.5A1 1 0 0 0 2 1.4Z"></path>
+    </svg>
+  </span>
+  <svg class="music-art__staff" width="100" height="56" viewBox="0 0 100 56" focusable="false">
+    {lines.map((y) => (
+      <path class="music-art__line" d={`M0 ${y}h100`} />
+    ))}
+    {notes.map((note, index) => (
+      <g
+        class:list={['music-art__note pf-note-hv-sp', { 'music-art__note_accent': index === 3 }]}
+        style={`--dx:${note.dx}px;--dy:${note.dy}px`}
+      >
+        <ellipse
+          cx={note.x}
+          cy={note.y}
+          rx="4.6"
+          ry="3.4"
+          transform={`rotate(-20 ${note.x} ${note.y})`}
+        />
+        <path class="music-art__stem" d={`M${note.x + 4} ${note.y - 1}v-19`} />
+      </g>
+    ))}
+  </svg>
+</div>
+
+<style>
+  @layer pf {
+    .music-art {
+      --note-accent: var(--pf-accent-violet);
+
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .music-art__play {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      padding-inline-start: 2px;
+      border-radius: 50%;
+      background: var(--note-accent);
+      box-shadow: 0 6px 16px color-mix(in srgb, var(--note-accent) 35%, transparent);
+      fill: var(--note-on-accent);
+    }
+
+    .music-art__line {
+      stroke: var(--note-line-2);
+      stroke-width: 1.2;
+    }
+
+    .music-art__note {
+      fill: var(--note-ink);
+      stroke: var(--note-ink);
+    }
+
+    .music-art__note_accent {
+      fill: var(--note-accent);
+      stroke: var(--note-accent);
+    }
+
+    .music-art__note ellipse {
+      stroke: none;
+    }
+
+    .music-art__stem {
+      stroke-width: 1.4;
+    }
+  }
+</style>

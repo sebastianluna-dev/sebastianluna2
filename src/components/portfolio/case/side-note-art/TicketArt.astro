@@ -1,0 +1,110 @@
+---
+/**
+ * Side note art `ticket`: two tickets with a perforated stub; the back one fans out (`pf-note-hv-fan`) while
+ * the front one lifts (`pf-note-hv-lift`). CA-14.
+ */
+const TICKET =
+  'M8 0h124a8 8 0 0 1 8 8v14a6 6 0 0 0 0 12v14a8 8 0 0 1-8 8H8a8 8 0 0 1-8-8V34a6 6 0 0 0 0-12V8a8 8 0 0 1 8-8Z';
+---
+
+<div class="ticket-art">
+  <svg
+    class="ticket-art__back pf-note-hv-fan"
+    width="140"
+    height="56"
+    viewBox="0 0 140 56"
+    focusable="false"
+  >
+    <path class="ticket-art__shape ticket-art__shape_back" d={TICKET}></path>
+  </svg>
+  <svg
+    class="ticket-art__front pf-note-hv-lift"
+    width="140"
+    height="56"
+    viewBox="0 0 140 56"
+    focusable="false"
+  >
+    <path class="ticket-art__shape" d={TICKET}></path>
+    <path
+      class="ticket-art__stub"
+      d="M100 0h32a8 8 0 0 1 8 8v14a6 6 0 0 0 0 12v14a8 8 0 0 1-8 8h-32Z"
+    ></path>
+    <path class="ticket-art__perforation" d="M100 5v46"></path>
+    <rect
+      class="ticket-art__line ticket-art__line_strong"
+      x="14"
+      y="14"
+      width="56"
+      height="7"
+      rx="3.5"
+    ></rect>
+    <rect class="ticket-art__line" x="14" y="27" width="40" height="6" rx="3"></rect>
+    <rect class="ticket-art__line" x="14" y="38" width="64" height="6" rx="3"></rect>
+    <path
+      class="ticket-art__star"
+      d="M118 19.5l2.6 5.2 5.7.8-4.1 4 1 5.7-5.2-2.7-5.1 2.7 1-5.7-4.2-4 5.7-.8Z"
+    ></path>
+  </svg>
+</div>
+
+<style>
+  @layer pf {
+    .ticket-art {
+      --note-accent: var(--pf-accent-violet);
+
+      position: relative;
+      width: 148px;
+      height: 76px;
+    }
+
+    .ticket-art__back,
+    .ticket-art__front {
+      position: absolute;
+      left: 4px;
+    }
+
+    .ticket-art__back {
+      --rh: -14deg;
+
+      top: 8px;
+      transform: rotate(-7deg);
+      transform-origin: 20% 100%;
+    }
+
+    .ticket-art__front {
+      top: 14px;
+      filter: drop-shadow(0 4px 10px rgb(0 0 0 / 0.12));
+    }
+
+    .ticket-art__shape {
+      fill: var(--note-surface);
+      stroke: var(--note-line-2);
+    }
+
+    .ticket-art__shape_back {
+      fill: var(--note-surface-2);
+    }
+
+    .ticket-art__stub {
+      fill: var(--note-accent);
+    }
+
+    .ticket-art__perforation {
+      stroke: var(--note-surface);
+      stroke-dasharray: 3 3;
+      stroke-width: 1.5;
+    }
+
+    .ticket-art__line {
+      fill: var(--note-line-2);
+    }
+
+    .ticket-art__line_strong {
+      fill: var(--note-ink-3);
+    }
+
+    .ticket-art__star {
+      fill: var(--note-on-accent);
+    }
+  }
+</style>

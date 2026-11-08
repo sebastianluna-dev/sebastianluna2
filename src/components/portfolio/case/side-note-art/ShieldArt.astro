@@ -1,0 +1,111 @@
+---
+/**
+ * Side note art `shield`: a shield with a check that lifts on hover (`pf-note-hv-lift`), beside the two
+ * lines of a verified account and a lock chip that closes (`pf-note-hv-off` / `pf-note-hv-on`). CA-14.
+ */
+---
+
+<div class="shield-art">
+  <svg
+    class="shield-art__shield pf-note-hv-lift"
+    width="46"
+    height="54"
+    viewBox="0 0 46 54"
+    focusable="false"
+  >
+    <path
+      class="shield-art__body"
+      d="M23 2 43 10v15c0 13-9 21.5-20 26C12 46.5 3 38 3 25V10Z"
+    ></path>
+    <path class="shield-art__half" d="M23 2v49C12 46.5 3 38 3 25V10Z"></path>
+    <path class="shield-art__check" d="m14.5 26.5 6 5.5 11-12"></path>
+  </svg>
+  <span class="shield-art__lines">
+    <span class="shield-art__line shield-art__line_strong"></span>
+    <span class="shield-art__line"></span>
+    <span class="shield-art__chip">
+      <svg width="10" height="12" viewBox="0 0 10 12" focusable="false">
+        <rect x="1" y="5" width="8" height="6.5" rx="1.6"></rect>
+        <path class="shield-art__shackle pf-note-hv-off" d="M2.9 5V3.4a2.6 2.6 0 0 1 5.1-.8"></path>
+        <path class="shield-art__shackle pf-note-hv-on" d="M2.9 5V3.4a2.1 2.1 0 0 1 4.2 0V5"></path>
+      </svg>
+      <span class="shield-art__chip-bar"></span>
+    </span>
+  </span>
+</div>
+
+<style>
+  @layer pf {
+    .shield-art {
+      --note-accent: var(--pf-accent-teal);
+
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .shield-art__body {
+      fill: var(--note-accent);
+    }
+
+    .shield-art__half {
+      fill: var(--note-surface);
+      opacity: 0.18;
+    }
+
+    .shield-art__check {
+      fill: none;
+      stroke: var(--note-on-accent);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 3.4;
+    }
+
+    .shield-art__lines {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .shield-art__line {
+      width: 44px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--note-line-2);
+    }
+
+    .shield-art__line_strong {
+      width: 64px;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--note-ink);
+    }
+
+    .shield-art__chip {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+      width: max-content;
+      height: 22px;
+      margin-block-start: 2px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--note-accent) 14%, transparent);
+      fill: var(--note-accent);
+    }
+
+    .shield-art__shackle {
+      fill: none;
+      stroke: var(--note-accent);
+      stroke-width: 1.4;
+    }
+
+    .shield-art__chip-bar {
+      width: 26px;
+      height: 5px;
+      border-radius: 3px;
+      background: var(--note-accent);
+      opacity: 0.6;
+    }
+  }
+</style>

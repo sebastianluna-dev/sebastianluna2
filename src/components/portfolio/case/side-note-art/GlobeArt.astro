@@ -1,0 +1,105 @@
+---
+/**
+ * Side note art `globe`: a wireframe globe that tilts on hover (`pf-note-hv-tilt`) beside a two-language
+ * switch whose thumb slides to the other side (`pf-note-hv-x`, one segment). CA-14.
+ */
+---
+
+<div class="globe-art">
+  <svg
+    class="globe-art__globe pf-note-hv-tilt"
+    width="52"
+    height="52"
+    viewBox="0 0 52 52"
+    focusable="false"
+  >
+    <circle class="globe-art__fill" cx="26" cy="26" r="23"></circle>
+    <g class="globe-art__wire">
+      <circle cx="26" cy="26" r="23"></circle>
+      <ellipse cx="26" cy="26" rx="10" ry="23"></ellipse>
+      <path d="M26 3v46M3 26h46M7 14.5h38M7 37.5h38"></path>
+    </g>
+    <path class="globe-art__route" d="M14 34C18 20 30 13 40 17"></path>
+    <circle class="globe-art__stop" cx="14" cy="34" r="3.4"></circle>
+    <circle class="globe-art__stop" cx="40" cy="17" r="3.4"></circle>
+  </svg>
+  <span class="globe-art__switch">
+    <span class="globe-art__thumb pf-note-hv-x"></span>
+    <span class="globe-art__label globe-art__label_current"></span>
+    <span class="globe-art__label"></span>
+  </span>
+</div>
+
+<style>
+  @layer pf {
+    .globe-art {
+      --note-accent: var(--pf-accent-blue);
+      --globe-art-segment: 44px;
+
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .globe-art__fill {
+      fill: var(--note-surface);
+    }
+
+    .globe-art__wire {
+      fill: none;
+      stroke: var(--note-ink-3);
+      stroke-width: 1.4;
+    }
+
+    .globe-art__route {
+      fill: none;
+      stroke: var(--note-accent);
+      stroke-dasharray: 3 3;
+      stroke-linecap: round;
+      stroke-width: 2;
+    }
+
+    .globe-art__stop {
+      fill: var(--note-accent);
+      stroke: var(--note-surface);
+      stroke-width: 1.5;
+    }
+
+    .globe-art__switch {
+      position: relative;
+      display: inline-grid;
+      grid-template-columns: repeat(2, var(--globe-art-segment));
+      height: 32px;
+      padding: 3px;
+      border-radius: 10px;
+      background: var(--note-surface-2);
+    }
+
+    .globe-art__thumb {
+      --x: var(--globe-art-segment);
+
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: var(--globe-art-segment);
+      height: 26px;
+      border-radius: 8px;
+      background: var(--note-surface);
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+    }
+
+    .globe-art__label {
+      position: relative;
+      align-self: center;
+      justify-self: center;
+      width: 18px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--note-ink-3);
+    }
+
+    .globe-art__label_current {
+      background: var(--note-accent);
+    }
+  }
+</style>

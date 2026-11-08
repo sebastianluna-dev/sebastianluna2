@@ -1,0 +1,128 @@
+---
+/**
+ * Side note art `calendar`: a month card whose selected day slides to the next one on hover
+ * (`pf-note-hv-x`, one column), with an event dot under a later day. CA-14.
+ */
+const DAYS = 21;
+const EVENT_DAY = 11;
+---
+
+<div class="calendar-art">
+  <div class="calendar-art__head">
+    <span class="calendar-art__ring"></span>
+    <span class="calendar-art__title"></span>
+    <span class="calendar-art__arrows">
+      <span></span>
+      <span></span>
+    </span>
+  </div>
+  <div class="calendar-art__grid">
+    <span class="calendar-art__selected pf-note-hv-x"></span>
+    {Array.from({ length: DAYS }, (_, day) => (
+      <span class:list={['calendar-art__day', { 'calendar-art__day_event': day === EVENT_DAY }]} />
+    ))}
+  </div>
+</div>
+
+<style>
+  @layer pf {
+    .calendar-art {
+      --note-accent: var(--pf-accent-red);
+      --calendar-art-cell: 16px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 136px;
+      padding: 10px 12px 12px;
+      border-radius: 14px;
+      background: var(--note-surface);
+      box-shadow: var(--note-shadow);
+    }
+
+    .calendar-art__head {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .calendar-art__ring {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--note-accent);
+    }
+
+    .calendar-art__title {
+      width: 48px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--note-ink-3);
+    }
+
+    .calendar-art__arrows {
+      display: flex;
+      gap: 4px;
+      margin-inline-start: auto;
+
+      & span {
+        width: 8px;
+        height: 6px;
+        border-radius: 2px;
+        background: var(--note-line-2);
+      }
+    }
+
+    .calendar-art__grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(7, var(--calendar-art-cell));
+      grid-auto-rows: var(--calendar-art-cell);
+    }
+
+    .calendar-art__day {
+      position: relative;
+      align-self: center;
+      justify-self: center;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--note-line-2);
+    }
+
+    .calendar-art__day_event::after {
+      position: absolute;
+      top: 8px;
+      left: 1px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--note-accent);
+      content: '';
+    }
+
+    /* Over the third day of the second week; hover moves it to the next one. */
+    .calendar-art__selected {
+      --x: var(--calendar-art-cell);
+
+      position: absolute;
+      top: calc(var(--calendar-art-cell) + 1px);
+      left: calc(2 * var(--calendar-art-cell) + 1px);
+      width: calc(var(--calendar-art-cell) - 2px);
+      height: calc(var(--calendar-art-cell) - 2px);
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--note-accent);
+
+      &::after {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--note-on-accent);
+        content: '';
+      }
+    }
+  }
+</style>

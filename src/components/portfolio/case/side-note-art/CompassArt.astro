@@ -1,0 +1,131 @@
+---
+/**
+ * Side note art `compass`: a compass whose needle swings on hover (`pf-note-hv-fan`, from `--r` to `--rh`),
+ * beside three destinations, the middle one marked. CA-14.
+ */
+const TICKS = 12;
+const ticks = Array.from({ length: TICKS }, (_, index) => (360 / TICKS) * index);
+const places = [
+  { width: 40, current: false },
+  { width: 52, current: true },
+  { width: 34, current: false },
+];
+---
+
+<div class="compass-art">
+  <svg class="compass-art__dial" width="64" height="64" viewBox="0 0 64 64" focusable="false">
+    <circle class="compass-art__face" cx="32" cy="32" r="30"></circle>
+    {ticks.map((angle) => (
+      <path
+        class:list={['compass-art__tick', { 'compass-art__tick_major': angle % 90 === 0 }]}
+        d="M32 5v5"
+        transform={`rotate(${angle} 32 32)`}
+      />
+    ))}
+    <g class="compass-art__needle pf-note-hv-fan">
+      <path class="compass-art__north" d="M32 13l5 19h-10Z"></path>
+      <path class="compass-art__south" d="M27 32h10l-5 19Z"></path>
+    </g>
+    <circle class="compass-art__pin" cx="32" cy="32" r="2.6"></circle>
+  </svg>
+  <span class="compass-art__places">
+    {places.map((place) => (
+      <span class:list={['compass-art__place', { 'compass-art__place_current': place.current }]}>
+        <span class="compass-art__marker" />
+        <span class="compass-art__bar" style={`width:${place.width}px`} />
+      </span>
+    ))}
+  </span>
+</div>
+
+<style>
+  @layer pf {
+    .compass-art {
+      --note-accent: var(--pf-accent-amber);
+
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .compass-art__face {
+      fill: var(--note-surface);
+      stroke: var(--note-line-2);
+      stroke-width: 1.5;
+      filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.08));
+    }
+
+    .compass-art__tick {
+      stroke: var(--note-ink-3);
+      stroke-linecap: round;
+      stroke-width: 1.2;
+    }
+
+    .compass-art__tick_major {
+      stroke: var(--note-ink);
+      stroke-width: 1.8;
+    }
+
+    .compass-art__needle {
+      --rh: -18deg;
+
+      transform: rotate(38deg);
+      transform-box: view-box;
+      transform-origin: 32px 32px;
+    }
+
+    .compass-art__north {
+      fill: var(--note-accent);
+    }
+
+    .compass-art__south {
+      fill: var(--note-ink-3);
+    }
+
+    .compass-art__pin {
+      fill: var(--note-ink);
+    }
+
+    .compass-art__places {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .compass-art__place {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      width: max-content;
+      height: 22px;
+      padding: 0 8px 0 6px;
+      border-radius: 999px;
+    }
+
+    .compass-art__place_current {
+      background: var(--note-surface-2);
+    }
+
+    .compass-art__marker {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1.5px var(--note-ink-3);
+    }
+
+    .compass-art__place_current .compass-art__marker {
+      background: var(--note-accent);
+      box-shadow: none;
+    }
+
+    .compass-art__bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--note-line-2);
+    }
+
+    .compass-art__place_current .compass-art__bar {
+      background: var(--note-ink-3);
+    }
+  }
+</style>
