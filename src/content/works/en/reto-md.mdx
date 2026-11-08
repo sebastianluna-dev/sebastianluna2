@@ -1,9 +1,16 @@
 ---
 title: 'Reto MD'
 kicker: 'Network of medical sites'
-summary: 'I built the web presence for Reto MD, a mobile app that prepares Mexican physicians for the ENARM residency exam: its websites showcase the product, sell memberships, and acquire users.'
+summary: 'I was the frontend developer for Reto MD, an app that prepares physicians for the ENARM residency exam: I built its corporate website and consolidated the brand’s specialty sites into one multi-tenant application with six deployments.'
+description: 'Frontend for Reto MD at Mellow: the corporate site of the ENARM prep app and one multi-tenant application for six specialty sites.'
 role: 'Frontend developer at Mellow'
-service: ['Frontend development', 'Multi-tenant architecture', 'Service integrations']
+service:
+  [
+    'Frontend development',
+    'Multi-tenant architecture',
+    'Service integrations',
+    'Performance and SEO',
+  ]
 tools:
   [
     'Next.js',
@@ -14,21 +21,288 @@ tools:
     'NextAuth',
     'Firebase',
     'next-intl',
+    'Zod',
     'Vercel',
   ]
 year: '2021–2023'
 url: 'https://retomd.com'
 order: 3
 cover:
-  src: '../../../assets/works/reto-md/cover.jpg'
-  alt: 'Home page of Reto MD'
+  src: '../../../assets/works/reto-md/retomd-inicio.jpg'
+  alt: 'Reto MD home page with the headline “Pasa el ENARM estudiando mejor, no estudiando más” and the app mascot holding a clock'
 zones:
-  - src: '../../../assets/works/reto-md/cover.jpg'
+  - src: '../../../assets/works/reto-md/retomd-inicio.jpg'
     alt: 'Home page of Reto MD'
-  - src: '../../../assets/works/reto-md/reto-pediatria.jpg'
-    alt: 'Home page of Reto Pediatría'
-  - src: '../../../assets/works/reto-md/reto-dermatologia.jpg'
+  - src: '../../../assets/works/reto-md/cardiologia-inicio.jpg'
+    alt: 'Home page of Reto Cardiología'
+  - src: '../../../assets/works/reto-md/dermatologia-inicio.jpg'
     alt: 'Home page of Reto Dermatología'
+demos: ['specialty-switcher', 'article-filters', 'form-validation']
 ---
 
-I built the web presence for Reto MD, a mobile app that prepares Mexican physicians for the ENARM residency exam. I consolidated the specialty websites into one multi-tenant application with App Router and next-intl: each specialty’s branding, content, and features are configuration-driven, removing the need to duplicate projects.
+import {
+  CaseSection,
+  CaseSubsection,
+  ChatAside,
+  DemoSlot,
+  Figure,
+  Gallery,
+  SideNote,
+  SideNotes,
+} from '@/components/portfolio/case';
+import telefonosInicio from '@/assets/works/reto-md/telefonos-inicio.jpg';
+import cardiologiaInicio from '@/assets/works/reto-md/cardiologia-inicio.jpg';
+import dermatologiaInicio from '@/assets/works/reto-md/dermatologia-inicio.jpg';
+import cardiologiaApp from '@/assets/works/reto-md/cardiologia-app.jpg';
+import dermatologiaApp from '@/assets/works/reto-md/dermatologia-app.jpg';
+import cardiologiaPorQue from '@/assets/works/reto-md/cardiologia-por-que.jpg';
+import dermatologiaPorQue from '@/assets/works/reto-md/dermatologia-por-que.jpg';
+import dermatologiaArticulos from '@/assets/works/reto-md/dermatologia-articulos.jpg';
+import cardiologiaEventos from '@/assets/works/reto-md/cardiologia-eventos.jpg';
+import dermatologiaRecursos from '@/assets/works/reto-md/dermatologia-podria-interesarte.jpg';
+import cardiologiaSesion from '@/assets/works/reto-md/cardiologia-iniciar-sesion.jpg';
+import telefonosApp from '@/assets/works/reto-md/telefonos-app.jpg';
+import telefonosEventos from '@/assets/works/reto-md/telefonos-eventos.jpg';
+import telefonosArticulosSesion from '@/assets/works/reto-md/telefonos-articulos-sesion.jpg';
+
+<CaseSection id="overview" title="The web presence of Reto MD and its specialty sites">
+
+Reto MD is an app that prepares Mexican physicians for the ENARM, the national medical residency exam; under the Reto brand, Mellow also runs continuing medical education sites by specialty. From 2021 to 2023 I was the frontend developer at Mellow, the company behind Reto MD, and I made the frontend decisions for its products, working closely with the backend, design, and product teams.
+
+Its websites showcase the product, sell memberships, and bring in new users. I built the corporate site and the network of specialty sites, and I wrote the entire codebase behind that web presence. Screenshots show the sites as of 2026, so they may include changes made after I left, and the visual design is by Mellow’s design team.
+
+<ChatAside
+  meta="Tue 8:15 PM"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'How many sites were there?' },
+    {
+      from: 'sebastian',
+      text: 'The corporate site and six specialties, each with its own deployment.',
+    },
+    { from: 'visitor', text: 'Six projects?', tapback: '‼️' },
+    { from: 'sebastian', text: 'One repository 🩺', fx: 'slam' },
+  ]}
+/>
+
+</CaseSection>
+
+<CaseSection id="challenge" title="A lot of content, and a brand for every specialty">
+
+The corporate site had to bring a lot together in one place: the blog, the job board, events, webinars, podcasts, information about the app and the ENARM, and an About Us section. Accounts also had to work with Firebase and with the platform’s API at the same time.
+
+### One site per specialty
+
+Reto was also growing by specialty. I built the Reto Dermatología, Reto Cardiología, and Reto Oftalmología websites, each in its own repository, and the network was set to keep growing until it reached six specialties. Every brand needed its own identity without starting each launch from scratch.
+
+</CaseSection>
+
+<CaseSection id="approach" title="One configuration per brand on a single codebase">
+
+I consolidated the repositories of every specialty into a multi-tenant architecture on the Next.js App Router. At its core is a configuration interface in TypeScript, where each brand declares its colors, the pages and sections it shows, and its brand vocabulary.
+
+A specialty stopped being a separate project and became a configuration. Internationalization, built with next-intl, lives in the same codebase.
+
+<SideNotes label="What each brand declares" cols={3}>
+  <SideNote title="Colors" art="palette">
+    Each specialty’s palette, in one place.
+  </SideNote>
+  <SideNote title="Pages and sections" art="blocks">
+    Which pages and which sections each site shows.
+  </SideNote>
+  <SideNote title="Brand vocabulary" art="stethoscope">
+    The words each specialty uses to speak to its physicians.
+  </SideNote>
+</SideNotes>
+
+<DemoSlot
+  name="specialty-switcher"
+  caption="Switch specialties and the same codebase changes its colors, sections, and words."
+/>
+
+<CaseSubsection kicker="An identity per brand" appear>
+
+On the same codebase, Reto Cardiología and Reto Dermatología share their structure and stand apart through their palette and vocabulary, on desktop and on phones.
+
+<Gallery variant="lead">
+  <Figure
+    src={telefonosInicio}
+    alt="Two phones showing the Reto Cardiología home page, in pink and navy, and the Reto Dermatología home page, in coral and peach, with the same headline “Tu aliada en la práctica clínica diaria”"
+  />
+</Gallery>
+<Gallery variant="pair-2col-phone">
+  <Figure
+    src={cardiologiaInicio}
+    alt="Reto Cardiología home page on desktop: headline, search bar, “Lo nuevo”, “Patrocinados”, and “Destacados” filters, and cardiology article cards"
+    appear="approachGallery"
+  />
+  <Figure
+    src={dermatologiaInicio}
+    alt="Reto Dermatología home page on desktop with the same structure in coral tones: headline, search bar, filters, and dermatology article cards"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="research" title="What changes from one specialty to the next">
+
+The three sites I had built separately made it clear: from one specialty to the next, what changed were the colors, the visible pages and sections, and the brand’s words. The structure was the same.
+
+Those three differences are the fields of the configuration. Everything else became shared code.
+
+<CaseSubsection kicker="The same page for two brands">
+
+The app pages of Reto Cardiología and Reto Dermatología use the same sections. Only the palette and the vocabulary change: “cardiólogos” on one, “dermatólogos” on the other.
+
+<Gallery variant="pair">
+  <Figure
+    src={cardiologiaApp}
+    alt="Reto Cardiología app page: “Diagnóstico y tratamientos precisos, en la palma de tu mano” and “Conéctate, aprende y crece junto a otros cardiólogos”"
+    appear="researchFirst"
+  />
+  <Figure
+    src={dermatologiaApp}
+    alt="Reto Dermatología app page with the same sections in coral: “Conéctate, aprende y crece junto a otros dermatólogos”"
+  />
+</Gallery>
+<Gallery variant="pair">
+  <Figure
+    src={cardiologiaPorQue}
+    alt="“¿Por qué usar Reto Cardiología?” section: a video, the tagline, and six benefits, from “Offline” to the job board"
+  />
+  <Figure
+    src={dermatologiaPorQue}
+    alt="“¿Por qué usar Reto Dermatología?” section with the same six benefits, now “Reta a otros dermatólogos”"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="design" title="Content that loads fast, and accounts tied to the platform">
+
+The solutions here live in how content loads, how people move between listings, and how a physician signs in. I optimized the sites’ performance, accessibility, best practices, and SEO using Lighthouse reports as the benchmark.
+
+<ChatAside
+  meta="Thu 11:40 AM"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'Did the blog query the API on every visit?' },
+    { from: 'sebastian', text: 'Not anymore: I moved it to Next.js static generation.' },
+    {
+      from: 'sebastian',
+      text: 'Less load on the API and a faster first load ⚡',
+      fx: 'loud',
+    },
+  ]}
+/>
+
+<SideNotes label="What makes the site faster to use" cols={3}>
+  <SideNote title="Static blog" art="gauge">
+    Pages generated with Next.js, with no API query on every visit.
+  </SideNote>
+  <SideNote title="Cached listings" art="compass">
+    TanStack Query keeps category searches and filtered listings.
+  </SideNote>
+  <SideNote title="Forms with Zod" art="shield">
+    Standardized validation, with clear error messages.
+  </SideNote>
+</SideNotes>
+
+<CaseSubsection kicker="Articles, events, and resources">
+
+The sites bring together articles, events, webinars, and podcasts. On the blog, I replaced the API queries on every visit with static generation, and for category searches and filtered listings I added TanStack Query to cache the results and speed up navigation.
+
+<DemoSlot
+  name="article-filters"
+  caption="Switch categories and come back: the listing is already cached."
+/>
+
+<Gallery variant="lead">
+  <Figure
+    src={dermatologiaArticulos}
+    alt="Reto Dermatología articles: categories, a search bar, and a grid of cards with illustrations and excerpts"
+    appear="designLead"
+  />
+</Gallery>
+<Gallery variant="pair">
+  <Figure
+    src={cardiologiaEventos}
+    alt="Reto Cardiología events: a search bar, the featured national congress, and a carousel of in-person events"
+    appear="designRowFirst"
+  />
+  <Figure
+    src={dermatologiaRecursos}
+    alt="Reto Dermatología “Podría interesarte” section, with blog, video, and podcast tabs and a carousel of articles"
+    appear="designRowSecond"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Accounts and forms">
+
+I implemented a hybrid authentication system using Firebase and the platform’s API, and I standardized form validation with Zod so every error comes with a clear message.
+
+<DemoSlot
+  name="form-validation"
+  caption="Each field explains its error with a clear message before submitting."
+/>
+
+<Gallery variant="lead">
+  <Figure
+    src={cardiologiaSesion}
+    alt="Reto Cardiología sign-in: a “Bienvenid@, médic@” card with email and password fields and links to sign up or reset the password"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="App Router">
+
+I carried out the migration from the Pages Router to the App Router. It is the foundation the multi-tenant application runs on.
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="outcome" title="A new brand, in production in an hour">
+
+A single repository generated six independent Vercel deployments: Cardiología, Dermatología, Oftalmología, Pediatría, Psiquiatría, and Nefrología. With the content ready, a new brand could go live in about an hour.
+
+I wrote the entire codebase behind the web presence: the frontend implementation, the service integrations, and a shared architecture that simplifies maintenance and future launches.
+
+<ChatAside
+  meta="Fri 5:30 PM"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'What if another specialty comes along?' },
+    { from: 'sebastian', text: 'You declare its configuration and deploy it.' },
+    {
+      from: 'sebastian',
+      text: 'With the content ready, in about an hour 🚀',
+      fx: 'rain',
+      rain: '🩺🚀',
+    },
+  ]}
+/>
+
+<Gallery variant="composition">
+  <Figure
+    src={telefonosApp}
+    alt="Two phones showing the app pages of Reto Cardiología and Reto Dermatología, each in its own colors"
+  />
+  <Figure
+    src={telefonosEventos}
+    alt="Two phones showing the Reto Cardiología and Reto Dermatología events pages"
+  />
+  <Figure
+    src={telefonosArticulosSesion}
+    alt="Two phones: the Reto Dermatología articles and the Reto Cardiología sign-in"
+  />
+</Gallery>
+
+</CaseSection>
