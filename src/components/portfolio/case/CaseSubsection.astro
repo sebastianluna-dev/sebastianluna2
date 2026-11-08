@@ -1,0 +1,84 @@
+---
+/**
+ * Titled block inside a section, without an h2 (case.md §4 "SubsectionBlock": Visual Direction,
+ * Typography, Components, Competitor Analysis…). It is a case block itself (`data-case-block`, 720):
+ * the kicker chip and the prose in the 560 column (16 apart), then its own blocks (usually a Gallery)
+ * at the block gap (64 / 48). Same split as CaseSection (`splitLeadingProse`); with no prose, only the
+ * kicker heads its blocks (vibe-skills "Visual Direction").
+ *
+ * The kicker is the same plain chip as the section kicker, rendered as the subsection's `h3` so
+ * heading navigation reaches it (design-spec §7; a heading inside its prose goes one level down, `####`,
+ * which `case-outline.test.ts` checks). CA-01 only with `appear` (first subsection
+ * of Approach: kicker 1.25 s, body 1.3 s); every other subsection is static, as in the reference.
+ */
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { CASE_BLOCK_APPEAR } from '@/components/motion/presets';
+import Chip from '@/components/portfolio/ui/Chip.astro';
+import { splitLeadingProse } from '@/lib/works';
+import type { CaseSubsectionProps } from './types';
+
+type Props = CaseSubsectionProps;
+
+const { kicker, appear = false } = Astro.props;
+const html = Astro.slots.has('default') ? await Astro.slots.render('default') : '';
+const { prose, rest } = splitLeadingProse(html);
+---
+
+<div class="case-subsection" data-case-block>
+  <div class="case-subsection__text">
+    {appear ? (
+      <AppearMotion appear={CASE_BLOCK_APPEAR.subsectionKicker} class="case-subsection__kicker">
+        <Chip as="h3" variant="plain">
+          {kicker}
+        </Chip>
+      </AppearMotion>
+    ) : (
+      <div class="case-subsection__kicker">
+        <Chip as="h3" variant="plain">
+          {kicker}
+        </Chip>
+      </div>
+    )}
+    {prose &&
+      (appear ? (
+        <AppearMotion
+          appear={CASE_BLOCK_APPEAR.subsectionBody}
+          class="case-subsection__body pf-prose"
+        >
+          <Fragment set:html={prose} />
+        </AppearMotion>
+      ) : (
+        <div class="case-subsection__body pf-prose">
+          <Fragment set:html={prose} />
+        </div>
+      ))}
+  </div>
+  {rest && <Fragment set:html={rest} />}
+</div>
+
+<style>
+  @layer pf {
+    .case-subsection {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-block-gap);
+    }
+
+    .case-subsection__text {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-text-gap);
+      width: min(var(--pf-text-col), 100%);
+      margin-inline: auto;
+    }
+
+    .case-subsection__kicker {
+      display: flex;
+    }
+
+    .case-subsection__body {
+      display: block;
+      min-width: 0;
+    }
+  }
+</style>

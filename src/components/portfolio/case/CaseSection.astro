@@ -1,0 +1,106 @@
+---
+/**
+ * One of the six fixed sections of a case (design-spec §3.2, case.md §2.2): `section#<id>` with
+ * `data-case-section` (Works Map spy) and its scroll margin (196; 266 for `design`), the 560 text
+ * block (kicker chip → h2 → body, 16 apart) and then the section blocks at the block gap (64 / 48).
+ *
+ * - The slot is split with `splitLeadingProse`: everything before the first `[data-case-block]` is
+ *   the body (one appear, `.pf-prose`, styled by `src/styles/prose.css`); the blocks after it are
+ *   laid out as siblings of the text block, in the 720 column.
+ * - The kicker is the reference's plain "text background" chip: the badge fill without its hairline,
+ *   shadow or blur, ink text and Geist without the ss03/ss08 alternates (measured).
+ * - The h2: serif 32/38.4 −0.04em, max 480, balanced, in ink, at every width.
+ * - CA-01: kicker, h2 and body take the absolute delays of `CASE_SECTION_APPEAR[id]`.
+ */
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { CASE_SECTION_APPEAR } from '@/components/motion/presets';
+import Chip from '@/components/portfolio/ui/Chip.astro';
+import { getMessages } from '@/i18n/t';
+import { splitLocale } from '@/lib/i18n-paths';
+import { splitLeadingProse } from '@/lib/works';
+import type { CaseSectionProps } from './types';
+
+type Props = CaseSectionProps;
+
+const { id, kicker, title } = Astro.props;
+const { locale } = splitLocale(Astro.url.pathname);
+const copy = getMessages(locale).case;
+const appear = CASE_SECTION_APPEAR[id];
+const html = Astro.slots.has('default') ? await Astro.slots.render('default') : '';
+const { prose, rest } = splitLeadingProse(html);
+const headingId = `${id}-title`;
+---
+
+<section
+  id={id}
+  class:list={['case-section', `case-section_id_${id}`]}
+  data-case-section={id}
+  aria-labelledby={headingId}
+>
+  <div class="case-section__text">
+    <AppearMotion appear={appear.kicker} class="case-section__kicker">
+      <Chip variant="plain">{kicker ?? copy.sections[id]}</Chip>
+    </AppearMotion>
+    <AppearMotion
+      as="h2"
+      appear={appear.heading}
+      id={headingId}
+      tabindex="-1"
+      class="case-section__title"
+    >
+      {title}
+    </AppearMotion>
+    {prose && (
+      <AppearMotion appear={appear.body} class="case-section__body pf-prose">
+        <Fragment set:html={prose} />
+      </AppearMotion>
+    )}
+  </div>
+  {rest && <Fragment set:html={rest} />}
+</section>
+
+<style>
+  @layer pf {
+    .case-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-block-gap);
+      scroll-margin-top: var(--pf-case-scroll-margin);
+    }
+
+    .case-section_id_design {
+      scroll-margin-top: var(--pf-case-scroll-margin-design);
+    }
+
+    .case-section__text {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-text-gap);
+      width: min(var(--pf-text-col), 100%);
+      margin-inline: auto;
+    }
+
+    .case-section__kicker {
+      display: flex;
+    }
+
+    .case-section__title {
+      max-width: min(var(--pf-case-h2-max), 100%);
+      margin: 0;
+      color: var(--pf-text);
+      font-family: var(--pf-font-serif);
+      font-size: var(--pf-type-h2-size);
+      font-weight: 400;
+      line-height: var(--pf-type-h2-lh);
+      letter-spacing: var(--pf-type-h2-ls);
+      text-wrap: balance;
+      overflow-wrap: break-word;
+    }
+
+    /* Bodies are block flow, so the prose margins collapse around chats and notes. */
+    .case-section__body {
+      display: block;
+      min-width: 0;
+    }
+  }
+</style>

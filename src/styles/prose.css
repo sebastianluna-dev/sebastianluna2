@@ -1,0 +1,187 @@
+/*
+ * Prose of the case study body (design-spec §2.2 and §3.2, case.md §2.2): the `.pf-prose` blocks that
+ * CaseSection, CaseSubsection and the figure captions render from the MDX. Global because the MDX
+ * markup carries no scope.
+ *
+ * - Body: serif 18/27.9 (17/26.35 below 1200), −0.03em plus the Serif Text adjustment,
+ *   `--pf-text-body`, greedy wrapping: the reference body preset sets no `text-wrap` (measured `wrap`,
+ *   with its one-word last lines), so `pretty` would break lines elsewhere. h3: serif 22/27.5 (20/26), −0.03em, balanced, ink. h2 inside the body (only
+ *   ez-wallet in the reference): serif 32/37.76 (28/33.6), −0.04em.
+ * - Rhythm (measured): paragraph → paragraph 12; 16 above an h3 and 12 below it; 24 above a body h2.
+ *   Only the text elements take margins, so chats and side notes keep their own and the margins
+ *   collapse around them (the body is block flow).
+ * - The reference bodies have no lists, quotes, links, bold, italics or code; ours get a quiet style
+ *   in the same voice: ink links with a thin underline, serif italics and bold, Geist-free code.
+ */
+@layer pf {
+  .pf-prose {
+    /* Own values of the elements the reference never uses. */
+    --prose-list-indent: 1.25em;
+    --prose-item-gap: calc(var(--pf-case-para-gap) / 2);
+    --prose-quote-rule: 2px;
+    --prose-quote-indent: var(--pf-case-text-gap);
+    --prose-underline-offset: 0.2em;
+    --prose-underline-rest: 35%; /* share of the ink in the resting underline */
+    --prose-code-size: 0.85em;
+    --prose-code-pad: 0.1em 0.3em;
+
+    color: var(--pf-text-body);
+    font-family: var(--pf-font-serif);
+    font-size: var(--pf-type-body-size);
+    font-weight: 400;
+    line-height: var(--pf-type-body-lh);
+    letter-spacing: calc(var(--pf-type-body-ls) + var(--pf-serif-ls-adjust));
+    text-wrap: wrap;
+    overflow-wrap: break-word;
+
+    /* ---------- Rhythm ---------- */
+
+    & > :where(p, h2, h3, h4, ul, ol, blockquote, pre, hr) {
+      margin-block: 0;
+    }
+
+    & > :where(*) + :where(p, ul, ol, blockquote, pre) {
+      margin-block-start: var(--pf-case-para-gap);
+    }
+
+    & > :where(*) + :where(h3, h4) {
+      margin-block-start: var(--pf-case-h3-before);
+    }
+
+    & > :where(*) + :where(h2) {
+      margin-block-start: var(--pf-case-body-h2-before);
+    }
+
+    & > :where(h2, h3, h4) + :where(p, ul, ol, blockquote, pre) {
+      margin-block-start: var(--pf-case-h3-after);
+    }
+
+    /* ---------- Headings ---------- */
+
+    & :where(h2, h3, h4) {
+      color: var(--pf-text);
+      font-family: var(--pf-font-serif);
+      font-weight: 400;
+      text-wrap: balance;
+    }
+
+    & :where(h2) {
+      font-size: var(--pf-type-h2-alt-size);
+      line-height: var(--pf-type-h2-alt-lh);
+      letter-spacing: var(--pf-type-h2-ls);
+    }
+
+    & :where(h3, h4) {
+      font-size: var(--pf-type-h3-size);
+      line-height: var(--pf-type-h3-lh);
+      letter-spacing: var(--pf-type-h3-ls);
+    }
+
+    /* Anchored headings (Markdown ids) clear the fixed chrome like the sections do. */
+    & :where(h2, h3, h4)[id] {
+      scroll-margin-top: var(--pf-case-scroll-margin);
+    }
+
+    /* ---------- Lists and quotes ----------
+       The list and inline rules skip the chat asides and side notes that live inside the body: they
+       style their own lists, bold and links, and these rules must not depend on losing to them. */
+
+    & :where(ul, ol):where(:not(:is([data-chat-aside], [data-side-notes]) *)) {
+      padding-inline-start: var(--prose-list-indent);
+    }
+
+    & :where(li):where(:not(:is([data-chat-aside], [data-side-notes]) *)) + :where(li),
+    & :where(li):where(:not(:is([data-chat-aside], [data-side-notes]) *)) > :where(ul, ol) {
+      margin-block-start: var(--prose-item-gap);
+    }
+
+    & :where(li):where(:not(:is([data-chat-aside], [data-side-notes]) *))::marker {
+      color: var(--pf-text-tertiary);
+    }
+
+    & :where(blockquote) {
+      margin-inline: 0;
+      padding-inline-start: var(--prose-quote-indent);
+      border-inline-start: var(--prose-quote-rule) solid var(--pf-border-strong);
+      color: var(--pf-text);
+    }
+
+    & :where(hr) {
+      height: var(--pf-case-divider-width);
+      border: 0;
+      background: var(--pf-case-divider);
+    }
+
+    /* ---------- Inline ---------- */
+
+    & :where(strong, b):where(:not(:is([data-chat-aside], [data-side-notes]) *)) {
+      color: var(--pf-text);
+      font-weight: 700;
+    }
+
+    & :where(em, i):where(:not(:is([data-chat-aside], [data-side-notes]) *)) {
+      font-style: italic;
+    }
+
+    & :where(h2, h3, h4) :where(em, i) {
+      font-weight: 500;
+    }
+
+    & :where(a[href]):where(:not(:is([data-chat-aside], [data-side-notes]) *)) {
+      color: var(--pf-text);
+      text-decoration-line: underline;
+      text-decoration-thickness: 1px;
+      text-decoration-color: color-mix(
+        in srgb,
+        currentColor var(--prose-underline-rest),
+        transparent
+      );
+      text-underline-offset: var(--prose-underline-offset);
+      border-radius: var(--pf-radius-xs);
+      -webkit-tap-highlight-color: transparent;
+
+      @media (hover: hover) and (pointer: fine) {
+        transition: text-decoration-color var(--pf-dur-link) var(--pf-ease-enter);
+
+        @media (prefers-reduced-motion: reduce) {
+          transition: none;
+        }
+
+        &:hover {
+          text-decoration-color: currentColor;
+        }
+      }
+
+      &:active {
+        opacity: var(--pf-link-active-opacity);
+      }
+    }
+
+    & :where(code, kbd, samp):where(:not(:is([data-chat-aside], [data-side-notes]) *)) {
+      padding: var(--prose-code-pad);
+      border-radius: var(--pf-radius-xs);
+      background: var(--pf-badge-bg);
+      color: var(--pf-text);
+      font-family: var(--pf-font-mono);
+      font-size: var(--prose-code-size);
+      letter-spacing: normal;
+    }
+
+    & :where(pre) {
+      overflow-x: auto;
+      padding: var(--pf-case-para-gap) var(--pf-case-text-gap);
+      border-radius: var(--pf-radius-badge);
+      background: var(--pf-badge-bg);
+
+      & :where(code) {
+        padding: 0;
+        background: none;
+      }
+    }
+
+    & :where(img) {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+}
