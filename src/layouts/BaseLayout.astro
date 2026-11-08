@@ -2,7 +2,7 @@
 /**
  * Document shell of every page with chrome: head (metadata, alternates, fonts,
  * theme bootstrap), <ClientRouter/>, skip link, header with the pill nav and the
- * theme cord, <main id="main"> and the footer, plus the dark star field behind everything. The 404 does not use it (design-spec §9.1).
+ * theme cord, <main id="main">, the footer and the Blue launcher, plus the dark star field behind everything. The 404 does not use it (design-spec §9.1).
  */
 import { ClientRouter } from 'astro:transitions';
 import layersCss from '@/styles/layers.css?raw';
@@ -22,6 +22,8 @@ import PillNav from '@/components/portfolio/shell/PillNav.astro';
 import Footer from '@/components/portfolio/shell/Footer.astro';
 import ThemeToggle from '@/components/portfolio/theme/ThemeToggle.astro';
 import Stellar from '@/components/portfolio/ui/Stellar.astro';
+import BlueLauncher from '@/components/portfolio/blue/BlueLauncher.astro';
+import { FEATURES } from '@/data/features';
 
 interface Props {
   locale: Locale;
@@ -102,6 +104,8 @@ const otherLocale: Locale = locale === 'es' ? 'en' : 'es';
       <slot />
     </main>
     <Footer locale={locale} />
+    {/* Last in the Tab order (decision 24); the panel host sits right behind the launcher. */}
+    {FEATURES.blue && <BlueLauncher locale={locale} />}
 
     <script>
       // Page appear engine (animation-inventory.md §3–4), installed on every page so any

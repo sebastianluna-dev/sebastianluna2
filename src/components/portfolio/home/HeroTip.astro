@@ -1,8 +1,11 @@
 ---
 /**
- * Blue shortcut tip under the CTAs: "Press ⌘ + ⌥ + / to chat with Blue" (HE-17), hidden on phone,
- * where the launcher does not exist (design-spec §3.1). Two keycaps and the rest as text, like the
- * reference; every visual symbol has a spoken twin so it reads "Command plus Option plus slash".
+ * Blue shortcut tip under the CTAs: "Press ⌘ + ⌥ + / to chat with Blue" (HE-17), hidden wherever the
+ * launcher is (phones, design-spec §3.1, and short touch screens, decision 15): no keyboard there.
+ * Two keycaps and the rest as text, like the reference; every visual symbol has a spoken twin so it
+ * reads "Command plus Option plus slash". Outside Apple platforms the shortcut is Ctrl + Alt + /, so
+ * a small script swaps the keycaps (`isApplePlatform`, the launcher's own test). Without JS it keeps
+ * its box but is not shown, like the launcher it points to.
  */
 import type { Locale } from '@/i18n/locales';
 import { getMessages } from '@/i18n/t';
@@ -20,13 +23,21 @@ const { tip } = getMessages(locale).hero;
 
 <AppearMotion as="p" appear={HOME_APPEAR.shortcutTip} class="hero-tip pf-alt-glyphs">
   <span class="hero-tip__text">{tip.before}</span>
-  <span class="hero-tip__keys">
+  <span class="hero-tip__keys hero-tip__keys_os_apple">
     <Kbd symbol="⌘" label={tip.keys.command} />
     <svg class="hero-tip__plus" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M12 5v14M5 12h14"></path>
     </svg>
     <span class="sr-only">{tip.keys.plus}</span>
     <Kbd symbol="⌥" label={tip.keys.option} />
+  </span>
+  <span class="hero-tip__keys hero-tip__keys_os_other">
+    <Kbd symbol={tip.caps.ctrl} label={tip.keys.ctrl} />
+    <svg class="hero-tip__plus" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 5v14M5 12h14"></path>
+    </svg>
+    <span class="sr-only">{tip.keys.plus}</span>
+    <Kbd symbol={tip.caps.alt} label={tip.keys.alt} />
   </span>
   <span class="hero-tip__text">
     <span aria-hidden="true">+ /</span>
@@ -36,6 +47,21 @@ const { tip } = getMessages(locale).hero;
     {tip.after}
   </span>
 </AppearMotion>
+
+<script>
+  import { isApplePlatform, platformOf } from '@/lib/blue/client/shortcut';
+
+  /** Ctrl + Alt keycaps where the shortcut uses them (the launcher reads the same platform). */
+  function markPlatform(): void {
+    const other = !isApplePlatform(platformOf(navigator));
+    document.querySelectorAll('.hero-tip').forEach((tip) => {
+      tip.toggleAttribute('data-keys-other', other);
+    });
+  }
+
+  markPlatform();
+  document.addEventListener('astro:page-load', markPlatform);
+</script>
 
 <style>
   @layer pf {
@@ -52,7 +78,13 @@ const { tip } = getMessages(locale).hero;
       letter-spacing: 0;
       white-space: nowrap;
 
-      @media (max-width: 809.98px) {
+      /* Without JS the shortcut does nothing (design-spec §8.2): hidden, keeping the hero's layout. */
+      :global(html:not(.js)) & {
+        visibility: hidden;
+      }
+
+      /* Where the launcher is hidden (blue-launcher.css): phones and short touch screens. */
+      @media (max-width: 809.98px), (hover: none) and (max-height: 500px) {
         display: none;
       }
     }
@@ -61,6 +93,20 @@ const { tip } = getMessages(locale).hero;
       display: flex;
       align-items: center;
       gap: 2px;
+    }
+
+    .hero-tip__keys_os_other {
+      display: none;
+    }
+
+    .hero-tip[data-keys-other] {
+      .hero-tip__keys_os_apple {
+        display: none;
+      }
+
+      .hero-tip__keys_os_other {
+        display: flex;
+      }
     }
 
     /* 8 px plus at .4 of the ink (the reference paints it black in both themes; ours follows it). */

@@ -4,8 +4,9 @@
  */
 export const FEATURES = {
   /**
-   * Blue chat (Phase 6): "Ask Blue" in the hero menu (HE-12) and the ⌘ + ⌥ + / tip (HE-17). Turn it
-   * on together with the launcher, which must `preventDefault()` the `pf:blue-open` event.
+   * Blue chat (Phase 6): the launcher and its panel (`blue/BlueLauncher.astro`, rendered by
+   * BaseLayout), "Ask Blue" in the hero menu (HE-12) and the ⌘ + ⌥ + / tip (HE-17). The launcher
+   * takes the hero's `pf:blue-open` with `preventDefault()`.
    */
-  blue: false,
+  blue: true,
 } as const;
