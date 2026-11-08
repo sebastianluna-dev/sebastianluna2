@@ -1,0 +1,14 @@
+---
+/**
+ * Reserved place of a live demo (phase 5). Today it renders a hidden marker only, so nothing shows and
+ * it takes no gap; it is a case block, so the text before it is the section body. Phase 5 replaces
+ * it with `<DemoFrame>` (reserved height, poster, caption in the body style).
+ */
+import type { DemoSlotProps } from './types';
+
+type Props = DemoSlotProps;
+
+const { name, caption } = Astro.props;
+---
+
+<div hidden data-case-block data-demo-slot={name} data-demo-caption={caption}></div>
