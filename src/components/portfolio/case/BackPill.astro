@@ -1,0 +1,232 @@
+---
+/**
+ * "Back" pill of a case (design-spec §3.2, §7.3; case.md §3.3): a fixed link to the works list of the
+ * home (`/#works`, localised), rendered right after the header (BaseLayout `after-header` slot) so it
+ * comes right after the chrome in the Tab order.
+ *
+ * - CA-04: the link enters with `back-pill-in` (opacity, y −8, blur 4; 300 ms) on load and every time
+ *   the pill shows again.
+ * - CA-05: on phones the wrapper hides with the phone chrome (`pf:mobile-chrome`: opacity 150 ms,
+ *   y −10 in 300 ms, no pointer events). Unlike the reference it never leaves the Tab order: its
+ *   focus shows it (`focusin` here and `data-mobile-chrome` for the pill nav, D-15).
+ * - CA-06: hover moves the chevron −2 px (220 ms) and washes the background with 6 % ink (150 ms);
+ *   press scales to .96; focus draws the global ring.
+ *
+ * The wrapper is a named `nav`, so the pill sits in a landmark like the rest of the chrome (axe
+ * `region`); it lives outside `main`, right after the header.
+ *
+ * The wrapper owns the hide (`translate`), the link the entry and the press (`scale`), so the three
+ * never fight over one property. Without JavaScript the pill is always visible.
+ */
+import { getMessages } from '@/i18n/t';
+import { localizePath } from '@/lib/i18n-paths';
+import { WORKS_HASH } from '@/lib/pill-nav';
+import type { BackPillProps } from './types';
+
+type Props = BackPillProps;
+
+const { locale } = Astro.props;
+const copy = getMessages(locale).case;
+---
+
+<nav class="back-pill" aria-label={copy.backNavLabel} data-back-pill>
+  <a
+    class="back-pill__link"
+    href={localizePath(`/${WORKS_HASH}`, locale)}
+    aria-label={copy.backLabel}
+    data-mobile-chrome
+  >
+    <span class="back-pill__arrow" aria-hidden="true">
+      <svg class="back-pill__icon" viewBox="0 0 16 16" width="16" height="16" focusable="false">
+        <path
+          d="M9.5 3.5 5 8l4.5 4.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
+    </span>
+    <span class="back-pill__label">{copy.back}</span>
+  </a>
+</nav>
+
+<script>
+  import { BREAKPOINT_QUERIES } from '@/components/motion/presets';
+  import { MOBILE_CHROME_EVENT, type MobileChromeDetail } from '@/lib/pill-nav';
+  import { backPillHidden } from '@/lib/case-nav';
+
+  const HIDDEN_CLASS = 'back-pill_hidden';
+  const bound = new Map<HTMLElement, () => void>();
+
+  function bindBackPill(root: HTMLElement): () => void {
+    const phone = matchMedia(BREAKPOINT_QUERIES.phone);
+    // The pill nav persists across navigations: start from its current state.
+    let chromeHidden = document
+      .querySelector('[data-pill-nav]')
+      ?.hasAttribute('data-chrome-hidden');
+    let focused = root.contains(document.activeElement);
+
+    const apply = () => {
+      const hidden = backPillHidden({
+        chromeHidden: chromeHidden ?? false,
+        phone: phone.matches,
+        focused,
+      });
+      root.classList.toggle(HIDDEN_CLASS, hidden);
+    };
+    const onChrome = (event: Event) => {
+      chromeHidden = (event as CustomEvent<MobileChromeDetail>).detail?.hidden ?? false;
+      apply();
+    };
+    const onFocusIn = () => {
+      focused = true;
+      apply();
+    };
+    const onFocusOut = (event: FocusEvent) => {
+      focused = root.contains(event.relatedTarget as Node | null);
+      apply();
+    };
+
+    window.addEventListener(MOBILE_CHROME_EVENT, onChrome);
+    phone.addEventListener('change', apply);
+    root.addEventListener('focusin', onFocusIn);
+    root.addEventListener('focusout', onFocusOut);
+    apply();
+
+    return () => {
+      window.removeEventListener(MOBILE_CHROME_EVENT, onChrome);
+      phone.removeEventListener('change', apply);
+      root.removeEventListener('focusin', onFocusIn);
+      root.removeEventListener('focusout', onFocusOut);
+    };
+  }
+
+  function bindAll(): void {
+    for (const root of document.querySelectorAll<HTMLElement>('[data-back-pill]')) {
+      if (!bound.has(root)) bound.set(root, bindBackPill(root));
+    }
+  }
+
+  function forgetDetached(): void {
+    for (const [root, teardown] of bound) {
+      if (root.isConnected) continue;
+      teardown();
+      bound.delete(root);
+    }
+  }
+
+  document.addEventListener('astro:after-swap', forgetDetached);
+  document.addEventListener('astro:page-load', bindAll);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindAll, { once: true });
+  } else {
+    bindAll();
+  }
+</script>
+
+<style>
+  @layer pf {
+    /* CA-05: the hide, on the wrapper (exits quicker than entrances). */
+    .back-pill {
+      position: fixed;
+      top: var(--pf-back-top);
+      left: var(--pf-back-left);
+      z-index: var(--pf-z-back);
+      transition:
+        opacity var(--pf-back-hide-fade) ease-out,
+        translate var(--pf-back-hide-move) var(--pf-ease-standard);
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
+    .back-pill_hidden {
+      opacity: 0;
+      translate: 0 var(--pf-back-hide-y);
+      pointer-events: none;
+    }
+
+    .back-pill__link {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--pf-back-gap);
+      box-sizing: border-box;
+      height: var(--pf-back-height);
+      padding: var(--pf-back-pad);
+      border-radius: var(--pf-radius-pill);
+      background: var(--pf-surface);
+      color: var(--pf-text);
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-nav-size);
+      font-weight: 500;
+      line-height: var(--pf-type-nav-lh);
+      letter-spacing: var(--pf-type-nav-ls);
+      white-space: nowrap;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      /* CA-06: press and background wash. */
+      transition:
+        scale var(--pf-dur-press) ease-out,
+        background-color var(--pf-back-bg-duration) ease-out;
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: var(--pf-back-hit);
+        border-radius: inherit;
+      }
+
+      &:active {
+        scale: var(--pf-press-scale);
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          background-color: var(--pf-back-pill-hover-bg);
+        }
+
+        &:hover .back-pill__arrow {
+          translate: var(--pf-back-arrow-shift) 0;
+        }
+      }
+    }
+
+    /* CA-04: the entry, replayed whenever the pill shows again. */
+    .back-pill:not(.back-pill_hidden) .back-pill__link {
+      animation: back-pill-in var(--pf-back-in-duration) var(--pf-ease-standard) both;
+
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
+    }
+
+    .back-pill__arrow {
+      display: inline-flex;
+      transition: translate var(--pf-back-arrow-duration) var(--pf-ease-out-expo);
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
+    .back-pill__icon {
+      width: var(--pf-back-icon);
+      height: var(--pf-back-icon);
+    }
+
+    @keyframes back-pill-in {
+      from {
+        opacity: 0;
+        translate: 0 var(--pf-back-in-y);
+        filter: blur(var(--pf-back-in-blur));
+      }
+    }
+  }
+</style>
