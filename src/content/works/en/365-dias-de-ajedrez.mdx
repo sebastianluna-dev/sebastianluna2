@@ -1,23 +1,24 @@
 ---
 title: '365 Días de Ajedrez'
-kicker: 'Online academy · own project'
-summary: 'I turned my experience as a chess coach into a platform that brings my academy’s teaching, study, and training into one digital experience.'
-role: 'Founder and developer'
-service: ['Product', 'UI/UX design', 'Frontend development']
+kicker: 'Chess platform · own project'
+summary: 'I designed and built the platform behind my chess academy: classes, courses, and puzzles with a streak nobody can game, a cut-paper adventure mode, and a single admin area for academies, clubs, and independent coaches.'
+description: 'The platform behind my chess academy: classes, courses, and puzzles with a streak nobody can game, an adventure mode, and one admin area.'
+role: 'Founder, design and development'
+service: ['Product', 'UI/UX design', 'Design system', 'Full-stack development']
 tools:
   [
-    'Figma',
     'Next.js',
     'React',
     'TypeScript',
-    'Payload CMS',
-    'Prisma',
     'PostgreSQL',
+    'Prisma',
+    'Material Web',
     'Chessground',
     'chessops',
-    'Cloudinary',
-    'Vitest',
+    'Stockfish',
+    'LiveKit',
     'Storybook',
+    'Vitest',
     'Vercel',
   ]
 year: '2026'
@@ -25,7 +26,290 @@ url: 'https://www.365diasdeajedrez.com'
 order: 1
 cover:
   src: '../../../assets/works/365-dias-de-ajedrez/cover.jpg'
-  alt: 'Home page of 365 Días de Ajedrez'
+  alt: 'Home page of the new 365 Días de Ajedrez site (in development) with the headline “Learn chess with a coach, every day” and a chessboard'
+zones:
+  - src: '../../../assets/works/365-dias-de-ajedrez/inicio-alumno.jpg'
+    alt: 'Student home in October with the blue “Up next” card'
+  - src: '../../../assets/works/365-dias-de-ajedrez/ejercicios-solucionador.jpg'
+    alt: 'Puzzle solver with the board and the “Your move” header'
+  - src: '../../../assets/works/365-dias-de-ajedrez/aventura-cuaderno-biblioteca.jpg'
+    alt: 'Cut-paper map of the adventure mode in front of the Central Library'
+demos: ['organization-roles', 'exercise-solver', 'rival-stamp']
 ---
 
-I turned my experience as a chess coach into a platform that brings my academy’s teaching, study, and training into one digital experience. Powered by Next.js, React, and TypeScript, it combines courses and classes with game databases, a move trainer, puzzles, and analysis boards, with role-based access for students, instructors, and administrators.
+import {
+  CaseSection,
+  CaseSubsection,
+  ChatAside,
+  DemoSlot,
+  Figure,
+  Gallery,
+  SideNote,
+  SideNotes,
+} from '@/components/portfolio/case';
+import tresApps from '@/assets/works/365-dias-de-ajedrez/sitio-profesores-tres-apps.jpg';
+import direccionA from '@/assets/works/365-dias-de-ajedrez/aventura-direccion-a.jpg';
+import direccionB from '@/assets/works/365-dias-de-ajedrez/aventura-direccion-b.jpg';
+import direccionC from '@/assets/works/365-dias-de-ajedrez/aventura-direccion-c.jpg';
+import inicioAntes from '@/assets/works/365-dias-de-ajedrez/inicio-alumno-antes.jpg';
+import inicio from '@/assets/works/365-dias-de-ajedrez/inicio-alumno.jpg';
+import solucionador from '@/assets/works/365-dias-de-ajedrez/ejercicios-solucionador.jpg';
+import biblioteca from '@/assets/works/365-dias-de-ajedrez/aventura-cuaderno-biblioteca.jpg';
+import fichaRival from '@/assets/works/365-dias-de-ajedrez/aventura-ficha-rival.jpg';
+import adminInicio from '@/assets/works/365-dias-de-ajedrez/administracion-inicio.jpg';
+import adminFicha from '@/assets/works/365-dias-de-ajedrez/administracion-ficha-alumno.jpg';
+import cuadernoFinal from '@/assets/works/365-dias-de-ajedrez/aventura-cuaderno-final.jpg';
+import telefonoAlumno from '@/assets/works/365-dias-de-ajedrez/telefono-alumno.jpg';
+import telefonoAdmin from '@/assets/works/365-dias-de-ajedrez/telefono-administracion.jpg';
+
+<CaseSection id="overview" title="A whole chess academy on one platform">
+
+365 Días de Ajedrez started as the website of my online academy. I turned it into the place where we teach, study, and train: courses, classes with a coach, puzzles, game studies, an opening explorer, and an adventure mode for playing against the computer. The academy’s site is live; the platform described here is built and tested in development and awaiting release.
+
+I ran the whole thing as the only person on the project: product, architecture, design, and code. In three months it grew to 111 screens for five roles: student, coach, content editor, organization admin, and the platform operator.
+
+<ChatAside
+  meta="Tue 8:15 PM"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'What’s inside?' },
+    {
+      from: 'sebastian',
+      text: 'Courses, classes, puzzles, and an explorer with over 4 million games.',
+    },
+    { from: 'visitor', text: '4 million?', tapback: '‼️' },
+    { from: 'sebastian', text: 'And it answers in about 25 ms per move ⚡', fx: 'slam' },
+  ]}
+/>
+
+</CaseSection>
+
+<CaseSection id="challenge" title="What happens between one class and the next">
+
+I saw it up close at the academy: each student’s materials and links were scattered across WhatsApp, payments and attendance lived in a spreadsheet, and practice happened on Lichess or not at all. Nobody could tell who had solved the homework, or how many classes a student had left, without opening all three.
+
+A class lasts an hour; the rest of the week decides whether the coach walks in knowing what to review. So progress had to be trustworthy. A streak you can pad by reloading the page, or a “solved” that really meant “peeked at the answer,” leaves the coach making decisions on bad data.
+
+### One tool for many kinds of schools
+
+On top of that, the platform had to work for an academy, a club with three coaches, a school with a front desk, and an independent coach, without anyone seeing what isn’t theirs.
+
+<Gallery variant="lead">
+  <Figure
+    src={tresApps}
+    alt="“Every student lives in three apps” section of the page for coaches: WhatsApp, spreadsheet, and Lichess snippets next to four questions"
+  />
+</Gallery>
+
+</CaseSection>
+
+<CaseSection id="approach" title="Decide in writing before drawing">
+
+I started with the model: everything belongs to an organization, and an independent coach is an organization of one. That way a single admin area serves everyone, with boundaries written once.
+
+From there, the puzzles, the adventure, and the admin screens went through written decisions before they had a screen. For puzzles I answered 40 product questions over ten rounds, each with options and a recommendation, before any code, and 11 more during the build. For the admin area I asked for four genuinely different options per piece, A through D, and picked one out of every four. For the adventure I wrote a brief with three rules: no card grids, scenery made of separate objects, and a dedicated layout for phones.
+
+<SideNotes label="How I decided each module" cols={3}>
+  <SideNote title="51 decisions" art="board">
+    The puzzles module: 40 decisions before the code and 11 during the build.
+  </SideNote>
+  <SideNote title="Four options per piece" art="blocks">
+    The admin list, profile, and new-student form, each explored in four distinct shapes.
+  </SideNote>
+  <SideNote title="Three worlds" art="compass">
+    Three illustrated directions for the adventure, built on the same data.
+  </SideNote>
+</SideNotes>
+
+<DemoSlot
+  name="organization-roles"
+  caption="One organization seen through each role: what a student, a coach, and an admin can reach."
+/>
+
+<CaseSubsection kicker="Visual direction" appear>
+
+Three worlds were drawn in parallel on the same data: a city in three-quarter view, a cut-paper notebook, and isometric islands. I chose the notebook. Every paper cutout is an object the code can move, and the story of a 1994 notebook someone hands you at the club gives each rival a page of their own.
+
+<Gallery variant="lead">
+  <Figure
+    src={direccionB}
+    alt="Chosen direction, “Travel notebook”: a cut-paper park with a path stitched in red thread and rivals as postage stamps"
+  />
+</Gallery>
+<Gallery variant="pair-2col-phone">
+  <Figure
+    src={direccionA}
+    alt="Discarded direction, “Jacaranda walk”: a city in three-quarter view with a purple checkered path"
+    appear="approachGallery"
+  />
+  <Figure
+    src={direccionC}
+    alt="Discarded direction, “Board islands”: isometric islands floating over a pink sky"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="research" title="What was already there, and what I let go">
+
+I started from what existed. “Play” had 45 bots, rated from 412 to 2798, calibrated over more than 6,500 games against Stockfish. The measurable part was solved; what was missing was a reason to play the next game, because winning didn’t change anything.
+
+For puzzles I didn’t want to make up a bank. I went through the public Lichess database, with more than 6 million puzzles, and imported it through a strict filter on popularity, games played, and rating deviation. One in 200 made it: over 30,000 puzzles across 6 levels and 32 themes.
+
+I also cut things early. Spaced repetition was my own idea, and I dropped it before designing its screen: students understand “what I did” better than “what’s due,” so it became a filterable history instead. The solving timer stayed only in Puzzle Rush, because on a study puzzle it adds pressure without measuring anything.
+
+<CaseSubsection kicker="The student home">
+
+This was the screen I redid the most. Until October 14 it was four cards of equal weight, and nothing said what to do first. On October 24, with Material 3 Expressive, it became a single focus, “Up next,” with everything else below; on November 4, a grid with the class on the left and “Before your class” inside it.
+
+<Gallery variant="pair">
+  <Figure
+    src={inicioAntes}
+    alt="Student home on October 14: four equally weighted white cards with a red button"
+    appear="researchFirst"
+  />
+  <Figure
+    src={inicio}
+    alt="Student home in October, with Material 3 Expressive: a blue “Up next” card with the next class and the class puzzles below"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="design" title="Rules the server enforces">
+
+All three modules share one idea: a rule is written once, enforced by the server, and guarded by a test. The screen just announces it, before the student touches a piece.
+
+<ChatAside
+  meta="Thu 1:40 PM"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'If I miss and reload the page, does it count?' },
+    { from: 'sebastian', text: 'Your first attempt of the day is the one that counts.' },
+    { from: 'sebastian', text: 'The second one runs, but it isn’t scored.' },
+    { from: 'visitor', text: 'And if I look at the solution?' },
+    { from: 'sebastian', text: 'That counts as a miss too 🙃', fx: 'loud', tapback: '😅' },
+  ]}
+/>
+
+<SideNotes label="Rules guarded by a test" cols={3}>
+  <SideNote title="One boundary" art="roles">
+    What each role can do across thirteen capabilities, written as a single rule.
+  </SideNote>
+  <SideNote title="The server referees" art="shield">
+    It replays the moves and never lets a correct answer sneak in after a miss.
+  </SideNote>
+  <SideNote title="Every color is a pair" art="palette">
+    Light and dark in one token, at 4.5:1 in both themes.
+  </SideNote>
+</SideNotes>
+
+<CaseSubsection kicker="Puzzles">
+
+One scored attempt per puzzle per day. The first wrong move decides, as on Lichess, and “Show solution” counts as a miss. If the student already tried it, the header says so before they move: “You already tried this today: this attempt counts for the class, not for your streak.” A single solver powers lessons, classes, free practice, and the editor preview.
+
+<DemoSlot
+  name="exercise-solver"
+  caption="The first wrong move decides, and the header says whether the attempt counts."
+/>
+
+<Gallery variant="lead">
+  <Figure
+    src={solucionador}
+    alt="Student puzzles: themes and levels on the left, the board in the center, and the “Your move” header with Hint and Show solution"
+    appear="designLead"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Adventure mode">
+
+Every game against the computer is an encounter in the traveler’s notebook: twelve rivals across six zones, rated from 412 to 1309, each borrowing the strength of an already calibrated bot. Stars depend on the attempt, every win leaves a keepsake stuck in the notebook, and only a win opens the next page. Progress is derived from the games themselves, with no new tables.
+
+<DemoSlot
+  name="rival-stamp"
+  caption="A locked rival turns into a stamp, stars, and a keepsake once you beat them."
+/>
+
+<Gallery variant="pair">
+  <Figure
+    src={biblioteca}
+    alt="Notebook map in front of the Central Library: the available rival’s stamp with its red pin and the stitched path coming up from below"
+    appear="designRowFirst"
+  />
+  <Figure
+    src={fichaRival}
+    alt="Proposal for the rival card styled as a passport page: approximate rating, favorite opening, stars per attempt, and the Start button"
+    appear="designRowSecond"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="An admin area for four kinds of organization">
+
+A payment buys class credits, a missed class uses one, and students see their balance, never amounts. Every admin query receives whoever makes it first and only reads that person’s organization. With permissions settled in one place, each screen was designed once: a home with a single focus, a profile with the person’s card on the left, and no photos in lists, because every photo is one more request.
+
+<Gallery variant="pair">
+  <Figure
+    src={adminInicio}
+    alt="Admin home with a single focus: a pending payment, the Record payment button, and the organization’s seats"
+  />
+  <Figure
+    src={adminFicha}
+    alt="Profile of a demo student: a card with initials, classes taken and upcoming, and tabs for the account and the assigned coach"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Design system">
+
+177 tokens in a single block, 144 of them colors with a light and dark pair, a type scale of 10 steps and a spacing scale of 12, and Material 3 Expressive used only for its CSS, with its color roles pointing at ours. In forms, focus and selection are blue, because the brand red was the same red as errors. Visual rules have their own tests: a radius off the scale, an “Añadir” or “Borrar” where the rule asks for “Agregar” or “Eliminar”, or an animation without its reduced-motion version fails a test.
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="outcome" title="Built, tested, and documented">
+
+The platform brings together 111 screens for five roles, on 104 data models, across desktop, tablet, and phone, in light and dark themes. It’s backed by more than 2,300 automated tests, 192 Storybook story files that pass axe in both themes, and over 400 pages of technical documentation.
+
+To test it at realistic volume, I filled it with a three-month simulation: 548 simulated students in 19 organizations, with about 4,200 classes and more than 1,100 payments. I worked with Claude Code as my build team, under rules I wrote and the tests enforce.
+
+<ChatAside
+  meta="Fri 6:05 PM"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'How do you know it all works?' },
+    { from: 'sebastian', text: 'More than 2,300 automated tests, all green.' },
+    {
+      from: 'sebastian',
+      text: 'Plus a three-month simulation with 548 simulated students 🏆',
+      fx: 'rain',
+      rain: '♟️🏆',
+    },
+  ]}
+/>
+
+<Gallery variant="composition">
+  <Figure
+    src={cuadernoFinal}
+    alt="End of the adventure notebook: the Palace of the Squares at night, with fireworks and the sealed stamp of the final"
+  />
+  <Figure
+    src={telefonoAlumno}
+    alt="Two phone screens: the student home in the light theme and the adventure notebook in the dark theme"
+  />
+  <Figure
+    src={telefonoAdmin}
+    alt="Two admin phone screens: the home with a pending payment and the bottom sheet for adding a student"
+  />
+</Gallery>
+
+</CaseSection>

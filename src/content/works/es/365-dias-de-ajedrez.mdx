@@ -1,23 +1,24 @@
 ---
 title: '365 Días de Ajedrez'
-kicker: 'Academia online · proyecto propio'
-summary: 'Transformé mi experiencia como entrenador de ajedrez en una plataforma propia para enseñar, estudiar y entrenar en un solo lugar.'
-role: 'Fundador y desarrollador'
-service: ['Producto', 'Diseño UI/UX', 'Desarrollo frontend']
+kicker: 'Plataforma de ajedrez · proyecto propio'
+summary: 'Diseñé y construí la plataforma de mi academia de ajedrez: clases, cursos y ejercicios con una racha que no se puede engañar, una aventura de papel recortado y una sola administración para academias, clubes y profesores.'
+description: 'La plataforma de mi academia de ajedrez: clases, cursos y ejercicios con una racha que no se puede engañar, un modo aventura y una sola administración.'
+role: 'Fundador, diseño y desarrollo'
+service: ['Producto', 'Diseño UI/UX', 'Sistema de diseño', 'Desarrollo full-stack']
 tools:
   [
-    'Figma',
     'Next.js',
     'React',
     'TypeScript',
-    'Payload CMS',
-    'Prisma',
     'PostgreSQL',
+    'Prisma',
+    'Material Web',
     'Chessground',
     'chessops',
-    'Cloudinary',
-    'Vitest',
+    'Stockfish',
+    'LiveKit',
     'Storybook',
+    'Vitest',
     'Vercel',
   ]
 year: '2026'
@@ -25,7 +26,290 @@ url: 'https://www.365diasdeajedrez.com'
 order: 1
 cover:
   src: '../../../assets/works/365-dias-de-ajedrez/cover.jpg'
-  alt: 'Página de inicio de 365 Días de Ajedrez'
+  alt: 'Página de inicio del nuevo sitio de 365 Días de Ajedrez (en desarrollo) con el titular «Aprende ajedrez con un maestro, todos los días» y un tablero'
+zones:
+  - src: '../../../assets/works/365-dias-de-ajedrez/inicio-alumno.jpg'
+    alt: 'Inicio del alumno de octubre con la tarjeta azul «Lo siguiente»'
+  - src: '../../../assets/works/365-dias-de-ajedrez/ejercicios-solucionador.jpg'
+    alt: 'Solucionador de ejercicios con el tablero y la cabecera «Tu turno»'
+  - src: '../../../assets/works/365-dias-de-ajedrez/aventura-cuaderno-biblioteca.jpg'
+    alt: 'Mapa de papel recortado del modo aventura frente a la Biblioteca Central'
+demos: ['organization-roles', 'exercise-solver', 'rival-stamp']
 ---
 
-Transformé mi experiencia como entrenador de ajedrez en una plataforma propia para enseñar, estudiar y entrenar en un solo lugar. Desarrollada con Next.js, React y TypeScript, conecta cursos y clases con bases de datos de partidas, un entrenador de movimientos, problemas y tableros de análisis, con funciones y permisos específicos para alumnos, maestros y administradores.
+import {
+  CaseSection,
+  CaseSubsection,
+  ChatAside,
+  DemoSlot,
+  Figure,
+  Gallery,
+  SideNote,
+  SideNotes,
+} from '@/components/portfolio/case';
+import tresApps from '@/assets/works/365-dias-de-ajedrez/sitio-profesores-tres-apps.jpg';
+import direccionA from '@/assets/works/365-dias-de-ajedrez/aventura-direccion-a.jpg';
+import direccionB from '@/assets/works/365-dias-de-ajedrez/aventura-direccion-b.jpg';
+import direccionC from '@/assets/works/365-dias-de-ajedrez/aventura-direccion-c.jpg';
+import inicioAntes from '@/assets/works/365-dias-de-ajedrez/inicio-alumno-antes.jpg';
+import inicio from '@/assets/works/365-dias-de-ajedrez/inicio-alumno.jpg';
+import solucionador from '@/assets/works/365-dias-de-ajedrez/ejercicios-solucionador.jpg';
+import biblioteca from '@/assets/works/365-dias-de-ajedrez/aventura-cuaderno-biblioteca.jpg';
+import fichaRival from '@/assets/works/365-dias-de-ajedrez/aventura-ficha-rival.jpg';
+import adminInicio from '@/assets/works/365-dias-de-ajedrez/administracion-inicio.jpg';
+import adminFicha from '@/assets/works/365-dias-de-ajedrez/administracion-ficha-alumno.jpg';
+import cuadernoFinal from '@/assets/works/365-dias-de-ajedrez/aventura-cuaderno-final.jpg';
+import telefonoAlumno from '@/assets/works/365-dias-de-ajedrez/telefono-alumno.jpg';
+import telefonoAdmin from '@/assets/works/365-dias-de-ajedrez/telefono-administracion.jpg';
+
+<CaseSection id="overview" title="Una academia de ajedrez completa en una sola plataforma">
+
+365 Días de Ajedrez empezó como el sitio de mi academia en línea. Lo convertí en la plataforma donde se enseña, se estudia y se entrena: cursos, clases con profesor, ejercicios, estudios de partidas, un explorador de aperturas y un modo aventura para jugar contra la computadora. El sitio de la academia está en línea; la plataforma que describo está construida y probada en desarrollo y pendiente de liberar.
+
+Me encargué de todo como única persona en el proyecto: el producto, la arquitectura, el diseño y el código. En tres meses la plataforma creció a 111 pantallas para cinco roles: alumno, profesor, editor de contenido, administración de una organización y el operador de la plataforma.
+
+<ChatAside
+  meta="mar 20:15"
+  delivered
+  messages={[
+    { from: 'visitor', text: '¿Qué tiene adentro?' },
+    {
+      from: 'sebastian',
+      text: 'Cursos, clases, ejercicios y un explorador con más de 4 millones de partidas.',
+    },
+    { from: 'visitor', text: '¿4 millones?', tapback: '‼️' },
+    { from: 'sebastian', text: 'Y responde en unos 25 ms por jugada ⚡', fx: 'slam' },
+  ]}
+/>
+
+</CaseSection>
+
+<CaseSection id="challenge" title="Lo que pasa entre una clase y la siguiente">
+
+Lo vi de cerca en la academia: el material y los enlaces de cada alumno vivían dispersos en WhatsApp, los pagos y las asistencias en una hoja de cálculo, y la práctica en Lichess o en ninguna parte. Nadie podía contestar, sin abrir las tres, quién resolvió los ejercicios o cuántas clases le quedaban a un alumno.
+
+Una clase dura una hora; lo que pasa en el resto de la semana decide si el profesor llega sabiendo qué repasar. Por eso el progreso tenía que ser confiable: una racha que se infla recargando la página, o un «resuelto» que en realidad fue «vi la solución», hace que el profesor decida con datos falsos.
+
+### Una herramienta para muchas escuelas
+
+Además, la plataforma tenía que servirle a una academia, a un club con tres profesores, a una escuela con recepción y a un profesor independiente, sin que nadie viera lo que no le toca.
+
+<Gallery variant="lead">
+  <Figure
+    src={tresApps}
+    alt="Sección «Cada alumno vive en tres apps» del sitio para profesores: recortes de WhatsApp, una hoja de cálculo y Lichess junto a cuatro preguntas"
+  />
+</Gallery>
+
+</CaseSection>
+
+<CaseSection id="approach" title="Decidir por escrito antes de dibujar">
+
+Empecé por el modelo: todo cuelga de una organización, y un profesor independiente es una organización de una persona. Así una sola Administración sirve a todos, con fronteras que se escriben una vez.
+
+Después, los ejercicios, la aventura y las pantallas de Administración pasaron por decisiones escritas antes de tener pantalla. Para los ejercicios contesté 40 decisiones de producto en diez rondas de preguntas, cada una con opciones y una recomendación, antes de escribir código, y 11 más durante la construcción. Para Administración pedí cuatro opciones con forma propia por pieza, de la A a la D, y elegí una de cada cuatro. Para la aventura escribí un brief con tres prohibiciones: nada de cuadrícula de tarjetas, objetos del escenario separados y un trazado propio para el teléfono.
+
+<SideNotes label="Cómo decidí cada módulo" cols={3}>
+  <SideNote title="51 decisiones" art="board">
+    El módulo de ejercicios: 40 decisiones antes del código y 11 durante la obra.
+  </SideNote>
+  <SideNote title="Cuatro opciones por pieza" art="blocks">
+    Listado, ficha y alta de Administración, cada una en cuatro formas distintas.
+  </SideNote>
+  <SideNote title="Tres mundos" art="compass">
+    Tres direcciones ilustradas para la aventura, sobre los mismos datos.
+  </SideNote>
+</SideNotes>
+
+<DemoSlot
+  name="organization-roles"
+  caption="La misma organización vista por cada rol: lo que alcanza el alumno, el profesor y la administración."
+/>
+
+<CaseSubsection kicker="Dirección visual" appear>
+
+Para la aventura se dibujaron en paralelo tres mundos sobre los mismos datos: una ciudad en vista 3/4, un cuaderno de papel recortado y unas islas isométricas. Elegí el cuaderno: cada recorte es un objeto que el código puede mover, y la historia de un cuaderno de 1994 que te regalan en el club le da a cada rival su propia página.
+
+<Gallery variant="lead">
+  <Figure
+    src={direccionB}
+    alt="Dirección elegida, «Cuaderno de viaje»: un parque de papel recortado con un camino cosido con hilo rojo y rivales como sellos postales"
+  />
+</Gallery>
+<Gallery variant="pair-2col-phone">
+  <Figure
+    src={direccionA}
+    alt="Dirección descartada, «Paseo de las jacarandas»: una ciudad en vista 3/4 con un camino de cuadros morados"
+    appear="approachGallery"
+  />
+  <Figure
+    src={direccionC}
+    alt="Dirección descartada, «Islas del tablero»: islas isométricas que flotan sobre un cielo rosa"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="research" title="Lo que ya había, y lo que descarté">
+
+Partí de lo que existía. «Jugar» tenía 45 bots, de 412 a 2798 de Elo, calibrados con más de 6,500 partidas contra Stockfish. Lo medible estaba resuelto; faltaba una razón para la siguiente partida, porque ganar no cambiaba nada.
+
+Para los ejercicios no quise inventar un banco: revisé la base pública de Lichess, con más de 6 millones de problemas, y la importé con un filtro estricto de popularidad, partidas jugadas y desviación. Pasó uno de cada 200: más de 30,000 ejercicios en 6 niveles y 32 temas.
+
+También descarté a tiempo. El repaso espaciado lo había pedido yo y lo quité antes de dibujar su pantalla: un alumno entiende «qué hice» mejor que «qué me toca», así que quedó un historial con filtros. El reloj al resolver se quedó solo en Puzzle Rush, porque sobre un ejercicio de estudio presiona sin medir nada.
+
+<CaseSubsection kicker="El Inicio del alumno">
+
+Fue la pantalla que más veces rehíce. Hasta el 14 de octubre eran cuatro tarjetas del mismo peso, y nada decía qué hacer primero. El 24 de octubre, con Material 3 Expressive, pasó a un solo foco, «Lo siguiente», con lo demás debajo; el 4 de noviembre, a una rejilla con la clase a la izquierda y «Antes de tu clase» dentro.
+
+<Gallery variant="pair">
+  <Figure
+    src={inicioAntes}
+    alt="Inicio del alumno el 14 de octubre: cuatro tarjetas blancas del mismo peso con un botón rojo"
+    appear="researchFirst"
+  />
+  <Figure
+    src={inicio}
+    alt="Inicio del alumno en octubre, con Material 3 Expressive: una tarjeta azul «Lo siguiente» y debajo la próxima clase y los ejercicios"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="design" title="Reglas que el servidor hace cumplir">
+
+Los tres módulos comparten una idea: la regla se escribe una vez, la hace cumplir el servidor y la vigila una prueba. La pantalla solo la anuncia, antes de que el alumno mueva una pieza.
+
+<ChatAside
+  meta="jue 13:40"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'Si fallo y recargo la página, ¿cuenta?' },
+    { from: 'sebastian', text: 'Cuenta el primer intento del día.' },
+    { from: 'sebastian', text: 'El segundo corre, pero ya no puntúa.' },
+    { from: 'visitor', text: '¿Y si veo la solución?' },
+    { from: 'sebastian', text: 'También cuenta como fallo 🙃', fx: 'loud', tapback: '😅' },
+  ]}
+/>
+
+<SideNotes label="Reglas que vigila una prueba" cols={3}>
+  <SideNote title="Una frontera" art="roles">
+    Qué puede cada actor sobre trece capacidades, escrito en una sola regla.
+  </SideNote>
+  <SideNote title="El servidor arbitra" art="shield">
+    Replica las jugadas y no deja colar un acierto detrás de una falla.
+  </SideNote>
+  <SideNote title="Cada color es un par" art="palette">
+    Claro y oscuro en un mismo token, a 4.5:1 en los dos temas.
+  </SideNote>
+</SideNotes>
+
+<CaseSubsection kicker="Ejercicios">
+
+Un intento puntuado por ejercicio y por día; la primera jugada equivocada decide, como en Lichess, y «Ver la solución» cuenta como fallo. Si el alumno ya lo intentó, la cabecera lo dice antes de mover: «Ya lo intentaste hoy: este intento cuenta para la clase, no para tu racha». Un solo solucionador sirve para la lección, la clase, la práctica libre y la vista previa del editor.
+
+<DemoSlot
+  name="exercise-solver"
+  caption="La primera jugada equivocada decide, y la cabecera avisa si el intento cuenta."
+/>
+
+<Gallery variant="lead">
+  <Figure
+    src={solucionador}
+    alt="Ejercicios del alumno: temas y niveles a la izquierda, el tablero al centro y la cabecera «Tu turno» con «Pista» y «Ver la solución»"
+    appear="designLead"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Modo aventura">
+
+Toda partida contra la computadora es un encuentro del cuaderno del viajero: doce rivales en seis zonas, de 412 a 1309, que toman prestada la fuerza de bots ya calibrados. Las estrellas dependen del intento, cada victoria deja un recuerdo pegado en el cuaderno y solo ganar abre la página siguiente. El progreso se calcula de las partidas, sin tablas nuevas.
+
+<DemoSlot
+  name="rival-stamp"
+  caption="Un rival bloqueado se vuelve sello, estrellas y recuerdo al ganarle."
+/>
+
+<Gallery variant="pair">
+  <Figure
+    src={biblioteca}
+    alt="Mapa del cuaderno frente a la Biblioteca Central: el sello de la rival disponible con su alfiler rojo y la costura que llega desde abajo"
+    appear="designRowFirst"
+  />
+  <Figure
+    src={fichaRival}
+    alt="Propuesta de la ficha de rival como página de pasaporte: nivel orientativo, apertura favorita, estrellas según el intento y el botón «Empezar»"
+    appear="designRowSecond"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Administración para cuatro tipos de organización">
+
+Un pago da plazas, una falta gasta una, y el alumno ve su saldo, nunca importes. Cada consulta de Administración recibe primero a quien la hace y solo lee su organización. Con el permiso resuelto en un lugar, las pantallas se diseñaron una vez: Inicio con un solo foco, una ficha con la tarjeta de la persona a la izquierda y sin fotos en las listas, porque cada foto es una consulta más.
+
+<Gallery variant="pair">
+  <Figure
+    src={adminInicio}
+    alt="Inicio de Administración con un solo foco: un pago pendiente, el botón «Registrar pago» y los asientos de la organización"
+  />
+  <Figure
+    src={adminFicha}
+    alt="Ficha de un alumno de demostración: tarjeta con iniciales, clases tomadas y por venir, y las pestañas de cuenta y profesor asignado"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Sistema de diseño">
+
+177 tokens en un solo bloque, 144 de ellos colores con par claro y oscuro, una escala de 10 pasos de letra y 12 de espacio, y Material 3 Expressive usado solo por su CSS, con sus roles de color apuntando a los nuestros. Al llenar un formulario, el foco y lo elegido son azules, porque el rojo de la marca era el mismo rojo del error. Las reglas visuales tienen su prueba: un radio fuera de la escala, un «Añadir» o un «Borrar» donde la regla pide «Agregar» o «Eliminar», o una animación sin su versión para movimiento reducido la hacen fallar.
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="outcome" title="Construida, probada y documentada">
+
+La plataforma reúne 111 pantallas para cinco roles, sobre 104 modelos de datos, en escritorio, tableta y teléfono, con tema claro y oscuro. La respaldan más de 2,300 pruebas automáticas, 192 archivos de historias de Storybook que pasan axe en los dos temas y más de 400 páginas de documentación técnica.
+
+Para comprobarla con volumen, la llené con una simulación de tres meses: 548 alumnos simulados en 19 organizaciones, con unas 4,200 clases y más de 1,100 pagos. Trabajé con Claude Code como equipo de construcción, bajo reglas que escribí yo y que vigilan las pruebas.
+
+<ChatAside
+  meta="vie 18:05"
+  delivered
+  messages={[
+    { from: 'visitor', text: '¿Cómo sabes que todo funciona?' },
+    { from: 'sebastian', text: 'Más de 2,300 pruebas automáticas, todas en verde.' },
+    {
+      from: 'sebastian',
+      text: 'Y una simulación de tres meses con 548 alumnos simulados 🏆',
+      fx: 'rain',
+      rain: '♟️🏆',
+    },
+  ]}
+/>
+
+<Gallery variant="composition">
+  <Figure
+    src={cuadernoFinal}
+    alt="Final del cuaderno de la aventura: el Palacio de los Escaques de noche, con fuegos artificiales y el sello cerrado de la final"
+  />
+  <Figure
+    src={telefonoAlumno}
+    alt="Dos pantallas de teléfono: el Inicio del alumno en tema claro y el cuaderno de la aventura en tema oscuro"
+  />
+  <Figure
+    src={telefonoAdmin}
+    alt="Dos pantallas de teléfono de Administración: el Inicio con un pago pendiente y la hoja inferior para registrar un alumno"
+  />
+</Gallery>
+
+</CaseSection>
