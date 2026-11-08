@@ -37,6 +37,7 @@ import {
   type TouchIntent,
 } from '@/lib/theme-cord';
 import { THEME_STORAGE_KEY, type ThemeName } from './theme.inline';
+import { playInterfaceSound } from '@/lib/sound/interface-sound';
 
 export const THEME_CHANGE_EVENT = 'themeChange';
 const SWITCHING_CLASS = 'pf-theme-switching';
@@ -171,6 +172,7 @@ function bindThemeToggle(root: HTMLElement) {
     applyTheme(readTheme() === 'dark' ? 'light' : 'dark');
     syncChecked();
     navigator.vibrate?.(CORD.hapticMs);
+    playInterfaceSound('theme');
   };
 
   /** TE-04: back to rest with the current velocity. */

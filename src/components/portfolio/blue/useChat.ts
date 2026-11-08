@@ -21,6 +21,7 @@ import {
   type BlueMessage,
 } from '@/lib/blue/client/conversation';
 import { streamChat } from '@/lib/blue/client/stream';
+import { playInterfaceSound } from '@/lib/sound/interface-sound';
 
 /** `useReducer` passes only (state, action); the limits stay the contract's. */
 const reduce = (state: ChatState, action: ChatAction) => chatReducer(state, action);
@@ -79,10 +80,15 @@ export function useChat(locale: Locale): Chat {
       dispatch({ type: 'fail', error: { kind: 'upstream' } });
       return;
     }
+    let speaking = false;
     const outcome = await streamChat(request, {
       signal: current.signal,
       onDelta: (text) => {
-        if (controller.current === current) dispatch({ type: 'delta', text });
+        if (controller.current !== current) return;
+        // Blue starts to answer (the reference's droid sound when the answer appears).
+        if (!speaking) playInterfaceSound('droid');
+        speaking = true;
+        dispatch({ type: 'delta', text });
       },
       isOnline: () => navigator.onLine,
     });
@@ -100,6 +106,7 @@ export function useChat(locale: Locale): Chat {
       const content = text.trim();
       if (busy || !content) return;
       const message: BlueMessage = { id: newId(), role: 'user', content };
+      playInterfaceSound('typing');
       dispatch({ type: 'ask', message, replyId: newId() });
       void run(trimHistory([...state.messages, message]));
     },
@@ -107,6 +114,7 @@ export function useChat(locale: Locale): Chat {
       if (busy) return;
       const lastUser = state.messages.findLastIndex((m) => m.role === 'user');
       if (lastUser === -1) return;
+      playInterfaceSound('typing');
       dispatch({ type: 'retry', replyId: newId() });
       void run(state.messages.slice(0, lastUser + 1));
     },

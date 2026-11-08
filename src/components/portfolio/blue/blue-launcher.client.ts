@@ -17,6 +17,7 @@
  */
 import { BLUE } from '@/components/motion/presets';
 import { BLUE_OPEN_EVENT } from '@/lib/blue/events';
+import { playInterfaceSound } from '@/lib/sound/interface-sound';
 import { makeSiblingsInert } from '@/lib/blue/client/page-inert';
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/i18n/locales';
 import {
@@ -125,6 +126,7 @@ async function setOpen(next: boolean, from: Element | null = null): Promise<void
     syncLauncher();
     syncModal();
     handle.setOpen(true);
+    playInterfaceSound('openChat');
     return;
   }
   const active = document.activeElement;
@@ -136,6 +138,7 @@ async function setOpen(next: boolean, from: Element | null = null): Promise<void
   syncLauncher();
   syncModal();
   panel?.setOpen(false);
+  playInterfaceSound('closeChat');
 }
 
 function toggle(from: Element | null): void {
