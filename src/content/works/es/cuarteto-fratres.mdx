@@ -1,6 +1,6 @@
 ---
 title: 'Cuarteto Fratres'
-kicker: 'Sitio del cuarteto'
+kicker: 'Sitio de un cuarteto de cuerdas'
 summary: 'Diseñé y desarrollé el sitio del Cuarteto Fratres para presentar su propuesta musical y facilitar contrataciones para conciertos, bodas y eventos privados.'
 role: 'Diseñador y desarrollador'
 service: ['Producto', 'Diseño', 'Desarrollo', 'Modelado del CMS']
@@ -22,6 +22,267 @@ order: 2
 cover:
   src: '../../../assets/works/cuarteto-fratres/cover.jpg'
   alt: 'Página de inicio del sitio del Cuarteto Fratres: titular sobre fondo oscuro, retrato del cuarteto y próximas fechas de concierto'
+zones:
+  - src: '../../../assets/works/cuarteto-fratres/repertorio-programa.jpg'
+    alt: 'Programa del repertorio con filtros por categoría y una obra en curso'
+  - src: '../../../assets/works/cuarteto-fratres/telefono-reproductor.jpg'
+    alt: 'Tres pantallas de teléfono: el repertorio, el minirreproductor sobre el contacto y el menú'
+  - src: '../../../assets/works/cuarteto-fratres/contacto-minirreproductor.jpg'
+    alt: 'Sección de contacto en tableta con el minirreproductor fijo abajo'
+demos: ['concert-dates', 'staff-player', 'booking-request']
 ---
 
-Diseñé y desarrollé el sitio del Cuarteto Fratres para presentar su propuesta musical y facilitar contrataciones para conciertos, bodas y eventos privados. Construido con Next.js, React, TypeScript y Payload CMS sobre PostgreSQL, reúne próximas fechas, perfiles de los músicos, repertorio y contacto, y el grupo actualiza el contenido y gestiona solicitudes de forma independiente.
+import {
+  CaseSection,
+  CaseSubsection,
+  ChatAside,
+  DemoSlot,
+  Figure,
+  Gallery,
+  SideNote,
+  SideNotes,
+} from '@/components/portfolio/case';
+import contactoMini from '@/assets/works/cuarteto-fratres/contacto-minirreproductor.jpg';
+import cuartetoTitular from '@/assets/works/cuarteto-fratres/cuarteto-titular.jpg';
+import error404 from '@/assets/works/cuarteto-fratres/error-404.jpg';
+import formulario from '@/assets/works/cuarteto-fratres/formulario-contacto.jpg';
+import pieTelefono from '@/assets/works/cuarteto-fratres/pie-telefono.jpg';
+import repertorio from '@/assets/works/cuarteto-fratres/repertorio-programa.jpg';
+import pentagrama from '@/assets/works/cuarteto-fratres/reproductor-pentagrama.jpg';
+import telefonoRecorrido from '@/assets/works/cuarteto-fratres/telefono-recorrido.jpg';
+import telefonoReproductor from '@/assets/works/cuarteto-fratres/telefono-reproductor.jpg';
+
+<CaseSection id="overview" title="Un cuarteto de cuerdas, de la primera escucha a la contratación">
+
+Cuarteto Fratres es un cuarteto de cuerdas de Boca del Río, Veracruz, que toca música de cámara en salas de concierto, ceremonias y eventos privados. Diseñé y desarrollé su sitio para presentar su propuesta musical y facilitar las contrataciones.
+
+Es una sola página que va de conocer al cuarteto a escribirle: una portada con las próximas fechas, la presentación del grupo, los perfiles de los cuatro músicos, el repertorio con su reproductor y un formulario de contacto.
+
+Me encargué de todo el proyecto: producto, diseño, desarrollo, modelado del CMS y despliegue. Todo lo que ve quien visita se edita en Payload CMS, que vive dentro de la misma aplicación de Next.js, así que el grupo actualiza su contenido y atiende sus solicitudes por su cuenta.
+
+</CaseSection>
+
+<CaseSection id="challenge" title="Dos públicos en la misma página">
+
+El sitio tenía que servirle a quien organiza un concierto, una boda o un evento privado. Esa persona necesita saber cuándo toca el cuarteto, quiénes lo forman, qué repertorio maneja y cómo pedir una propuesta, todo sin salir de la página.
+
+Del otro lado está el grupo, que necesitaba publicar sus fechas, ajustar su repertorio y responder solicitudes sin que yo tuviera que tocar el código.
+
+### Las fechas, primero
+
+Por eso la portada abre con las dos próximas presentaciones publicadas. Cada tarjeta abre una ventana con el detalle de la fecha: descripción, programa, lugar, precios y enlace de boletos. Si una fecha no tiene venta de boletos, el botón lleva directo al formulario de contacto.
+
+<ChatAside
+  meta="jue 19:40"
+  delivered
+  messages={[
+    { from: 'visitor', text: '¿Qué pasa con un concierto que ya pasó?' },
+    { from: 'sebastian', text: 'La portada se regenera a diario y lo saca sola.' },
+    { from: 'sebastian', text: 'Y queda guardado en el CMS como registro 🎻', fx: 'gentle' },
+  ]}
+/>
+
+<DemoSlot
+  name="concert-dates"
+  caption="Las próximas fechas publicadas, cada una con su ventana de detalle."
+/>
+
+</CaseSection>
+
+<CaseSection id="approach" title="Una página ordenada y un CMS en la misma aplicación">
+
+Organicé la experiencia en una sola página para que el recorrido vaya de conocer al cuarteto a contactarlo. Cada sección tiene su ancla y la cabecera fija acompaña todo el recorrido: es transparente sobre la foto oscura de la portada y se vuelve marfil cuando empiezan las secciones claras. En el teléfono, un menú a pantalla completa numera las cuatro secciones.
+
+### Un CMS dentro del sitio
+
+Payload vive dentro de la aplicación de Next.js, en /admin, sobre PostgreSQL. Los textos de cada sección son documentos únicos (Globals, en Payload) y lo que se repite son colecciones: integrantes, presentaciones, repertorio, categorías e imágenes. Los componentes nunca leen Payload directamente: cada sección pide sus datos a un servicio que traduce el documento a un tipo propio y, campo por campo, recurre al contenido de lanzamiento si algo está vacío, así que la página nunca queda en blanco.
+
+<SideNotes label="Cómo está organizado el contenido" cols={3}>
+  <SideNote title="Presentaciones" art="calendar">
+    Fecha, programa, lugar y boletos, con una casilla para publicarla.
+  </SideNote>
+  <SideNote title="Repertorio" art="music">
+    Obras con compositor, categoría y duración.
+  </SideNote>
+  <SideNote title="Roles" art="roles">
+    Administración y edición; solo administración gestiona usuarios.
+  </SideNote>
+</SideNotes>
+
+<CaseSubsection kicker="Dirección visual" appear>
+
+La identidad parte de dos fondos, marfil y tinta, y un solo acento lima que se vuelve oliva cuando tiene que leerse sobre marfil. Las fotos van en blanco y negro con grano de película, y los bloques sobre tinta llevan su propia capa de grano. Los títulos grandes usan una tipografía display en mayúsculas, Forum acompaña los encabezados y Mulish el texto corrido. Un pentagrama corto con tres notas acompaña los títulos y reaparece en el pie y en la página de error.
+
+<Gallery variant="pair-2col-phone">
+  <Figure
+    src={cuartetoTitular}
+    alt="Sección El cuarteto sobre fondo marfil: pentagrama decorativo, titular en mayúsculas y texto de presentación"
+  />
+  <Figure
+    src={error404}
+    alt="Página de error 404 sobre fondo tinta con el pentagrama, el titular, un botón lima y otro con contorno"
+    appear="approachGallery"
+  />
+</Gallery>
+<Gallery variant="pair-2col-phone">
+  <Figure
+    src={pieTelefono}
+    alt="Pie del sitio en teléfono: monograma lima, nombre del cuarteto en tipografía display y lema sobre tinta con grano"
+  />
+  <Figure
+    src={repertorio}
+    alt="Programa del repertorio con filtros en píldoras y la segunda obra resaltada mientras está en curso"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="research" title="Contenido ordenado por ocasión">
+
+Organicé el contenido alrededor de las ocasiones que atiende el cuarteto: conciertos y actividades culturales, bodas y ceremonias, y eventos privados. El repertorio se agrupa en categorías como Cámara, Latinoamericana, Bodas y Pop, para que cada quien encuentre rápido lo que va con su evento.
+
+El CMS acepta hasta cinco categorías, las que caben en el filtro de un teléfono, y no deja borrar una que todavía tenga obras. En los dos casos le explica al editor por qué, en lugar de dejar que la página se rompa en silencio. El formulario pide solo tres datos, y el texto de la sección invita a escribir la fecha, el lugar y la duración prevista, lo que el grupo necesita para armar una propuesta de programa.
+
+<CaseSubsection kicker="Del filtro al formulario">
+
+<Gallery variant="pair">
+  <Figure
+    src={formulario}
+    alt="Formulario de contacto con tres campos, nombre, correo o WhatsApp y detalles, y el botón Enviar solicitud"
+    appear="researchFirst"
+  />
+  <Figure
+    src={telefonoRecorrido}
+    alt="Tres pantallas de teléfono: el repertorio filtrado por Cámara, el formulario de contacto y la página de error"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="design" title="Un reproductor dibujado como partitura">
+
+Todavía no hay grabaciones de estudio: el reproductor simula la reproducción con la duración de cada obra, y cuando lleguen los audios solo cambia un hook. La interfaz ya está completa.
+
+El repertorio es la pieza central. La obra seleccionada vive en una tarjeta oscura con una clave de sol lima como portada; cuando el título no cabe, se desplaza de lado como en el estéreo de un auto. La barra de progreso es un pentagrama dibujado dos veces, tenue abajo y brillante encima, y la capa brillante se recorta hasta la parte avanzada, así que las notas se encienden conforme avanza la obra. Una doble barra marca la posición y con un clic se salta a cualquier punto.
+
+### Nada empieza solo
+
+Quien visita decide cuándo reproducir y solo hay una obra en curso a la vez. Si la tarjeta sale de la pantalla durante la reproducción, aparece un minirreproductor fijo abajo para seguir leyendo sin perder el control. Se va en cuanto la tarjeta vuelve a verse o cinco segundos después de una pausa, y mientras está, el pie suma su altura como margen para que nada quede tapado. En el teléfono no hay tarjeta: la barra es todo el reproductor, con una línea de progreso en el borde inferior.
+
+<SideNotes label="Piezas del reproductor" cols={3}>
+  <SideNote title="Progreso" art="gauge">
+    Un pentagrama cuyas notas se encienden al avanzar.
+  </SideNote>
+  <SideNote title="Minirreproductor" art="phone">
+    Fijo abajo mientras la tarjeta está fuera de vista.
+  </SideNote>
+  <SideNote title="Filtros" art="blocks">
+    Píldoras por categoría, con Todo al principio.
+  </SideNote>
+</SideNotes>
+
+<ChatAside
+  meta="mar 11:05"
+  delivered
+  messages={[
+    { from: 'visitor', text: '¿Y si alguien navega solo con teclado?' },
+    {
+      from: 'sebastian',
+      text: 'El pentagrama es un deslizador: las flechas avanzan 5 % e Inicio y Fin van a los extremos.',
+    },
+    {
+      from: 'sebastian',
+      text: 'Y la ventana de cada fecha es un diálogo nativo del navegador, con foco y Escape incluidos.',
+    },
+  ]}
+/>
+
+<DemoSlot
+  name="staff-player"
+  caption="El reproductor del repertorio: filtros, programa y progreso en pentagrama."
+/>
+
+<CaseSubsection kicker="Reproductor">
+
+<Gallery variant="lead">
+  <Figure
+    src={telefonoReproductor}
+    alt="Tres pantallas de teléfono: el repertorio con una obra en curso, el minirreproductor sobre el contacto y el menú a pantalla completa"
+    appear="designLead"
+  />
+</Gallery>
+<Gallery variant="pair">
+  <Figure
+    src={pentagrama}
+    alt="Detalle de la tarjeta del reproductor: título, compositor, progreso en pentagrama con las notas encendidas y controles"
+    appear="designRowFirst"
+  />
+  <Figure
+    src={contactoMini}
+    alt="Sección de contacto en tableta con el minirreproductor fijo abajo y su progreso en pentagrama"
+    appear="designRowSecond"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Integrantes">
+
+Los cuatro músicos se presentan en una galería de franjas con su retrato. Siempre hay una abierta; elegir otra la ensancha y cambia la ficha de al lado, con instrumento, nombre y semblanza. Las franjas se abren con un clic y no al pasar el puntero, para que no se abran solo por cruzarlas.
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Solicitudes">
+
+El formulario se envía a una server action, así que funciona incluso antes de que la página cargue su JavaScript. La validación muestra todos los errores a la vez y también limita las longitudes en el servidor. Cada solicitud válida se guarda en el CMS como «Nueva»; el equipo la marca como «Respondida» o «Descartada» y deja notas internas, mientras los datos de quien escribió quedan de solo lectura. La API pública no permite crear solicitudes: la server action es la única puerta de entrada.
+
+<DemoSlot
+  name="booking-request"
+  caption="Una solicitud de contacto, del formulario a la bandeja del grupo."
+/>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="outcome" title="Un sitio que el grupo mantiene por su cuenta">
+
+El cuarteto tiene un sitio que lo presenta y recibe sus solicitudes de contratación, y el grupo publica fechas, ajusta su repertorio y atiende cada solicitud desde /admin. Al guardar, unos hooks invalidan la caché de esos datos y de la portada, así que el cambio se ve en la siguiente visita.
+
+Dejé el proyecto listo para crecer: el esquema de la base cambia solo con migraciones, la lógica que se puede probar sin React vive en funciones puras con su prueba al lado y la integración continua revisa el estilo y los tipos, corre las pruebas y compila el sitio con cada push. Las secciones aparecen al entrar en pantalla, y quien prefiere menos movimiento las ve completas desde el principio.
+
+<ChatAside
+  meta="vie 18:20"
+  delivered
+  messages={[
+    { from: 'visitor', text: '¿El grupo puede cambiar algo sin llamarte?' },
+    { from: 'sebastian', text: 'Todo lo que se ve en la página se edita en el CMS.' },
+    {
+      from: 'sebastian',
+      text: 'Al guardar, se ve en la siguiente visita.',
+      fx: 'rain',
+      rain: '🎻🎶',
+    },
+  ]}
+/>
+
+<Gallery variant="composition">
+  <Figure
+    src={telefonoRecorrido}
+    alt="Tres pantallas de teléfono: el repertorio filtrado por Cámara, el formulario de contacto y la página de error"
+  />
+  <Figure
+    src={pentagrama}
+    alt="Detalle de la tarjeta del reproductor con el progreso en pentagrama"
+  />
+  <Figure
+    src={pieTelefono}
+    alt="Pie del sitio en teléfono con el monograma lima y el nombre del cuarteto"
+  />
+</Gallery>
+
+</CaseSection>

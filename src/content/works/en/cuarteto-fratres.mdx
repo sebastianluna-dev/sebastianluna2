@@ -22,6 +22,261 @@ order: 2
 cover:
   src: '../../../assets/works/cuarteto-fratres/cover.jpg'
   alt: 'Home page of the Cuarteto Fratres site: headline on a dark background, portrait of the quartet and upcoming concert dates'
+zones:
+  - src: '../../../assets/works/cuarteto-fratres/repertorio-programa.jpg'
+    alt: 'Repertoire program with category filters and one piece in progress'
+  - src: '../../../assets/works/cuarteto-fratres/telefono-reproductor.jpg'
+    alt: 'Three phone screens: the repertoire, the mini player over the contact section and the menu'
+  - src: '../../../assets/works/cuarteto-fratres/contacto-minirreproductor.jpg'
+    alt: 'Contact section on a tablet with the mini player pinned to the bottom'
+demos: ['concert-dates', 'staff-player', 'booking-request']
 ---
 
-I designed and built Cuarteto Fratres’ website to showcase their music and support bookings for concerts, weddings, and private events. Built with Next.js, React, TypeScript, and Payload CMS on PostgreSQL, it brings together upcoming performances, musician profiles, repertoire, and contact, and the group manages content and booking inquiries independently.
+import {
+  CaseSection,
+  CaseSubsection,
+  ChatAside,
+  DemoSlot,
+  Figure,
+  Gallery,
+  SideNote,
+  SideNotes,
+} from '@/components/portfolio/case';
+import contactoMini from '@/assets/works/cuarteto-fratres/contacto-minirreproductor.jpg';
+import cuartetoTitular from '@/assets/works/cuarteto-fratres/cuarteto-titular.jpg';
+import error404 from '@/assets/works/cuarteto-fratres/error-404.jpg';
+import formulario from '@/assets/works/cuarteto-fratres/formulario-contacto.jpg';
+import pieTelefono from '@/assets/works/cuarteto-fratres/pie-telefono.jpg';
+import repertorio from '@/assets/works/cuarteto-fratres/repertorio-programa.jpg';
+import pentagrama from '@/assets/works/cuarteto-fratres/reproductor-pentagrama.jpg';
+import telefonoRecorrido from '@/assets/works/cuarteto-fratres/telefono-recorrido.jpg';
+import telefonoReproductor from '@/assets/works/cuarteto-fratres/telefono-reproductor.jpg';
+
+<CaseSection id="overview" title="A string quartet, from first listen to booking">
+
+Cuarteto Fratres is a string quartet from Boca del Río, Veracruz, playing chamber music in concert halls, ceremonies and private events. I designed and built their website to showcase their music and make booking them easy.
+
+It is a single page that takes visitors from discovering the quartet to getting in touch: a hero with the upcoming dates, an introduction to the group, profiles of the four musicians, the repertoire with its player and a contact form.
+
+I handled the project end to end: product, design, development, CMS modeling and deployment. Everything a visitor sees is edited in Payload CMS, which lives inside the same Next.js app, so the group updates its own content and handles its own booking requests.
+
+</CaseSection>
+
+<CaseSection id="challenge" title="Two audiences on one page">
+
+The site had to work for someone planning a concert, a wedding or a private event. They need to know when the quartet plays, who is in it, what they play and how to ask for a proposal, all without leaving the page.
+
+On the other side is the group, who needed to publish their dates, adjust their repertoire and answer requests without me touching the code.
+
+### Dates come first
+
+That is why the hero opens with the next two published performances. Each card opens a window with the date’s details: description, program, venue, prices and a tickets link. When a date has no ticket sales, the button goes straight to the contact form.
+
+<ChatAside
+  meta="Thu 7:40 PM"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'What happens to a concert once it’s over?' },
+    { from: 'sebastian', text: 'The home page rebuilds daily and drops it on its own.' },
+    { from: 'sebastian', text: 'It stays in the CMS as a record 🎻', fx: 'gentle' },
+  ]}
+/>
+
+<DemoSlot
+  name="concert-dates"
+  caption="The upcoming published dates, each with its own detail window."
+/>
+
+</CaseSection>
+
+<CaseSection id="approach" title="One well-ordered page and a CMS inside the app">
+
+I laid the experience out as a single page so the journey runs from meeting the quartet to contacting them. Every section has its own anchor and the fixed header follows the whole way: it is transparent over the dark hero photo and turns ivory once the light sections begin. On phones, a full-screen menu numbers the four sections.
+
+### A CMS inside the site
+
+Payload lives inside the Next.js app, at /admin, on PostgreSQL. Each section’s copy is a Global and whatever repeats is a collection: members, performances, repertoire, categories and images. Components never read Payload directly: each section asks a service for its data, which maps the document to a type of its own and falls back, field by field, to the launch content when something is empty, so the page is never blank.
+
+<SideNotes label="How the content is organized" cols={3}>
+  <SideNote title="Performances" art="calendar">
+    Date, program, venue and tickets, with a checkbox to publish it.
+  </SideNote>
+  <SideNote title="Repertoire" art="music">
+    Pieces with composer, category and length.
+  </SideNote>
+  <SideNote title="Roles" art="roles">
+    Admin and editor; only an admin manages users.
+  </SideNote>
+</SideNotes>
+
+<CaseSubsection kicker="Visual direction" appear>
+
+The identity starts from two grounds, ivory and ink, and a single lime accent that turns olive when it has to be read on ivory. Photos are black and white with film grain, and the blocks on ink carry a grain layer of their own. Large titles use an uppercase display face, Forum sets the headings and Mulish the body text. A short staff with three notes sits beside the titles and comes back in the footer and on the error page.
+
+<Gallery variant="pair-2col-phone">
+  <Figure
+    src={cuartetoTitular}
+    alt="The quartet section on ivory: decorative staff, uppercase headline and introduction text"
+  />
+  <Figure
+    src={error404}
+    alt="404 error page on ink with the staff, the headline, a lime button and an outlined one"
+    appear="approachGallery"
+  />
+</Gallery>
+<Gallery variant="pair-2col-phone">
+  <Figure
+    src={pieTelefono}
+    alt="Site footer on a phone: lime monogram, the quartet’s name in the display face and the tagline on grainy ink"
+  />
+  <Figure
+    src={repertorio}
+    alt="Repertoire program with pill filters and the second piece highlighted while it plays"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="research" title="Content organized by occasion">
+
+I organized the content around the occasions the quartet plays for: concerts and cultural events, weddings and ceremonies, and private events. The repertoire is grouped into categories such as Chamber, Latin American, Weddings and Pop, so each visitor quickly finds what suits their event.
+
+The CMS takes up to five categories, as many as fit in the filter on a phone, and will not delete one that still has pieces in it. Either way it tells the editor why, instead of letting the page break quietly. The form asks for just three things, and the section copy invites people to include the date, the venue and the expected length, which is what the group needs to put together a program proposal.
+
+<CaseSubsection kicker="From filter to form">
+
+<Gallery variant="pair">
+  <Figure
+    src={formulario}
+    alt="Contact form with three fields, name, email or WhatsApp and details, and the send request button"
+    appear="researchFirst"
+  />
+  <Figure
+    src={telefonoRecorrido}
+    alt="Three phone screens: the repertoire filtered by chamber music, the contact form and the error page"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="design" title="A player drawn as a score">
+
+There are no studio recordings yet: the player simulates playback over each piece’s length, and only one hook changes once the audio exists. The interface is already complete.
+
+The repertoire is the centerpiece. The selected piece lives on a dark card with a lime treble clef as its cover; when the title does not fit, it scrolls sideways like a car stereo. The progress bar is a staff drawn twice, faint underneath and bright on top, with the bright copy clipped to the part already played, so the notes light up as the piece moves along. A double bar line marks the position, and a click jumps to any point.
+
+### Nothing starts on its own
+
+Visitors decide when to press play, and only one piece is in progress at a time. If the card scrolls off screen during playback, a mini player pins itself to the bottom so people can keep reading without losing control. It leaves as soon as the card is back in view, or five seconds after a pause, and while it is there the footer adds its height as padding so nothing gets covered. On phones there is no card: the bar is the whole player, with a progress line along its bottom edge.
+
+<SideNotes label="Parts of the player" cols={3}>
+  <SideNote title="Progress" art="gauge">
+    A staff whose notes light up as it advances.
+  </SideNote>
+  <SideNote title="Mini player" art="phone">
+    Pinned to the bottom while the card is out of view.
+  </SideNote>
+  <SideNote title="Filters" art="blocks">
+    One pill per category, with All first.
+  </SideNote>
+</SideNotes>
+
+<ChatAside
+  meta="Tue 11:05 AM"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'What if someone only uses a keyboard?' },
+    {
+      from: 'sebastian',
+      text: 'The staff is a slider: arrow keys move 5 %, Home and End jump to either end.',
+    },
+    {
+      from: 'sebastian',
+      text: 'And each date’s window is a native browser dialog, with focus and Escape built in.',
+    },
+  ]}
+/>
+
+<DemoSlot
+  name="staff-player"
+  caption="The repertoire player: filters, program and progress on a staff."
+/>
+
+<CaseSubsection kicker="Player">
+
+<Gallery variant="lead">
+  <Figure
+    src={telefonoReproductor}
+    alt="Three phone screens: the repertoire with a piece in progress, the mini player over the contact section and the full-screen menu"
+    appear="designLead"
+  />
+</Gallery>
+<Gallery variant="pair">
+  <Figure
+    src={pentagrama}
+    alt="Close-up of the player card: title, composer, staff progress with lit notes and transport controls"
+    appear="designRowFirst"
+  />
+  <Figure
+    src={contactoMini}
+    alt="Contact section on a tablet with the mini player pinned to the bottom and its staff progress"
+    appear="designRowSecond"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Members">
+
+The four musicians appear in a gallery of portrait strips. One is always open; choosing another widens it and swaps the card beside it, with instrument, name and biography. Strips open on click rather than hover, so they don’t open just because the pointer crosses them.
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Requests">
+
+The form posts to a server action, so it works even before the page loads its JavaScript. Validation reports every error at once and caps the lengths on the server too. Every valid request is stored in the CMS as “New”; the team marks it “Answered” or “Discarded” and leaves internal notes, while the sender’s details stay read-only. The public API cannot create requests: the server action is the only way in.
+
+<DemoSlot name="booking-request" caption="A contact request, from the form to the group’s inbox." />
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="outcome" title="A site the group runs on its own">
+
+The quartet has a site that introduces them and takes their booking requests, and the group publishes dates, adjusts its repertoire and handles every request from /admin. On save, hooks invalidate the cache for that data and for the home page, so the change shows up on the next visit.
+
+I left the project ready to grow: the database schema only changes through migrations, any logic that can be tested without React lives in pure functions with a test beside them, and continuous integration checks style and types, runs the tests and builds the site on every push. Sections fade in as they enter the screen, and visitors who prefer less motion see them in full from the start.
+
+<ChatAside
+  meta="Fri 6:20 PM"
+  delivered
+  messages={[
+    { from: 'visitor', text: 'Can the group change things without calling you?' },
+    { from: 'sebastian', text: 'Everything on the page is edited in the CMS.' },
+    {
+      from: 'sebastian',
+      text: 'Hit save and it’s live on the next visit.',
+      fx: 'rain',
+      rain: '🎻🎶',
+    },
+  ]}
+/>
+
+<Gallery variant="composition">
+  <Figure
+    src={telefonoRecorrido}
+    alt="Three phone screens: the repertoire filtered by chamber music, the contact form and the error page"
+  />
+  <Figure src={pentagrama} alt="Close-up of the player card with the staff progress" />
+  <Figure
+    src={pieTelefono}
+    alt="Site footer on a phone with the lime monogram and the quartet’s name"
+  />
+</Gallery>
+
+</CaseSection>
