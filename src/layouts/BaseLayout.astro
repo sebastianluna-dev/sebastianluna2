@@ -15,7 +15,7 @@ import geistUrl from '@/assets/fonts/geist-variable.woff2?url';
 import serifUrl from '@/assets/fonts/noto-serif-latin-wdth-normal.woff2?url';
 import { HTML_LANG, OG_LOCALE, type Locale } from '@/i18n/locales';
 import { getMessages } from '@/i18n/t';
-import { alternates, canonicalUrl } from '@/lib/i18n-paths';
+import { absoluteUrl, alternates, canonicalUrl } from '@/lib/i18n-paths';
 import { themeInlineScript } from '@/components/portfolio/theme/theme.inline';
 import SkipLink from '@/components/portfolio/shell/SkipLink.astro';
 import PillNav from '@/components/portfolio/shell/PillNav.astro';
@@ -31,9 +31,13 @@ interface Props {
   description?: string;
   /** Keeps the page out of search results. */
   noindex?: boolean;
+  /** Share image (a case cover); `src` may be relative, it is made absolute. */
+  image?: { src: string; alt: string; width: number; height: number };
+  /** `og:type`: `article` for a case study, `website` otherwise. */
+  ogType?: 'website' | 'article';
 }
 
-const { locale, title, description, noindex = false } = Astro.props;
+const { locale, title, description, noindex = false, image, ogType = 'website' } = Astro.props;
 const { common } = getMessages(locale);
 const pageTitle = title ?? common.meta.title;
 const pageDescription = description ?? common.meta.description;
@@ -64,14 +68,22 @@ const otherLocale: Locale = locale === 'es' ? 'en' : 'es';
     <link rel="preload" href={geistUrl} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={common.siteName} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={OG_LOCALE[locale]} />
     <meta property="og:locale:alternate" content={OG_LOCALE[otherLocale]} />
-    <meta name="twitter:card" content="summary" />
+    {image && (
+      <>
+        <meta property="og:image" content={absoluteUrl(image.src)} />
+        <meta property="og:image:width" content={String(image.width)} />
+        <meta property="og:image:height" content={String(image.height)} />
+        <meta property="og:image:alt" content={image.alt} />
+      </>
+    )}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
 
     <slot name="head" />
     <ClientRouter />
