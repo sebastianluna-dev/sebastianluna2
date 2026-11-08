@@ -1,9 +1,12 @@
 import type { caseStudy as reference } from '../es/case';
 
 export const caseStudy = {
+  documentTitle: '{title} | {site}',
   back: 'Back',
   backLabel: 'Back to works',
+  backNavLabel: 'Return to the list',
   meta: {
+    label: 'Project details',
     service: 'Service',
     tools: 'Tools',
     year: 'Year',
@@ -26,4 +29,15 @@ export const caseStudy = {
   enlargeImage: 'Enlarge image: {alt}',
   lightbox: 'Enlarged image',
   close: 'Close',
+  figure: {
+    placeholder: 'Image in progress',
+  },
+  chat: {
+    label: 'Conversation about the project',
+    visitor: 'Visitor',
+    visitorInitial: 'V',
+    sebastian: 'Sebastian',
+    delivered: 'Delivered',
+    reaction: 'Reaction: {emoji}',
+  },
 } satisfies typeof reference;
