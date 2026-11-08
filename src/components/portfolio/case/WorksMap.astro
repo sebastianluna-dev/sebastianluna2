@@ -1,0 +1,100 @@
+---
+/**
+ * Works Map (design-spec §3.2, §7.3; case.md §3.1): fixed index of the six sections on the left,
+ * only ≥1200 (`display: none` below, so it also leaves the Tab order; it stays in the DOM).
+ *
+ * - CA-02: the item of the current section is at opacity 1 with `aria-current="location"`, the rest at
+ *   `--pf-map-inactive`; the opacity eases in 200 ms (100 ms on hover). The SSR marks the first item,
+ *   which is also the state at scroll 0 with JS, so nothing changes when the spy binds.
+ * - `:focus-visible` lifts the item to 1 and the ring is not clipped (the reference loses both).
+ * - CA-03: a click or Enter jumps natively (instant, `scroll-margin-top` 196 / 266) and
+ *   `works-map.client.ts` moves the focus to the h2 of the section.
+ */
+import { getMessages } from '@/i18n/t';
+import { CASE_SECTION_IDS } from '@/lib/works';
+import type { WorksMapProps } from './types';
+
+type Props = WorksMapProps;
+
+const { locale } = Astro.props;
+const copy = getMessages(locale).case;
+---
+
+<nav class="works-map" aria-label={copy.mapLabel} data-works-map>
+  <ol class="works-map__list">
+    {CASE_SECTION_IDS.map((id, index) => (
+      <li class="works-map__item">
+        <a
+          class="works-map__link"
+          href={`#${id}`}
+          aria-current={index === 0 ? 'location' : undefined}
+          data-works-map-link={id}
+        >
+          {copy.sections[id]}
+        </a>
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<script>
+  import { startWorksMap } from './works-map.client';
+
+  startWorksMap();
+</script>
+
+<style>
+  @layer pf {
+    .works-map {
+      position: fixed;
+      top: var(--pf-map-top);
+      left: var(--pf-map-left);
+      z-index: var(--pf-z-map);
+      display: none;
+
+      @media (min-width: 1200px) {
+        display: block;
+      }
+    }
+
+    .works-map__list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--pf-map-gap);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .works-map__item {
+      display: flex;
+    }
+
+    /* CA-02: spy 200 ms, hover 100 ms, both on the standard curve. */
+    .works-map__link {
+      display: block;
+      color: var(--pf-text);
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-index-size);
+      line-height: var(--pf-type-index-lh);
+      letter-spacing: var(--pf-type-index-ls);
+      white-space: nowrap;
+      text-decoration: none;
+      opacity: var(--pf-map-inactive);
+      transition: opacity var(--pf-map-spy-duration) var(--pf-ease-standard);
+
+      &[aria-current],
+      &:focus-visible {
+        opacity: 1;
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          opacity: 1;
+          transition-duration: var(--pf-map-hover-duration);
+        }
+      }
+    }
+  }
+</style>
