@@ -15,12 +15,16 @@ import type {
   ResponsivePreset,
   StaggerMode,
 } from './types';
+import type { CaseSectionId } from '@/lib/works';
 
 export const BREAKPOINT_QUERIES: Record<Breakpoint, string> = {
   desktop: '(min-width: 1200px)',
   tablet: '(min-width: 810px) and (max-width: 1199.98px)',
   phone: '(max-width: 809.98px)',
 };
+
+/** CA-15: the side notes turn into a carousel at the reference's own threshold (not a Framer breakpoint). */
+export const SIDE_NOTES_CAROUSEL_QUERY = '(max-width: 599.98px)';
 
 // ------------------------------------------------------------------ springs and tweens
 
@@ -257,7 +261,10 @@ export const BLUE_LAUNCHER_APPEAR = {
   delay: 0,
 } as const satisfies AppearSlot;
 
-/** CA-01: case hero blocks. Sections continue at `CASE_SECTION_STAGGER`. */
+/**
+ * CA-01: case hero blocks. In the meta only the row, the three labels and the year value animate
+ * (the Service and Tools values ride on the row). Sections continue at `CASE_SECTION_STAGGER`.
+ */
 export const CASE_APPEAR = {
   title: { preset: 'fadeUpY20SpringB000040', delay: 0 },
   heading: { preset: 'fadeInSpringB000040', delay: 0.05 },
@@ -276,6 +283,73 @@ export const CASE_SECTION_STAGGER = { start: 0.45, step: 0.05 } as const;
 export function caseSectionDelay(index: number): number {
   return Math.round((CASE_SECTION_STAGGER.start + index * CASE_SECTION_STAGGER.step) * 1000) / 1000;
 }
+
+/**
+ * CA-01: kicker, h2 and body of each fixed section, with the absolute delays of the reference master
+ * template (motion-json.md "Secuencia del caso"). They are `caseSectionDelay(i)` for the block index
+ * i of that template (overview 0–2, challenge 3–5, approach 6–8, research 10–12, design 19–21,
+ * outcome 31–33); the gaps are the optional blocks of `CASE_BLOCK_APPEAR`. `works.test.ts` checks it.
+ */
+export const CASE_SECTION_APPEAR = {
+  overview: {
+    kicker: { preset: 'fadeUpY20SpringB000040', delay: 0.45 },
+    heading: { preset: 'fadeUpY20SpringB000040', delay: 0.5 },
+    body: { preset: 'fadeUpY20SpringB000040', delay: 0.55 },
+  },
+  challenge: {
+    kicker: { preset: 'fadeUpY20SpringB000040', delay: 0.6 },
+    heading: { preset: 'fadeUpY20SpringB000040', delay: 0.65 },
+    body: { preset: 'fadeUpY20SpringB000040', delay: 0.7 },
+  },
+  approach: {
+    kicker: { preset: 'fadeUpY20SpringB000040', delay: 0.75 },
+    heading: { preset: 'fadeUpY20SpringB000040', delay: 0.8 },
+    body: { preset: 'fadeUpY20SpringB000040', delay: 0.85 },
+  },
+  research: {
+    kicker: { preset: 'fadeUpY20SpringB000040', delay: 0.95 },
+    heading: { preset: 'fadeUpY20SpringB000040', delay: 1 },
+    body: { preset: 'fadeUpY20SpringB000040', delay: 1.05 },
+  },
+  design: {
+    kicker: { preset: 'fadeUpY20SpringB000040', delay: 1.4 },
+    heading: { preset: 'fadeUpY20SpringB000040', delay: 1.45 },
+    body: { preset: 'fadeUpY20SpringB000040', delay: 1.5 },
+  },
+  outcome: {
+    kicker: { preset: 'fadeUpY20SpringB000040', delay: 2 },
+    heading: { preset: 'fadeUpY20SpringB000040', delay: 2.05 },
+    body: { preset: 'fadeUpY20SpringB000040', delay: 2.1 },
+  },
+} as const satisfies Record<
+  CaseSectionId,
+  { kicker: AppearSlot; heading: AppearSlot; body: AppearSlot }
+>;
+
+/** CA-01: the optional blocks of the master template that also appear (the rest never animates). */
+export const CASE_BLOCK_APPEAR = {
+  /** Approach › first subsection (Visual Direction in the reference): kicker and body. */
+  subsectionKicker: { preset: 'fadeUpY20SpringB000040', delay: 1.25 },
+  subsectionBody: { preset: 'fadeUpY20SpringB000040', delay: 1.3 },
+} as const satisfies Record<string, AppearSlot>;
+
+/**
+ * CA-01: the single figures of the galleries that appear, by role (`<Figure appear="…">` in the MDX).
+ * Every other figure is static, as in the reference.
+ */
+export const CASE_FIGURE_APPEAR = {
+  /** Research › evidence gallery, first image (1.2 s). */
+  researchFirst: { preset: 'fadeUpY20SpringB000040', delay: 1.2 },
+  /** Approach › Visual Direction gallery, second image (1.35 s). */
+  approachGallery: { preset: 'fadeUpY20SpringB000040', delay: 1.35 },
+  /** Design solutions › UI gallery, lead image (1.65 s). */
+  designLead: { preset: 'fadeUpY20SpringB000040', delay: 1.65 },
+  /** Design solutions › UI gallery, first row, first and second image (1.8 s, 1.95 s). */
+  designRowFirst: { preset: 'fadeUpY20SpringB000040', delay: 1.8 },
+  designRowSecond: { preset: 'fadeUpY20SpringB000040', delay: 1.95 },
+} as const satisfies Record<string, AppearSlot>;
+
+export type CaseFigureAppear = keyof typeof CASE_FIGURE_APPEAR;
 
 /** CA-01 stagger mode: `absolute`, identical to the reference (docs/decisiones.md). */
 export const APPEAR_STAGGER: StaggerMode = 'absolute';
@@ -543,5 +617,151 @@ export const ROUTE_TRANSITIONS = {
     easing: 'cubic-bezier(0.2, 0, 0, 1)',
     oldHoldUntil: 0.4,
     newInBy: 0.35,
+  },
+} as const;
+
+// ------------------------------------------------------------------ case study components
+
+/** CA-02: Works Map scroll-spy. CSS fades are tokens (`--pf-map-spy-duration`, `--pf-map-hover-duration`). */
+export const WORKS_MAP = {
+  /** The current section is the last whose top is above this share of `innerHeight`, else the first. */
+  activeLine: 0.4,
+  /** Opacity of the inactive items: CSS `--pf-map-inactive` (contrast decision 20). */
+} as const;
+
+/**
+ * CA-07 / CA-08: lightbox FLIP with WAAPI. The image animates from the rect of its thumbnail ("cover"
+ * scale + translate) to none; the scrim is `--pf-lightbox-scrim`. Reduced motion: `REDUCED_LIGHTBOX_MS`
+ * of opacity only.
+ */
+export const LIGHTBOX = {
+  open: {
+    imageMs: 320,
+    imageEasing: 'cubic-bezier(0.2, 0, 0, 1)',
+    /** Opacity 0 → 1 during the first 12 % of the image animation. */
+    imageFadeUntil: 0.12,
+    scrimMs: 200,
+    scrimEasing: 'ease-out',
+  },
+  close: {
+    durationMs: 200,
+    easing: 'ease-out',
+    /** Opacity stays 1 until 85 % of the way back, then fades to 0. */
+    imageHoldUntil: 0.85,
+  },
+  /** Source width of the enlarged image: clamp(minWidth, vwFactor · innerWidth, maxWidth) px. */
+  source: { minWidth: 960, vwFactor: 1.25, maxWidth: 1600 },
+} as const;
+
+/** CA-09 spring of bubbles, typing bubble and avatar (ζ .6155, ωn 10.915 per unit of duration, peak 1.0855). */
+const CHAT_SPRING_EASING =
+  'linear(0, 0.0332, 0.1177, 0.2335, 0.3645, 0.498, 0.625, 0.7393, 0.8374, 0.9178, 0.9803, 1.0263, 1.0575, 1.0762, 1.0847, 1.0855, 1.0807, 1.0722, 1.0616, 1.0501, 1.0388, 1.0282, 1.0189, 1.0111, 1.0048, 1, 0.9965, 0.9943, 0.9931, 0.9926, 0.9928, 0.9933, 0.9941, 0.9951, 0.9961, 0.997, 0.9979, 0.9987, 0.9993, 0.9998, 1)';
+const CHAT_POP_EASING = 'cubic-bezier(0.3, 1.2, 0.5, 1)';
+
+/**
+ * CA-09…CA-12: the "typing… → bubble" sequence of `ChatAside` (WAAPI + timers), in ms. The dots loop
+ * (CA-13) is CSS: `--pf-chat-dots-*`. Reduced motion or no JS: the whole conversation, static.
+ */
+export const CHAT_ASIDE = {
+  /** Starts once, when the aside enters this observer margin; paused while out of view. */
+  rootMargin: '0px 0px -22% 0px',
+  meta: { durationMs: 280, easing: 'ease-out' },
+  /** CA-09: fade of the author label when its run starts (measured `ease-out`, as the meta). */
+  who: { durationMs: 180, easing: 'ease-out' },
+  /** First message after the meta line (0 when there is no meta). */
+  startAfterMetaMs: 220,
+  avatar: { popMs: 320, slideMs: 340, fromScale: 0.5 },
+  typing: {
+    inMs: 420,
+    outMs: 140,
+    outEasing: 'cubic-bezier(0.4, 0, 1, 1)',
+    outScale: 1.06,
+    from: { y: 6, scale: 0.5 },
+    /** Typing time D = clamp(minMs, base + perCharMs · length, maxMs); base is lower for a repeat author. */
+    minMs: 400,
+    maxMs: 600,
+    baseMs: 400,
+    sameAuthorBaseMs: 330,
+    perCharMs: 3,
+  },
+  bubble: { durationMs: 640, from: { y: 10, scale: 0.82 } },
+  text: { durationMs: 220, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' },
+  /** Next message starts D + this after the current one. */
+  nextGapMs: 260,
+  /** The status ("Delivered") fades in this long before the end of the last message slot. */
+  status: { durationMs: 240, leadMs: 120, easing: 'ease-out' },
+  spring: { easing: CHAT_SPRING_EASING, fallbackEasing: 'cubic-bezier(0.3, 1.4, 0.55, 1)' },
+  /** CA-10: bubble effects, keyframes as [transform, offset] pairs ending at none (opacity 0 → 1 at the 2nd). */
+  fx: {
+    slam: {
+      durationMs: 620,
+      easing: CHAT_POP_EASING,
+      frames: [
+        { y: -26, scale: 2.1, offset: 0 },
+        { y: 2, scale: 0.9, offset: 0.55 },
+        { y: 0, scale: 1.03, offset: 0.78 },
+      ],
+    },
+    loud: {
+      durationMs: 820,
+      easing: CHAT_POP_EASING,
+      frames: [
+        { scale: 0.8, rotate: 0, offset: 0 },
+        { scale: 1.5, rotate: 0, offset: 0.35 },
+        { scale: 1.38, rotate: -3, offset: 0.5 },
+        { scale: 1.42, rotate: 3, offset: 0.62 },
+      ],
+    },
+    gentle: {
+      durationMs: 1300,
+      easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+      frames: [
+        { scale: 0.35, offset: 0 },
+        { scale: 1.06, offset: 0.7 },
+      ],
+    },
+  },
+  /** CA-11: tapback on an earlier bubble, after the bubble. */
+  tapback: {
+    delayMs: 380,
+    durationMs: 420,
+    easing: 'cubic-bezier(0.3, 1.4, 0.55, 1)',
+    from: { scale: 0, rotate: -25 },
+    peak: { scale: 1.35, rotate: 8, offset: 0.6 },
+  },
+  /** CA-12: emoji rain of a bubble with `rain`; random values inside these ranges. */
+  rain: {
+    /** After the bubble: slam waits for its impact. */
+    startMs: { slam: 260, other: 120 },
+    particles: [10, 18],
+    /** Share of particles that burst from the bubble; the rest fall from above. */
+    sourceShare: 1 / 3,
+    sourceMs: [1100, 1400],
+    sourceDelayMs: [0, 120],
+    sourceEasing: 'cubic-bezier(0.2, 0.7, 0.4, 1)',
+    fallMs: [1500, 2200],
+    fallDelayMs: [0, 500],
+    fallEasing: 'cubic-bezier(0.45, 0, 0.75, 0.9)',
+    rotateDeg: 70,
+    scale: [0.7, 1.3],
+    /**
+     * Geometry in px: one particle per 40 px of width; burst particles start at scale .3 over 70 % of
+     * the bubble, rise 30–110, peak 20 higher at 40 % and end 140 below; falling ones start 30–90
+     * above the aside, drift ±25 and end 16 below it, opaque from 15 % to 80 %.
+     */
+    geometry: {
+      pxPerParticle: 40,
+      glyphPx: 24,
+      sourceStartScale: 0.3,
+      sourceSpread: 0.7,
+      sourceRise: [30, 110],
+      sourcePeakLift: 20,
+      sourcePeakOffset: 0.4,
+      sourceDrop: 140,
+      fallStart: [30, 90],
+      fallDrift: 50,
+      fallBelow: 16,
+      fallOpaque: [0.15, 0.8],
+    },
   },
 } as const;
