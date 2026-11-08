@@ -12,9 +12,8 @@
  *   the check plays only when the Blue launcher took it (`preventDefault()`, R-06).
  */
 import { HERO_MENU } from '@/components/motion/presets';
+import { BLUE_OPEN_EVENT } from '@/lib/blue/events';
 import { EMAIL_FALLBACK_EVENT } from '@/lib/pill-nav';
-
-export const BLUE_OPEN_EVENT = 'pf:blue-open';
 
 const ACTION_SELECTOR = '[data-hero-action]';
 const busyRails = new WeakSet<HTMLElement>();
