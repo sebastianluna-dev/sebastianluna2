@@ -15,6 +15,7 @@ import type {
   ResponsivePreset,
   StaggerMode,
 } from './types';
+import type { BlinkTiming, GazeScale } from '@/lib/blue/eyes';
 import type { CaseSectionId } from '@/lib/works';
 
 export const BREAKPOINT_QUERIES: Record<Breakpoint, string> = {
@@ -306,6 +307,29 @@ export const BLUE = {
     maxViewportShare: 0.8,
   },
 } as const;
+
+/**
+ * BL-13: Blue's eyes follow the pointer and blink (`src/lib/blue/eyes.ts`). Measured on the
+ * reference at 1440 × 900: with the pointer far off (gaze clamped to ±1) the eyes travel ~17 px
+ * across and ~12 px up or down and the bubble ~7 / 3.5 px of that, turning towards the pointer.
+ * Blinks every 2.05–3.85 s, 125–180 ms closed, 28 % of them double (90–170 ms open, then 105–150 ms
+ * closed). The CSS transitions (`--pf-blue-eyes-*` tokens) give the reference's lag: the eyes
+ * snap, the bubble follows. Reduced motion: still eyes, no blinking.
+ */
+export const BLUE_EYES = {
+  gaze: {
+    limit: 1,
+    body: { x: 7, y: 3.5, tiltX: 9, tiltY: 13 },
+    eyes: { x: 10, y: 8.5 },
+  },
+  blink: {
+    interval: [2050, 3850],
+    closed: [125, 180],
+    doubleChance: 0.28,
+    doubleGap: [90, 170],
+    doubleClosed: [105, 150],
+  },
+} as const satisfies { gaze: { limit: number } & GazeScale; blink: BlinkTiming };
 
 /**
  * CA-01: case hero blocks. In the meta only the row, the three labels and the year value animate
