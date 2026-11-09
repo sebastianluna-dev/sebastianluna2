@@ -1,0 +1,74 @@
+---
+title: '[Borrador de ejemplo] Cómo se ve un artículo'
+description: 'Artículo de ejemplo que muestra los componentes de un escrito. Se reemplaza por el primer artículo real de Sebastian.'
+date: 2026-11-08
+tags: []
+draft: true
+---
+
+import { ChatAside, SideNote, SideNotes, WritingFigure } from '@/components/portfolio/writing';
+
+Este es un artículo de ejemplo: sirve para ver cómo se maquetan los escritos del sitio y se reemplaza por el primer artículo real. Nada de lo que dice es una opinión ni un dato de Sebastian.
+
+Este segundo párrafo existe para ver el ritmo entre párrafos: el espacio que los separa es más amplio que en los casos de estudio, para que un texto largo se lea con calma. Sus palabras solo ocupan lugar y no dicen nada sobre ningún proyecto.
+
+## Un encabezado de sección
+
+Cada sección de un escrito empieza con un encabezado como el de arriba y sigue con su texto. Dentro de un párrafo puede haber un enlace interno, como [la lista de trabajos](/#works), o uno externo, como [su perfil de GitHub](https://github.com/sebastianluna-dev), que se abre en otra pestaña. También puede haber una frase en **negrita** para destacar una idea.
+
+### Un subtítulo
+
+Un subtítulo divide la sección en partes más pequeñas. Debajo puede ir una lista con viñetas:
+
+- Un párrafo, que es la pieza básica del texto.
+- Una imagen, que va a todo el ancho de la columna.
+- Un bloque de código, con su botón para copiarlo.
+
+O una lista numerada, para pasos en orden:
+
+1. Escribe el texto.
+2. Agrega las imágenes.
+3. Quita `draft` del encabezado del archivo.
+
+<WritingFigure alt="Hueco de una imagen 16:9 de ejemplo" />
+
+Las imágenes ocupan el ancho de la columna con proporción 16:9 y no tienen esquinas redondeadas. Mientras no hay imagen, se ve un hueco neutro como el de arriba.
+
+| Componente | Para qué sirve                           | Cómo se escribe                                   |
+| ---------- | ---------------------------------------- | ------------------------------------------------- |
+| Párrafo    | Contar la idea principal                 | Texto normal, separado por una línea en blanco    |
+| Imagen     | Mostrar algo que el texto no alcanza     | El componente de figura, con su texto alternativo |
+| Tabla      | Comparar datos en filas y columnas       | Barras verticales y una fila de guiones           |
+| Código     | Enseñar un fragmento que se puede copiar | Tres acentos graves y el nombre del lenguaje      |
+
+La tabla de arriba tiene bordes redondeados y se desplaza de lado si no cabe. El bloque de abajo calcula el tiempo de lectura de un texto:
+
+```ts
+const words = text.trim().split(/\s+/).length;
+const minutes = Math.max(1, Math.round(words / 200));
+```
+
+Un escrito también puede tener una conversación, con las mismas burbujas que los casos de estudio:
+
+<ChatAside
+  messages={[
+    { from: 'visitor', text: '¿Esto es un artículo real?' },
+    { from: 'sebastian', text: 'No, es un ejemplo para ver el chat dentro de un escrito.' },
+  ]}
+/>
+
+Y una fila de notas con ilustración, que rompe la columna del texto:
+
+<SideNotes label="Partes de un escrito" cols={3}>
+  <SideNote title="Texto" art="blocks">
+    Los párrafos, encabezados y listas que cuentan la idea.
+  </SideNote>
+  <SideNote title="Imágenes" art="palette">
+    Las figuras de 16:9 que acompañan al texto.
+  </SideNote>
+  <SideNote title="Código" art="compass">
+    Los fragmentos que el lector puede copiar.
+  </SideNote>
+</SideNotes>
+
+Este es el final del ejemplo. Debajo está el pie del artículo, con el enlace al autor.

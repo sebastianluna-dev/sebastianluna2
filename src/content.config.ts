@@ -44,4 +44,32 @@ const works = defineCollection({
   },
 });
 
-export const collections = { works };
+// Writings (fase7-plan §2.1), one MDX per language: src/content/writings/<locale>/<slug>.mdx, with
+// the same id pattern as `works` (`es/<slug>`; no `slug` field, slugs are not translated). Every
+// article needs its twin in the other language. Drafts only exist in `astro dev`: the lists and the
+// routes go through `writingsForLocale` / `writingStaticPaths` in @/lib/writings, never `draft` itself.
+const writings = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/writings' }),
+  schema: ({ image }) =>
+    z.object({
+      /** h1 of the article, title of its card and of the document. */
+      title: z.string().min(1),
+      /** Card excerpt (clamped to one line) and meta description. */
+      description: z.string().min(1).max(META_DESCRIPTION_MAX),
+      /** Publication date: <time datetime>, article:published_time and the default order. */
+      date: z.coerce.date(),
+      /** Last substantive edit: article:modified_time. */
+      updated: z.coerce.date().optional(),
+      /** Only for article:tag metadata; never rendered (the reference shows no tags). */
+      tags: z.array(z.string().min(1)).default([]),
+      /** Share image (og:image) only; the page paints no cover, like the reference. */
+      cover: z.object({ src: image(), alt: z.string().min(1) }).optional(),
+      /** Overrides the computed reading time (minutes). */
+      readingMinutes: z.number().int().positive().optional(),
+      /** Manual position in the lists (1 = first); without it, newest first. */
+      order: z.number().int().positive().optional(),
+      draft: z.boolean().default(false),
+    }),
+});
+
+export const collections = { works, writings };

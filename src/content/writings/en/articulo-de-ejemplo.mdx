@@ -1,0 +1,74 @@
+---
+title: '[Example draft] What an article looks like'
+description: "Example article that shows the components of a piece of writing. It will be replaced by Sebastian's first real article."
+date: 2026-11-08
+tags: []
+draft: true
+---
+
+import { ChatAside, SideNote, SideNotes, WritingFigure } from '@/components/portfolio/writing';
+
+This is an example article: it shows how the site lays out its writings and will be replaced by the first real one. Nothing in it is an opinion or a fact about Sebastian.
+
+This second paragraph is here to show the rhythm between paragraphs: the space between them is wider than in the case studies, so a long text reads calmly. Its words only take up room and say nothing about any project.
+
+## A section heading
+
+Each section of a piece of writing starts with a heading like the one above and continues with its text. A paragraph can hold an internal link, like [the list of works](/en#works), or an external one, like [his GitHub profile](https://github.com/sebastianluna-dev), which opens in a new tab. It can also hold a sentence in **bold** to highlight an idea.
+
+### A subheading
+
+A subheading splits the section into smaller parts. A bulleted list can go below it:
+
+- A paragraph, the basic piece of the text.
+- An image, as wide as the column.
+- A code block, with its button to copy it.
+
+Or a numbered list, for steps in order:
+
+1. Write the text.
+2. Add the images.
+3. Remove `draft` from the header of the file.
+
+<WritingFigure alt="Placeholder of an example 16:9 image" />
+
+Images take the width of the column at a 16:9 ratio and have no rounded corners. While there is no image, a neutral placeholder like the one above shows instead.
+
+| Component | What it is for                        | How to write it                                 |
+| --------- | ------------------------------------- | ----------------------------------------------- |
+| Paragraph | Telling the main idea                 | Plain text, separated by a blank line           |
+| Image     | Showing what the text cannot          | The figure component, with its alternative text |
+| Table     | Comparing data in rows and columns    | Vertical bars and a row of dashes               |
+| Code      | Teaching a snippet that can be copied | Three backticks and the name of the language    |
+
+The table above has rounded borders and scrolls sideways when it does not fit. The block below works out the reading time of a text:
+
+```ts
+const words = text.trim().split(/\s+/).length;
+const minutes = Math.max(1, Math.round(words / 200));
+```
+
+A piece of writing can also hold a conversation, with the same bubbles as the case studies:
+
+<ChatAside
+  messages={[
+    { from: 'visitor', text: 'Is this a real article?' },
+    { from: 'sebastian', text: "No, it's an example to show the chat inside a piece of writing." },
+  ]}
+/>
+
+And a row of illustrated notes, which breaks out of the text column:
+
+<SideNotes label="Parts of a piece of writing" cols={3}>
+  <SideNote title="Text" art="blocks">
+    The paragraphs, headings and lists that tell the idea.
+  </SideNote>
+  <SideNote title="Images" art="palette">
+    The 16:9 figures that go with the text.
+  </SideNote>
+  <SideNote title="Code" art="compass">
+    The snippets the reader can copy.
+  </SideNote>
+</SideNotes>
+
+This is the end of the example. Below is the footer of the article, with the link to the author.

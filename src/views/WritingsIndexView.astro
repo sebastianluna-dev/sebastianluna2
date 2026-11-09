@@ -1,0 +1,39 @@
+---
+/**
+ * /writings of either language (writings-spec §2): the sheet geometry of /about (padding 100 20 0,
+ * 150 on top on phones; the 730 column, centred) with the shared WritingsList, whose chip is the
+ * page h1. Nothing animates on load, as in the reference; the footer follows the divider.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import WritingsList from '@/components/portfolio/writing/WritingsList.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { writings } = getMessages(locale);
+---
+
+<BaseLayout locale={locale} title={writings.meta.title} description={writings.meta.description}>
+  <div class="writings-page">
+    <div class="writings-page__column">
+      <WritingsList locale={locale} headingLevel="h1" />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  @layer pf {
+    .writings-page {
+      padding: var(--pf-sheet-pad-top) var(--pf-gutter-case) 0;
+    }
+
+    .writings-page__column {
+      width: min(var(--pf-sheet-col), 100%);
+      margin-inline: auto;
+    }
+  }
+</style>

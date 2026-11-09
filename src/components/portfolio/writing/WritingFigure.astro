@@ -1,0 +1,98 @@
+---
+/**
+ * Image of a writing (writings-spec §3.3): the width of the 560 column (350 on phones), 16:9, no
+ * radius, no lightbox (unlike the case `Figure`, which is 4:3, rounded and opens the lightbox) and an
+ * optional caption in Geist 13 at .65. Without `src` it paints a neutral 16:9 placeholder named by
+ * `alt`, with `writings.figure.placeholder` (the example draft uses it).
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import { getMessages } from '@/i18n/t';
+import { splitLocale } from '@/lib/i18n-paths';
+
+interface Props {
+  src?: ImageMetadata;
+  /** Always required, also for a placeholder: it says what the image shows. */
+  alt: string;
+  caption?: string;
+}
+
+/** Candidate widths of the srcset: 1x, 2x and 3x of the 560 column (never above the source). */
+const FIGURE_WIDTHS = [560, 1120, 1680];
+/** The column is 560 from 600 px of viewport up; below, the viewport minus the 20 px gutters. */
+const FIGURE_SIZES = '(min-width: 600px) 560px, calc(100vw - 40px)';
+
+const { src, alt, caption } = Astro.props;
+const { locale } = splitLocale(Astro.url.pathname);
+const copy = getMessages(locale).writings.figure;
+const widths = src ? FIGURE_WIDTHS.filter((width) => width <= src.width) : [];
+---
+
+<figure class="writing-figure">
+  {src ? (
+    <Image
+      class="writing-figure__image"
+      src={src}
+      alt={alt}
+      widths={widths.length > 0 ? widths : [src.width]}
+      sizes={FIGURE_SIZES}
+      loading="lazy"
+      decoding="async"
+    />
+  ) : (
+    <div class="writing-figure__placeholder" role="img" aria-label={alt}>
+      <span class="writing-figure__placeholder-text" aria-hidden="true">
+        {copy.placeholder}
+      </span>
+    </div>
+  )}
+  {caption && <figcaption class="writing-figure__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  @layer pf {
+    .writing-figure {
+      --writing-figure-ratio: 16 / 9;
+      --writing-figure-caption-gap: 8px;
+      --writing-figure-caption-opacity: 0.65;
+
+      display: block;
+    }
+
+    .writing-figure__image,
+    .writing-figure__placeholder {
+      display: block;
+      width: 100%;
+      aspect-ratio: var(--writing-figure-ratio);
+    }
+
+    .writing-figure__image {
+      height: auto;
+      object-fit: cover;
+    }
+
+    .writing-figure__placeholder {
+      display: grid;
+      place-items: center;
+      background: var(--pf-media-placeholder);
+    }
+
+    .writing-figure__placeholder-text {
+      color: var(--pf-text-neutral);
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-kicker-size);
+      line-height: var(--pf-type-kicker-lh);
+      letter-spacing: var(--pf-type-kicker-ls);
+    }
+
+    .writing-figure__caption {
+      margin-top: var(--writing-figure-caption-gap);
+      color: var(--pf-text);
+      font-family: var(--pf-font-sans);
+      font-size: 13px;
+      line-height: 1.35;
+      letter-spacing: 0;
+      opacity: var(--writing-figure-caption-opacity);
+    }
+  }
+</style>

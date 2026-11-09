@@ -1,0 +1,160 @@
+---
+/**
+ * One writing in a WritingsList (writings-spec §2.1–§2.4): the article title (serif 16/22.4, ink) and
+ * its description clamped to one line (`--pf-text-secondary`) in a 280 column, and a 16 px arrow at
+ * .4 on the right. The whole card is the link.
+ *
+ * - Focus (keyboard): a `--pf-writing-highlight` plate 14 px outside the card (radius 16) appears at
+ *   once with the focus ring drawn around it, as in the reference. Hover changes nothing, also as in
+ *   the reference (fase7-plan §8, question 8).
+ * - The link is named by the title (and the draft chip in dev); the excerpt is its description.
+ */
+import Chip from '@/components/portfolio/ui/Chip.astro';
+
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  /** Visible label of the draft chip; only passed for a draft (dev). */
+  draftLabel?: string;
+  /** Unique base for the ids that name and describe the link. */
+  id: string;
+}
+
+const { href, title, description, draftLabel, id } = Astro.props;
+const titleId = `${id}-title`;
+const draftId = `${id}-draft`;
+const excerptId = `${id}-excerpt`;
+---
+
+<li class="writing-card">
+  <a
+    class="writing-card__link"
+    href={href}
+    aria-labelledby={draftLabel ? `${titleId} ${draftId}` : titleId}
+    aria-describedby={excerptId}
+  >
+    <span class="writing-card__text">
+      <span class="writing-card__heading">
+        <span class="writing-card__title" id={titleId}>
+          {title}
+        </span>
+        {draftLabel && (
+          <Chip class="writing-card__draft" variant="plain" id={draftId}>
+            {draftLabel}
+          </Chip>
+        )}
+      </span>
+      <span class="writing-card__excerpt" id={excerptId}>
+        {description}
+      </span>
+    </span>
+    <svg
+      class="writing-card__arrow"
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M2.75 8h10.5M9 3.75 13.25 8 9 12.25"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></path>
+    </svg>
+  </a>
+</li>
+
+<style>
+  @layer pf {
+    .writing-card {
+      /* writings-spec §2.2–§2.4: card geometry (same in both themes). */
+      --writing-card-text: 280px;
+      --writing-card-text-gap: 4px;
+      --writing-card-plate-inset: -14px;
+      --writing-card-draft-gap: 8px;
+
+      display: block;
+    }
+
+    .writing-card__link {
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--writing-card-draft-gap);
+      color: var(--pf-text);
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+
+      /* The focus plate: hidden until the keyboard lands here; no transition (measured). */
+      &::before {
+        position: absolute;
+        z-index: -1;
+        inset: var(--writing-card-plate-inset);
+        border-radius: var(--pf-radius-md);
+        background: var(--pf-writing-highlight);
+        content: '';
+        opacity: 0;
+      }
+
+      &:focus-visible {
+        outline: none;
+
+        &::before {
+          outline: var(--pf-focus-width) solid var(--pf-focus-ring);
+          outline-offset: var(--pf-focus-offset);
+          opacity: 1;
+        }
+      }
+    }
+
+    .writing-card__text {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: var(--writing-card-text-gap);
+      min-width: 0;
+      max-width: var(--writing-card-text);
+    }
+
+    /* The heading box carries the type too, so its line box is the title's 22.4 (not the body's). */
+    .writing-card__heading,
+    .writing-card__excerpt {
+      font-family: var(--pf-font-serif);
+      font-size: var(--pf-type-bio-size);
+      font-weight: 400;
+      line-height: var(--pf-type-bio-lh);
+      letter-spacing: calc(var(--pf-type-bio-ls) + var(--pf-serif-ls-adjust));
+    }
+
+    .writing-card__heading {
+      color: var(--pf-text);
+    }
+
+    .writing-card__draft {
+      margin-inline-start: var(--writing-card-draft-gap);
+      /* Top of the line box: the 22 px chip never grows the 22.4 line. */
+      vertical-align: top;
+    }
+
+    .writing-card__excerpt {
+      display: -webkit-box;
+      overflow: hidden;
+      color: var(--pf-text-secondary);
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      line-clamp: 1;
+    }
+
+    .writing-card__arrow {
+      flex: none;
+      opacity: var(--pf-meta-dim);
+    }
+  }
+</style>

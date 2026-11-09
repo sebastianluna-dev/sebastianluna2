@@ -1,0 +1,142 @@
+---
+/**
+ * Writings list (writings-spec §2, about-spec §3.5): a sheet row with the heading on the left (an h1
+ * plain chip on the writings index; on /about an h2 in the plain label style of the other sheet rows)
+ * and, in the 400 column, one WritingCard per writing of the language, 28 apart, or the empty state
+ * (one paragraph in the excerpt style, no arrow, no link), then the 400 × 1 divider 60 px below. On
+ * phones the row stacks (heading, 32, list). Nothing here animates on load, as in the reference.
+ *
+ * It reads the collection itself: drafts only show in `astro dev`, with their chip
+ * (`writingsForLocale`, fase7-plan §2.3). The section is named by its heading.
+ */
+import { getCollection } from 'astro:content';
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { writingHref, writingSlug, writingsForLocale } from '@/lib/writings';
+import Chip from '@/components/portfolio/ui/Chip.astro';
+import WritingCard from './WritingCard.astro';
+
+interface Props {
+  locale: Locale;
+  /** h1 on the writings index, h2 inside /about. */
+  headingLevel: 'h1' | 'h2';
+  /** Anchor of the section (`writings` on /about). */
+  id?: string;
+}
+
+const { locale, headingLevel, id } = Astro.props;
+const copy = getMessages(locale).writings;
+const items = writingsForLocale(await getCollection('writings'), locale, {
+  includeDrafts: import.meta.env.DEV,
+});
+const base = id ?? 'writings-list';
+const headingId = `${base}-heading`;
+---
+
+<section class="writings-list" id={id} aria-labelledby={headingId}>
+  <div class="writings-list__label">
+    {headingLevel === 'h1' ? (
+      <Chip as="h1" variant="plain" id={headingId} tabindex="-1">
+        {copy.heading}
+      </Chip>
+    ) : (
+      <h2 class="writings-list__heading" id={headingId}>
+        {copy.heading}
+      </h2>
+    )}
+  </div>
+  <div class="writings-list__content">
+    {items.length > 0 ? (
+      <ul class="writings-list__items" role="list">
+        {items.map((entry) => (
+          <WritingCard
+            href={writingHref(writingSlug(entry), locale)}
+            title={entry.data.title}
+            description={entry.data.description}
+            draftLabel={entry.data.draft ? copy.draft : undefined}
+            id={`${base}-${writingSlug(entry)}`}
+          />
+        ))}
+      </ul>
+    ) : (
+      <p class="writings-list__empty">{copy.empty}</p>
+    )}
+    <div class="writings-list__divider" aria-hidden="true"></div>
+  </div>
+</section>
+
+<style>
+  @layer pf {
+    .writings-list {
+      /* about-spec §3.5: the #writings anchor lands below the chrome. */
+      --writings-list-scroll-margin: 196px;
+
+      display: flex;
+      gap: var(--pf-sheet-row-gap);
+      box-sizing: border-box;
+      width: 100%;
+      scroll-margin-top: var(--writings-list-scroll-margin);
+
+      /* Flex, so the chip sits at the top of the row instead of on a text baseline. */
+      .writings-list__label {
+        display: flex;
+        flex: 1;
+        align-items: flex-start;
+        max-width: var(--pf-sheet-label);
+      }
+
+      /* Same label as AboutRow's headings: Geist 14/14, ink, no fill. */
+      .writings-list__heading {
+        margin: 0;
+        color: var(--pf-text);
+        font-family: var(--pf-font-sans);
+        font-size: var(--pf-type-kicker-size);
+        font-weight: 400;
+        line-height: var(--pf-type-kicker-lh);
+        letter-spacing: var(--pf-type-kicker-ls);
+      }
+
+      .writings-list__content {
+        flex: 1;
+        min-width: 0;
+        max-width: var(--pf-sheet-content);
+      }
+
+      .writings-list__items {
+        display: flex;
+        flex-direction: column;
+        gap: var(--pf-writing-card-gap);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      /* Same voice as a card excerpt. */
+      .writings-list__empty {
+        margin: 0;
+        color: var(--pf-text-secondary);
+        font-family: var(--pf-font-serif);
+        font-size: var(--pf-type-bio-size);
+        line-height: var(--pf-type-bio-lh);
+        letter-spacing: calc(var(--pf-type-bio-ls) + var(--pf-serif-ls-adjust));
+        text-wrap: pretty;
+      }
+
+      .writings-list__divider {
+        height: 1px;
+        margin-top: var(--pf-writing-list-divider-gap);
+        border-radius: var(--pf-radius-md);
+        background: var(--pf-divider-solid);
+      }
+
+      @media (max-width: 809.98px) {
+        flex-direction: column;
+
+        .writings-list__label,
+        .writings-list__content {
+          max-width: none;
+        }
+      }
+    }
+  }
+</style>
