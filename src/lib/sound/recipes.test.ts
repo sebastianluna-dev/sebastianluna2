@@ -6,25 +6,15 @@ import {
   SOUND_ATTACK,
   SOUND_CHANNEL,
   soundLength,
-  type SoundName,
+  type RecipeName,
 } from './recipes';
 
-const names = Object.keys(SOUNDS) as SoundName[];
+const names = Object.keys(SOUNDS) as RecipeName[];
 
 describe('interface sounds', () => {
-  it('has every sound the site plays, droid in three variants and the book riffle in two', () => {
-    expect(names.sort()).toEqual([
-      'bookClose',
-      'bookOpen',
-      'closeChat',
-      'droid',
-      'openChat',
-      'theme',
-      'typing',
-    ]);
+  it('synthesises every sound but the books (recorded, samples.ts), droid in three variants', () => {
+    expect(names.sort()).toEqual(['closeChat', 'droid', 'openChat', 'theme', 'typing']);
     expect(SOUNDS.droid).toHaveLength(3);
-    expect(SOUNDS.bookOpen).toHaveLength(2);
-    expect(SOUNDS.bookClose).toHaveLength(1);
   });
 
   it('puts only the two book sounds on one channel, so a new one cuts the previous', () => {

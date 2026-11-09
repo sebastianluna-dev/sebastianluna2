@@ -3,7 +3,8 @@
  * for as long as it stays down (pointer capture) and closes it on release, cancel or a scroll that
  * takes the pointer. The look of mouse hover and keyboard focus is pure CSS; this script only follows
  * them to play `bookOpen` / `bookClose` when a book opens or closes under the mouse or the visible
- * focus, on fine-pointer devices (`src/lib/book-sound.ts`). Rebinds on `astro:page-load`.
+ * focus, on fine-pointer devices (`src/lib/book-sound.ts`), whose shelves load the recording as they
+ * bind, so the first book already sounds on time. Rebinds on `astro:page-load`.
  *
  * Two things the CSS knows that no hover or focus event says: the browser may update `:hover` a
  * moment after the page loads (a history back restores the scroll and then moves the hover under a
@@ -18,7 +19,7 @@ import {
   type BookChange,
   type BookFlags,
 } from '@/lib/book-sound';
-import { playInterfaceSound } from '@/lib/sound/interface-sound';
+import { playInterfaceSound, preloadInterfaceSound } from '@/lib/sound/interface-sound';
 
 const SHELF_SELECTOR = '[data-book-shelf]';
 const BOOK_SELECTOR = '[data-book]';
@@ -32,6 +33,10 @@ function bookOf(target: EventTarget | null): HTMLElement | null {
 
 function bind(shelf: HTMLElement): () => void {
   const fine = window.matchMedia(BOOK_SOUND_MEDIA);
+  if (fine.matches) {
+    preloadInterfaceSound('bookOpen');
+    preloadInterfaceSound('bookClose');
+  }
   const states = new Map<HTMLElement, BookFlags>();
   // Start from what is already true (a pointer resting on a book after a navigation), silently.
   for (const book of shelf.querySelectorAll<HTMLElement>(BOOK_SELECTOR)) {
