@@ -1,0 +1,373 @@
+/*
+ * /about "My toolkit" folder (about-spec §5.2), styles of ToolkitFolder.tsx. Imported by
+ * ToolkitSection.astro, which renders the island. Every length is in px of the 440 × 480 design box,
+ * which the stage scales by `--toolkit-folder-scale` (written by the island; the SSR value below is
+ * the one of each breakpoint's slot). The folder keeps its colours in both themes except the floor
+ * shadow and the floating tag (tokens).
+ */
+@layer pf {
+  .toolkit-folder {
+    /* SSR scale of the measured slots (400 → .909, 350 → .795); the island writes the exact one. */
+    --toolkit-folder-scale-ssr: 0.9091;
+    --toolkit-folder-front-inset:
+      inset 0 1px 0 rgb(255 255 255 / 0.55), inset 0 -2px 6px rgb(22 71 106 / 0.18);
+    --toolkit-folder-focus: var(--pf-folder-ink);
+    --toolkit-folder-stamp-open-scale: 0.85;
+
+    position: relative;
+    width: 100%;
+    aspect-ratio: 440 / 480;
+    pointer-events: none;
+
+    @media (max-width: 809.98px) {
+      --toolkit-folder-scale-ssr: 0.7955;
+    }
+  }
+
+  .toolkit-folder__stage {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 440px;
+    height: 480px;
+    perspective: 1200px;
+    transform: translateX(-50%) scale(var(--toolkit-folder-scale, var(--toolkit-folder-scale-ssr)));
+    transform-origin: 50% 0;
+  }
+
+  .toolkit-folder__scene {
+    position: absolute;
+    inset: 0;
+  }
+
+  .toolkit-folder__floor {
+    position: absolute;
+    top: 438px;
+    left: 46px;
+    width: 348px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--pf-folder-floor);
+    filter: blur(12px);
+  }
+
+  .toolkit-folder__layer {
+    position: absolute;
+    pointer-events: auto;
+  }
+
+  .toolkit-folder__layer_part_front {
+    z-index: 2;
+    perspective: 900px;
+  }
+
+  .toolkit-folder__tab {
+    position: absolute;
+    top: -25px;
+    left: 4px;
+    width: 110px;
+    height: 42px;
+    border-radius: 11px 16px 0 0;
+    background: var(--pf-folder-tab);
+  }
+
+  .toolkit-folder__back {
+    position: absolute;
+    inset: 0;
+    border-radius: 13px;
+    background: var(--pf-folder-back);
+    box-shadow: var(--pf-folder-back-inset);
+  }
+
+  /* ---------- Stamps (provisional stickers with the simple-icons logo) ---------- */
+
+  .toolkit-folder__stamps {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .toolkit-folder__stamp {
+    position: absolute;
+    top: 0;
+    filter: var(--pf-folder-stamp-shadow);
+    pointer-events: auto;
+    outline: none;
+
+    &:focus-visible .toolkit-folder__sticker {
+      outline: 4px solid var(--toolkit-folder-focus);
+      outline-offset: 4px;
+    }
+  }
+
+  .toolkit-folder__sticker {
+    position: absolute;
+    /* The sticker fills the top of the 200 × 242 stamp box, so the open fan never shows the pocket
+       clip below the lid (the reference's stamps are cut-out art with the same empty bottom). */
+    inset: 8px 12px 54px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 10px solid var(--pf-folder-sticker-bg);
+    border-radius: 36px;
+    background: linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--tool-color) 10%, var(--pf-folder-sticker-bg)),
+      color-mix(in srgb, var(--tool-color) 22%, var(--pf-folder-sticker-bg))
+    );
+    box-shadow: 0 0 0 1px var(--pf-folder-sticker-border);
+    color: var(--tool-color);
+  }
+
+  .toolkit-folder__logo {
+    width: 92px;
+    height: 92px;
+  }
+
+  .toolkit-folder__sheen {
+    position: absolute;
+    inset: 0;
+    background: rgb(255 255 255 / 0.2);
+    opacity: 0;
+    transition: opacity var(--toolkit-folder-tag-fade) ease;
+  }
+
+  .toolkit-folder__tag {
+    position: absolute;
+    bottom: calc(100% - 2px);
+    left: 50%;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--pf-folder-tag-bg);
+    color: var(--pf-folder-tag-text);
+    font-family: var(--pf-font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    /* Readable at its CSS size whatever the stage and the open stamp scale. */
+    scale: calc(
+      1 /
+        (
+          var(--toolkit-folder-scale, var(--toolkit-folder-scale-ssr)) *
+            var(--toolkit-folder-stamp-open-scale)
+        )
+    );
+    transform-origin: 50% 100%;
+    translate: -50% 0;
+    transition: opacity var(--toolkit-folder-tag-fade) ease;
+  }
+
+  .toolkit-folder__stamp[data-hovered] {
+    .toolkit-folder__tag,
+    .toolkit-folder__sheen {
+      opacity: 1;
+    }
+  }
+
+  /* ---------- Front (the lid) ---------- */
+
+  .toolkit-folder__front {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    box-sizing: border-box;
+    border: 1px solid var(--pf-folder-front-border);
+    border-bottom-color: var(--pf-folder-front-border-bottom);
+    border-radius: 11px 11px 15px 15px;
+    background: var(--pf-folder-front);
+    box-shadow: var(--toolkit-folder-front-inset), var(--pf-folder-front-shadow);
+    transform-origin: 50% 100%;
+  }
+
+  .toolkit-folder__slit {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    width: 30px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--pf-folder-front-border-bottom);
+    opacity: 0.55;
+    translate: -50% 0;
+  }
+
+  .toolkit-folder__lid {
+    position: absolute;
+    inset: -1px;
+    padding: 0;
+    border: 0;
+    border-radius: inherit;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &:disabled {
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: var(--pf-focus-width) solid var(--toolkit-folder-focus);
+      outline-offset: 3px;
+    }
+  }
+
+  .toolkit-folder__name {
+    position: absolute;
+    top: 94px;
+    left: 0;
+    width: 184px;
+    color: var(--pf-folder-ink);
+    font-family: var(--pf-font-sans);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .toolkit-folder__mark {
+    position: absolute;
+    top: 126px;
+    left: -1px;
+    width: 2px;
+    height: 9px;
+    border-radius: 1px;
+    background: var(--pf-folder-ink);
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  /* ---------- Lamps (one per collection) ---------- */
+
+  .toolkit-folder__lamps {
+    position: absolute;
+    bottom: 0;
+    left: 14px;
+    display: flex;
+  }
+
+  .toolkit-folder__lamp {
+    --toolkit-lamp: var(--pf-folder-lamp-1);
+    --toolkit-lamp-core: 0.82;
+    --toolkit-lamp-halo: var(--pf-folder-lamp-halo-idle);
+    --toolkit-lamp-fog: var(--pf-folder-lamp-fog-idle);
+    --toolkit-lamp-halo-scale: 0.75;
+
+    position: relative;
+    width: 64px;
+    height: 72px;
+    padding: 0;
+    border: 0;
+    border-radius: 20px;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &[aria-pressed='true'] {
+      --toolkit-lamp-core: 1;
+      --toolkit-lamp-halo: var(--pf-folder-lamp-halo-active);
+      --toolkit-lamp-fog: var(--pf-folder-lamp-fog-active);
+      --toolkit-lamp-halo-scale: 1;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: var(--pf-focus-width) solid var(--toolkit-folder-focus);
+      outline-offset: -8px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:not(:disabled):hover .toolkit-folder__core {
+        scale: calc(var(--toolkit-lamp-core) * 1.08);
+      }
+    }
+
+    &:not(:disabled):active .toolkit-folder__core {
+      scale: calc(var(--toolkit-lamp-core) * 0.96);
+    }
+  }
+
+  .toolkit-folder__lamp_color_2 {
+    --toolkit-lamp: var(--pf-folder-lamp-2);
+  }
+
+  .toolkit-folder__lamp_color_3 {
+    --toolkit-lamp: var(--pf-folder-lamp-3);
+  }
+
+  .toolkit-folder__lamp_color_4 {
+    --toolkit-lamp: var(--pf-folder-lamp-4);
+  }
+
+  .toolkit-folder__lamp_color_5 {
+    --toolkit-lamp: var(--pf-folder-lamp-5);
+  }
+
+  .toolkit-folder__fog,
+  .toolkit-folder__halo,
+  .toolkit-folder__core {
+    position: absolute;
+    top: 37px;
+    left: 32px;
+    border-radius: 50%;
+    translate: -50% -50%;
+    pointer-events: none;
+    transition:
+      scale var(--pf-dur-fast) var(--pf-ease-out-quint),
+      opacity var(--pf-dur-fast) var(--pf-ease-out-quint);
+  }
+
+  .toolkit-folder__fog {
+    width: 118px;
+    height: 118px;
+    background: radial-gradient(var(--toolkit-lamp) 0 24%, transparent 70%);
+    filter: blur(16px);
+    mix-blend-mode: screen;
+    opacity: var(--toolkit-lamp-fog);
+  }
+
+  .toolkit-folder__halo {
+    width: 58px;
+    height: 66px;
+    background: radial-gradient(circle, var(--toolkit-lamp) 0%, transparent 68%);
+    filter: blur(7px);
+    opacity: var(--toolkit-lamp-halo);
+    scale: var(--toolkit-lamp-halo-scale);
+  }
+
+  .toolkit-folder__core {
+    width: 16px;
+    height: 16px;
+    background: radial-gradient(
+      circle at 35% 30%,
+      rgb(255 255 255 / 0.95) 0 14%,
+      var(--toolkit-lamp) 48%,
+      color-mix(in srgb, var(--toolkit-lamp), #000 22%) 100%
+    );
+    border: 1px solid rgb(255 255 255 / 0.64);
+    box-shadow:
+      0 0 10px var(--toolkit-lamp),
+      0 1px 2px rgb(23 59 93 / 0.6);
+    scale: var(--toolkit-lamp-core);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toolkit-folder__fog,
+    .toolkit-folder__halo,
+    .toolkit-folder__core,
+    .toolkit-folder__tag,
+    .toolkit-folder__sheen {
+      transition: none;
+    }
+  }
+}

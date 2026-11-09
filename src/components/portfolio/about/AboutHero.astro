@@ -1,0 +1,114 @@
+---
+/**
+ * /about hero (about-spec §3.1, §4.2): the 400 column centred on the page (350 on phones), 16 px apart:
+ * 40 px avatar, the chip h1, two serif paragraphs and the Email button. Each block plays its
+ * `ABOUT_APPEAR` slot once. The avatar is Sebastian's own photo served square at exactly 1x/2x/3x of
+ * its 40 px (`AVATAR_IMAGE`: AVIF with a WebP fallback); unlike the home avatar it is not a link.
+ */
+import { getImage } from 'astro:assets';
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { AVATAR_IMAGE } from '@/data/profile';
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { ABOUT_APPEAR } from '@/components/motion/presets';
+import Chip from '@/components/portfolio/ui/Chip.astro';
+import AboutEmail from './AboutEmail.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { about } = getMessages(locale);
+
+/** Drawn size in CSS px, the `--pf-about-avatar` token. */
+const SIZE = 40;
+const { src, formats, densities, fit, position } = AVATAR_IMAGE;
+const [avif, webp] = await Promise.all(
+  formats.map((format) =>
+    getImage({ src, format, width: SIZE, height: SIZE, densities: [...densities], fit, position }),
+  ),
+);
+const [intro, story] = about.hero.paragraphs;
+---
+
+<section class="about-hero" aria-labelledby="about-title">
+  <AppearMotion appear={ABOUT_APPEAR.avatar} class="about-hero__avatar">
+    <picture>
+      <source type="image/avif" srcset={avif.srcSet.attribute} />
+      <img
+        class="about-hero__image"
+        src={webp.src}
+        srcset={webp.srcSet.attribute}
+        alt={about.hero.avatarAlt}
+        width={SIZE}
+        height={SIZE}
+        loading="eager"
+        decoding="async"
+        draggable="false"
+      />
+    </picture>
+  </AppearMotion>
+  <AppearMotion appear={ABOUT_APPEAR.title} class="about-hero__title">
+    <Chip as="h1" variant="plain" id="about-title" tabindex="-1">
+      {about.hero.title}
+    </Chip>
+  </AppearMotion>
+  <AppearMotion as="p" appear={ABOUT_APPEAR.intro} class="about-hero__text">
+    {intro}
+  </AppearMotion>
+  <AppearMotion as="p" appear={ABOUT_APPEAR.story} class="about-hero__text">
+    {story}
+  </AppearMotion>
+  <AppearMotion appear={ABOUT_APPEAR.email} class="about-hero__email">
+    <AboutEmail locale={locale} />
+  </AppearMotion>
+</section>
+
+<style>
+  @layer pf {
+    .about-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: var(--pf-sheet-content);
+      margin-inline: auto;
+
+      .about-hero__avatar {
+        width: var(--pf-about-avatar);
+        height: var(--pf-about-avatar);
+        overflow: hidden;
+        border-radius: 50%;
+        background: var(--pf-surface);
+      }
+
+      .about-hero__image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        user-select: none;
+      }
+
+      .about-hero__title {
+        display: flex;
+      }
+
+      .about-hero__text {
+        margin: 0;
+        color: var(--pf-text-secondary);
+        font-family: var(--pf-font-serif);
+        font-size: var(--pf-type-bio-size);
+        line-height: 24px;
+        letter-spacing: calc(var(--pf-type-bio-ls) + var(--pf-serif-ls-adjust));
+      }
+
+      .about-hero__email {
+        display: flex;
+      }
+    }
+  }
+</style>

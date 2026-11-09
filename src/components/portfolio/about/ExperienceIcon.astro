@@ -1,0 +1,66 @@
+---
+/**
+ * The 17 px monochrome icon of an Experience row (about-spec §3.3), drawn for this site in
+ * `currentColor`: a chess pawn (365 Días de Ajedrez), a briefcase (consulting), a stethoscope (health
+ * sites) and a shopping bag (online stores). Decorative: the row's h3 names it.
+ */
+export type ExperienceIconId = 'chess' | 'consulting' | 'health' | 'stores';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+
+/** One stroked path set per icon, on a 17 × 17 grid. */
+const PATHS: Record<ExperienceIconId, string[]> = {
+  chess: [
+    'M8.5 2.25a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2Z',
+    'M6.6 6.45h3.8',
+    'M7.2 6.45 6.4 11.6h4.2l-.8-5.15',
+    'M4.6 14.75h7.8l-.6-3.15H5.2l-.6 3.15Z',
+  ],
+  consulting: [
+    'M2.25 5.75h12.5v8.5H2.25z',
+    'M6 5.75V4a1.25 1.25 0 0 1 1.25-1.25h2.5A1.25 1.25 0 0 1 11 4v1.75',
+    'M2.25 9.25h12.5',
+    'M7.5 9.25v1.5h2v-1.5',
+  ],
+  health: [
+    'M3.5 2.25v4a3.25 3.25 0 0 0 6.5 0v-4',
+    'M6.75 9.5v1.75a3.5 3.5 0 0 0 7 0V9.75',
+    'M13.75 9.75a1.4 1.4 0 1 0 0-2.8 1.4 1.4 0 0 0 0 2.8Z',
+    'M2.75 2.25h1.5M9.25 2.25h1.5',
+  ],
+  stores: ['M3 5.75h11l-.75 9H3.75L3 5.75Z', 'M6 7.5V4.75a2.5 2.5 0 0 1 5 0V7.5'],
+};
+
+const paths = PATHS[id as ExperienceIconId] ?? [];
+---
+
+<svg
+  class="experience-icon"
+  viewBox="0 0 17 17"
+  width="17"
+  height="17"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.3"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {paths.map((d) => (
+    <path d={d} />
+  ))}
+</svg>
+
+<style>
+  @layer pf {
+    .experience-icon {
+      display: block;
+      flex: none;
+    }
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+/**
+ * /about "My toolkit" row (about-spec §3.2): the h2 label (appears with `ABOUT_APPEAR.toolkitLabel`)
+ * and the folder slot, 400 × 220 on wide screens with the 400 × 436 island centred over it (it spills
+ * 108 px above and below without pushing anything), 350 × 289 on phones with the island hanging from
+ * its top. The island hydrates when visible; its CSS is imported here, by the page that renders it.
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { ABOUT_APPEAR } from '@/components/motion/presets';
+import AboutRow from './AboutRow.astro';
+import { ToolkitFolder } from './ToolkitFolder';
+import './toolkit-folder.css';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { about } = getMessages(locale);
+const headingId = 'about-toolkit-heading';
+const labels = {
+  open: about.toolkit.open,
+  close: about.toolkit.close,
+  collectionsLabel: about.toolkit.collectionsLabel,
+  collections: about.toolkit.collections,
+};
+---
+
+<section class="toolkit-section" aria-labelledby={headingId}>
+  <AboutRow
+    heading={about.toolkit.heading}
+    headingId={headingId}
+    headingAppear={ABOUT_APPEAR.toolkitLabel}
+    align="center"
+    compact
+  >
+    <div class="toolkit-section__slot">
+      <div class="toolkit-section__island">
+        <ToolkitFolder client:visible labels={labels} />
+      </div>
+    </div>
+  </AboutRow>
+</section>
+
+<style>
+  @layer pf {
+    .toolkit-section {
+      /* Slot heights measured on the reference (about-spec §3.2). */
+      --toolkit-section-slot: 220px;
+      --toolkit-section-slot-phone: 289px;
+
+      width: 100%;
+
+      .toolkit-section__slot {
+        position: relative;
+        height: var(--toolkit-section-slot);
+      }
+
+      .toolkit-section__island {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        translate: 0 -50%;
+      }
+
+      @media (max-width: 809.98px) {
+        .toolkit-section__slot {
+          height: var(--toolkit-section-slot-phone);
+        }
+
+        .toolkit-section__island {
+          top: 0;
+          translate: none;
+        }
+      }
+    }
+  }
+</style>

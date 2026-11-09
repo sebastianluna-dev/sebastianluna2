@@ -1,0 +1,62 @@
+---
+/**
+ * /about of either language (about-spec §2–§3, fase7-plan §1): the 730 page column, centred, 100 px
+ * from the top (150 on phones), with five sections 120 px apart: hero, toolkit, experience, readings
+ * and writings (the shared `WritingsList`, h2 and `#writings`, which ends with the 400 × 1 divider
+ * 60 px below). The footer follows straight after.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import AboutHero from '@/components/portfolio/about/AboutHero.astro';
+import AboutRow from '@/components/portfolio/about/AboutRow.astro';
+import BookShelf from '@/components/portfolio/about/BookShelf.astro';
+import ExperienceList from '@/components/portfolio/about/ExperienceList.astro';
+import ToolkitSection from '@/components/portfolio/about/ToolkitSection.astro';
+import WritingsList from '@/components/portfolio/writing/WritingsList.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { about } = getMessages(locale);
+const readingsId = 'about-readings-heading';
+---
+
+<BaseLayout locale={locale} title={about.meta.title} description={about.meta.description}>
+  <div class="about-page">
+    <div class="about-page__column">
+      <AboutHero locale={locale} />
+      <ToolkitSection locale={locale} />
+      <ExperienceList locale={locale} />
+      <section class="about-page__readings" aria-labelledby={readingsId}>
+        <AboutRow heading={about.readings.heading} headingId={readingsId}>
+          <BookShelf locale={locale} />
+        </AboutRow>
+      </section>
+      <WritingsList locale={locale} headingLevel="h2" id="writings" />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  @layer pf {
+    .about-page {
+      padding: var(--pf-sheet-pad-top) var(--pf-gutter-case) 0;
+    }
+
+    .about-page__column {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--pf-about-section-gap);
+      width: min(var(--pf-sheet-col), 100%);
+      margin-inline: auto;
+
+      .about-page__readings {
+        width: 100%;
+      }
+    }
+  }
+</style>

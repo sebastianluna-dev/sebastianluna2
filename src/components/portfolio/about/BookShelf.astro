@@ -1,0 +1,321 @@
+---
+/**
+ * /about Readings shelf (about-spec §3.4, §5.3; fase7-plan §1.5): 80 × 122 books, 16 px apart and
+ * bottom-aligned (four per row in the 400 column, three in the 350 one). A book opens from its spine
+ * on a fine-pointer hover, on visible focus or while a finger holds it (book-shelf.client.ts): the
+ * cover turns −70° and the book comes 50 px forward with its shadow, spine shade and shine.
+ *
+ * Sebastian has not given his list yet (`READINGS` is empty), so the shelf paints eight neutral
+ * books: a plain cover and an inner page with decorative lines only, no invented title or author.
+ * They are hidden from assistive technology and not focusable; a visually hidden note says the list
+ * is in preparation. Real books get `role="group"`, `tabindex="0"` and their name (title, author, meta).
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { READINGS, READING_PLACEHOLDER_COUNT } from '@/data/readings';
+import { bookLabel, bookTitleSize } from '@/lib/books';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { about } = getMessages(locale);
+const placeholders = READINGS.length === 0;
+const placeholderVariants = Array.from(
+  { length: READING_PLACEHOLDER_COUNT },
+  (_, index) => (index % 4) + 1,
+);
+---
+
+<div class="book-shelf" data-book-shelf>
+  {placeholders && <p class="sr-only">{about.readings.placeholderNote}</p>}
+  <div class="book-shelf__books" aria-hidden={placeholders ? 'true' : undefined}>
+    {placeholders
+      ? placeholderVariants.map((variant) => (
+          <div class:list={['book-shelf__book', `book-shelf__book_variant_${variant}`]} data-book>
+            <div class="book-shelf__page">
+              <span class="book-shelf__line book-shelf__line_size_title" />
+              <span class="book-shelf__line book-shelf__line_size_subtitle" />
+              <span class="book-shelf__rule" />
+              <span class="book-shelf__line book-shelf__line_size_author" />
+              <span class="book-shelf__line book-shelf__line_size_meta" />
+            </div>
+            <div class="book-shelf__cover">
+              <span class="book-shelf__cover-mark" />
+              <span class="book-shelf__cover-mark book-shelf__cover-mark_size_short" />
+              <span class="book-shelf__spine" />
+              <span class="book-shelf__shine" />
+            </div>
+          </div>
+        ))
+      : READINGS.map((book) => {
+          const title = bookTitleSize(book.title);
+          return (
+            <div
+              class="book-shelf__book"
+              data-book
+              role="group"
+              // eslint-disable-next-line astro/jsx-a11y/no-noninteractive-tabindex -- a book opens on keyboard focus, as on hover (about-spec §5.3)
+              tabindex="0"
+              aria-label={bookLabel(book)}
+            >
+              <div class="book-shelf__page" aria-hidden="true">
+                <p
+                  class="book-shelf__title"
+                  style={`font-size: ${title.size}px; line-height: ${title.lineHeight}px`}
+                >
+                  {book.title}
+                </p>
+                <span class="book-shelf__rule" />
+                <p class="book-shelf__author">{book.author}</p>
+                <p class="book-shelf__meta">{book.meta}</p>
+              </div>
+              <div class="book-shelf__cover" aria-hidden="true">
+                <span class="book-shelf__cover-mark" />
+                <span class="book-shelf__cover-mark book-shelf__cover-mark_size_short" />
+                <span class="book-shelf__spine" />
+                <span class="book-shelf__shine" />
+              </div>
+            </div>
+          );
+        })}
+  </div>
+</div>
+
+<script>
+  import { startBookShelves } from './book-shelf.client';
+
+  startBookShelves();
+</script>
+
+<style>
+  @layer pf {
+    .book-shelf {
+      /* Measured on the reference (about-spec §3.4, §5.3). */
+      --book-shelf-width: 80px;
+      --book-shelf-height: 122px;
+      --book-shelf-gap: 16px;
+      --book-shelf-lift: 50px;
+      --book-shelf-turn: -70deg;
+      --book-shelf-page-pad: 13px 7px 13px 24px;
+
+      width: 100%;
+
+      .book-shelf__books {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: var(--book-shelf-gap);
+      }
+
+      .book-shelf__book {
+        position: relative;
+        flex: none;
+        width: var(--book-shelf-width);
+        aspect-ratio: 80 / 122;
+        transform: perspective(var(--pf-book-perspective)) translateZ(0);
+        transform-style: preserve-3d;
+        transition:
+          transform var(--pf-book-close-duration) var(--pf-ease-book),
+          box-shadow var(--pf-book-close-duration) var(--pf-ease-book);
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        touch-action: pan-y;
+
+        &:focus-visible {
+          outline: var(--pf-focus-width) solid var(--pf-text);
+          outline-offset: var(--pf-focus-offset);
+        }
+      }
+
+      .book-shelf__page {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        box-sizing: border-box;
+        padding: var(--book-shelf-page-pad);
+        overflow: hidden;
+        background: var(--pf-book-page);
+        color: var(--pf-book-ink);
+      }
+
+      .book-shelf__line {
+        display: block;
+        height: 3px;
+        border-radius: 2px;
+        background: var(--pf-book-page-line);
+      }
+
+      .book-shelf__line_size_title {
+        width: 100%;
+        height: 5px;
+      }
+
+      .book-shelf__line_size_subtitle {
+        width: 70%;
+        height: 5px;
+        margin-top: -2px;
+      }
+
+      .book-shelf__line_size_author {
+        width: 55%;
+      }
+
+      .book-shelf__line_size_meta {
+        width: 80%;
+        height: 2px;
+      }
+
+      .book-shelf__rule {
+        display: block;
+        flex: none;
+        width: 14px;
+        height: 1px;
+        background: currentColor;
+        opacity: 0.18;
+      }
+
+      .book-shelf__title,
+      .book-shelf__author,
+      .book-shelf__meta {
+        margin: 0;
+        font-family: var(--pf-font-sans);
+        overflow-wrap: anywhere;
+      }
+
+      .book-shelf__title {
+        font-weight: 650;
+      }
+
+      .book-shelf__author {
+        font-size: 5.8px;
+        line-height: 6.67px;
+        opacity: 0.78;
+      }
+
+      .book-shelf__meta {
+        font-size: 4.8px;
+        line-height: 5.856px;
+        opacity: 0.44;
+      }
+
+      .book-shelf__cover {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        box-sizing: border-box;
+        padding: 16px 12px;
+        overflow: hidden;
+        background: var(--pf-book-cover);
+        transform-origin: left center;
+        transition: transform var(--pf-book-close-duration) var(--pf-ease-book);
+        backface-visibility: hidden;
+      }
+
+      .book-shelf__cover-mark {
+        display: block;
+        width: 72%;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--pf-book-page-line);
+      }
+
+      .book-shelf__cover-mark_size_short {
+        width: 44%;
+      }
+
+      .book-shelf__spine,
+      .book-shelf__shine {
+        position: absolute;
+        inset-block: 0;
+        left: 0;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity var(--pf-book-spine-close-duration) var(--pf-ease-book);
+      }
+
+      .book-shelf__spine {
+        width: 18px;
+        background: var(--pf-book-spine);
+      }
+
+      .book-shelf__shine {
+        right: 0;
+        background: var(--pf-book-shine);
+      }
+
+      /* Four placeholder layouts so the shelf does not read as one repeated book. */
+      .book-shelf__book_variant_2 .book-shelf__cover {
+        justify-content: flex-end;
+      }
+
+      .book-shelf__book_variant_3 .book-shelf__cover {
+        justify-content: center;
+        align-items: center;
+      }
+
+      .book-shelf__book_variant_4 .book-shelf__cover {
+        padding-top: 28px;
+      }
+
+      /* Open: fine-pointer hover, visible focus (real books) or a held finger (data-open). */
+      @media (hover: hover) and (pointer: fine) {
+        .book-shelf__book:hover {
+          z-index: 1;
+          transform: perspective(var(--pf-book-perspective)) translateZ(var(--book-shelf-lift));
+          box-shadow: var(--pf-book-open-shadow);
+          transition:
+            transform var(--pf-book-open-duration) var(--pf-ease-book),
+            box-shadow var(--pf-book-open-duration) var(--pf-ease-book);
+
+          .book-shelf__cover {
+            transform: rotateY(var(--book-shelf-turn)) translateX(1px);
+            transition: transform var(--pf-book-open-duration) var(--pf-ease-book);
+          }
+
+          .book-shelf__spine,
+          .book-shelf__shine {
+            opacity: 1;
+            transition: opacity var(--pf-book-spine-open-duration) var(--pf-ease-book);
+          }
+        }
+      }
+
+      .book-shelf__book:is(:focus-visible, [data-open]) {
+        z-index: 1;
+        transform: perspective(var(--pf-book-perspective)) translateZ(var(--book-shelf-lift));
+        box-shadow: var(--pf-book-open-shadow);
+        transition:
+          transform var(--pf-book-open-duration) var(--pf-ease-book),
+          box-shadow var(--pf-book-open-duration) var(--pf-ease-book);
+
+        .book-shelf__cover {
+          transform: rotateY(var(--book-shelf-turn)) translateX(1px);
+          transition: transform var(--pf-book-open-duration) var(--pf-ease-book);
+        }
+
+        .book-shelf__spine,
+        .book-shelf__shine {
+          opacity: 1;
+          transition: opacity var(--pf-book-spine-open-duration) var(--pf-ease-book);
+        }
+      }
+
+      /* Instant with reduced motion; `:is()` outranks every open-state rule above. */
+      @media (prefers-reduced-motion: reduce) {
+        .book-shelf__book:is(*, :hover, :focus-visible, [data-open]),
+        .book-shelf__book:is(*, :hover, :focus-visible, [data-open])
+          :is(.book-shelf__cover, .book-shelf__spine, .book-shelf__shine) {
+          transition: none;
+        }
+      }
+    }
+  }
+</style>

@@ -1,0 +1,132 @@
+---
+/**
+ * One row of the /about sheet (about-spec §3): a label column (flex 1, max 133) and a content column
+ * (flex 1, max 400) 32 px apart. In the 730 page column the 165 px left over sits on the right, so the
+ * content lines up with the centred hero and the label hangs to its left. On phones the label goes
+ * above its content (32 px; `compact` 8 px, the toolkit row).
+ *
+ * `heading` renders the section h2 in the label column, styled as the reference's plain label;
+ * `headingAppear` plays it with the page engine and `headingReveal` hands it to the Experience reveal.
+ * Extra label content (the first Experience date) goes in the `label` slot.
+ */
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import type { AppearSlot } from '@/components/motion/presets';
+
+interface Props {
+  heading?: string;
+  headingId?: string;
+  headingAppear?: AppearSlot;
+  /** `data-reveal` slot of the heading (Experience). */
+  headingReveal?: string;
+  /** Inline style of the heading (the reveal's initial state). */
+  headingStyle?: string;
+  /** Vertical alignment of label and content on wide screens. */
+  align?: 'start' | 'center';
+  /** Phone gap between label and content: 8 px instead of 32 (toolkit). */
+  compact?: boolean;
+  class?: string;
+}
+
+const {
+  heading,
+  headingId,
+  headingAppear,
+  headingReveal,
+  headingStyle,
+  align = 'start',
+  compact = false,
+  class: className,
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'about-row',
+    align === 'center' && 'about-row_align_center',
+    compact && 'about-row_gap_compact',
+    className,
+  ]}
+>
+  <div class="about-row__label">
+    {heading &&
+      (headingAppear ? (
+        <AppearMotion appear={headingAppear} class="about-row__appear">
+          <h2 class="about-row__heading" id={headingId}>
+            {heading}
+          </h2>
+        </AppearMotion>
+      ) : (
+        <h2
+          class="about-row__heading"
+          id={headingId}
+          data-reveal={headingReveal}
+          style={headingStyle}
+        >
+          {heading}
+        </h2>
+      ))}
+    <slot name="label" />
+  </div>
+  <div class="about-row__content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  @layer pf {
+    .about-row {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--pf-sheet-row-gap);
+      width: 100%;
+
+      .about-row__label {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 0;
+        max-width: var(--pf-sheet-label);
+      }
+
+      .about-row__content {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+        max-width: var(--pf-sheet-content);
+      }
+
+      .about-row__heading {
+        margin: 0;
+        color: var(--pf-text);
+        font-family: var(--pf-font-sans);
+        font-size: var(--pf-type-kicker-size);
+        font-weight: 400;
+        line-height: var(--pf-type-kicker-lh);
+        letter-spacing: var(--pf-type-kicker-ls);
+      }
+
+      @media (max-width: 809.98px) {
+        flex-direction: column;
+        gap: var(--pf-about-label-to-content);
+
+        .about-row__label,
+        .about-row__content {
+          flex: none;
+          width: 100%;
+          max-width: none;
+        }
+      }
+    }
+
+    .about-row_align_center {
+      align-items: center;
+    }
+
+    .about-row_gap_compact {
+      @media (max-width: 809.98px) {
+        gap: var(--pf-about-toolkit-label-gap);
+      }
+    }
+  }
+</style>

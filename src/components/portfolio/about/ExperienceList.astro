@@ -1,0 +1,143 @@
+---
+/**
+ * /about Experience (about-spec §3.3, §4.3): four sheet rows 46 px apart (48 on phones). The label
+ * column holds the dates (and, in the first row, the section h2 above them); the 400 card holds the
+ * 17 px icon with the h3 (12 px apart) and the serif body, 10 px below.
+ *
+ * Every text plays the reversible reveal of `ABOUT_EXPERIENCE_REVEAL` (experience-reveal.client.ts):
+ * the CSS below is the final state, so without JS or with reduced motion everything shows. The hidden
+ * state only exists under `html.js` without reduced motion, fed by the preset through custom
+ * properties, and the icons never animate (as in the reference).
+ */
+import type { Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { ABOUT_EXPERIENCE_REVEAL, APPEAR_PRESETS } from '@/components/motion/presets';
+import { revealFrame } from '@/lib/in-view-reveal';
+import AboutRow from './AboutRow.astro';
+import ExperienceIcon from './ExperienceIcon.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { about } = getMessages(locale);
+const { slots } = ABOUT_EXPERIENCE_REVEAL;
+
+/** Hidden state of a reveal slot, as the custom properties the `html.js` rule below reads. */
+function hiddenStyle(slot: keyof typeof slots): string {
+  const { opacity, translate } = revealFrame(APPEAR_PRESETS[slots[slot].preset], 'out');
+  return `--experience-hidden-opacity: ${opacity}; --experience-hidden-translate: ${translate}`;
+}
+
+const style = {
+  label: hiddenStyle('label'),
+  date: hiddenStyle('date'),
+  title: hiddenStyle('title'),
+  body: hiddenStyle('body'),
+};
+const headingId = 'about-experience-heading';
+---
+
+<section class="experience-list" aria-labelledby={headingId}>
+  <ol class="experience-list__rows" role="list">
+    {about.experience.items.map((item, index) => (
+      <li class="experience-list__item">
+        <AboutRow
+          heading={index === 0 ? about.experience.heading : undefined}
+          headingId={headingId}
+          headingReveal="label"
+          headingStyle={style.label}
+        >
+          <p slot="label" class="experience-list__dates" data-reveal="date" style={style.date}>
+            {item.dates}
+          </p>
+          <div class="experience-list__card">
+            <div class="experience-list__title-row">
+              <ExperienceIcon id={item.id} />
+              <h3 class="experience-list__title" data-reveal="title" style={style.title}>
+                {item.title}
+              </h3>
+            </div>
+            <p class="experience-list__body" data-reveal="body" style={style.body}>
+              {item.body}
+            </p>
+          </div>
+        </AboutRow>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<script>
+  import { startExperienceReveal } from './experience-reveal.client';
+
+  startExperienceReveal();
+</script>
+
+<style>
+  @layer pf {
+    .experience-list {
+      width: 100%;
+
+      .experience-list__rows {
+        display: flex;
+        flex-direction: column;
+        gap: var(--pf-about-exp-gap);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .experience-list__dates {
+        margin: 0;
+        color: var(--pf-text);
+        font-family: var(--pf-font-sans);
+        font-size: var(--pf-type-kicker-size);
+        line-height: var(--pf-type-kicker-lh);
+        letter-spacing: var(--pf-type-kicker-ls);
+        opacity: var(--pf-meta-dim);
+      }
+
+      .experience-list__card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .experience-list__title-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--pf-text);
+      }
+
+      .experience-list__title {
+        margin: 0;
+        font-family: var(--pf-font-serif);
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 24px;
+        letter-spacing: calc(-0.04em + var(--pf-serif-ls-adjust));
+      }
+
+      .experience-list__body {
+        max-width: 560px;
+        margin: 0;
+        color: var(--pf-text-secondary);
+        font-family: var(--pf-font-serif);
+        font-size: var(--pf-type-bio-size);
+        line-height: 24px;
+        letter-spacing: calc(var(--pf-type-bio-ls) + var(--pf-serif-ls-adjust));
+      }
+    }
+
+    /* Hidden state of the reveal: only when its script runs and motion is allowed. */
+    @media (prefers-reduced-motion: no-preference) {
+      :global(html.js) .experience-list :global([data-reveal]:not([data-reveal-state='in'])) {
+        opacity: var(--experience-hidden-opacity);
+        translate: var(--experience-hidden-translate);
+      }
+    }
+  }
+</style>
