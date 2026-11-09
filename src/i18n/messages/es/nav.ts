@@ -3,6 +3,7 @@ export const nav = {
   label: 'Principal',
   home: 'Inicio',
   works: 'Trabajos',
+  about: 'Sobre mí',
   email: 'Email',
   /** Toast after the Email link copied the address. */
   emailCopied: '{email} copiado al portapapeles',

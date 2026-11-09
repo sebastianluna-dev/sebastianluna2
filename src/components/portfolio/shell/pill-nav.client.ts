@@ -246,7 +246,10 @@ function bindPillNav(root: HTMLElement): Teardown {
     const target = linkFor(key);
     for (const link of links) {
       if (link === target)
-        link.setAttribute('aria-current', ariaCurrentFor(link.getAttribute('href') ?? ''));
+        link.setAttribute(
+          'aria-current',
+          ariaCurrentFor(link.getAttribute('href') ?? '', location.pathname),
+        );
       else link.removeAttribute('aria-current');
     }
     if (target) active.moveTo(target, animate);

@@ -25,10 +25,24 @@ describe('activeNavKey', () => {
     expect(activeNavKey('/en/works/reto-md', '#outcome')).toBe('works');
   });
 
+  it('marks Sobre mí on /about and on the writings of both languages', () => {
+    expect(activeNavKey('/about')).toBe('about');
+    expect(activeNavKey('/en/about')).toBe('about');
+    expect(activeNavKey('/about/')).toBe('about');
+    expect(activeNavKey('/writings')).toBe('about');
+    expect(activeNavKey('/en/writings')).toBe('about');
+    expect(activeNavKey('/writings/articulo-de-ejemplo')).toBe('about');
+    expect(activeNavKey('/en/writings/x', '#intro')).toBe('about');
+  });
+
   it('ignores other hashes on the home and marks nothing elsewhere', () => {
     expect(activeNavKey('/', '#main')).toBe('home');
     expect(activeNavKey('/404')).toBeUndefined();
+    expect(activeNavKey('/en/no-existe')).toBeUndefined();
     expect(activeNavKey('/en/worksx')).toBeUndefined();
+    expect(activeNavKey('/aboutx')).toBeUndefined();
+    expect(activeNavKey('/about/x')).toBeUndefined();
+    expect(activeNavKey('/writingsx')).toBeUndefined();
   });
 });
 
@@ -36,7 +50,17 @@ describe('ariaCurrentFor', () => {
   it('uses location for in-page targets', () => {
     expect(ariaCurrentFor('/#works')).toBe('location');
     expect(ariaCurrentFor('/en#works')).toBe('location');
+    expect(ariaCurrentFor('/en#works', '/en/works/reto-md')).toBe('location');
     expect(ariaCurrentFor('/')).toBe('page');
+  });
+
+  it('is page on the page itself and true where the link only stands for it', () => {
+    expect(ariaCurrentFor('/about', '/about')).toBe('page');
+    expect(ariaCurrentFor('/en/about', '/en/about/')).toBe('page');
+    expect(ariaCurrentFor('/', '/')).toBe('page');
+    expect(ariaCurrentFor('/en', '/en')).toBe('page');
+    expect(ariaCurrentFor('/about', '/writings')).toBe('true');
+    expect(ariaCurrentFor('/en/about', '/en/writings/x')).toBe('true');
   });
 });
 

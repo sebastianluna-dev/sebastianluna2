@@ -3,28 +3,48 @@
  * which item is active for a location (SH-01) and the phone chrome that hides when
  * scrolling down and comes back when scrolling up (SH-08).
  */
-import { splitLocale } from '@/lib/i18n-paths';
+import { normalizePath, splitLocale } from '@/lib/i18n-paths';
 
-export type NavKey = 'home' | 'works' | 'email';
+export type NavKey = 'home' | 'works' | 'about' | 'email';
 
 /** In-page anchor of the works list on the home. */
 export const WORKS_HASH = '#works';
 
+/** Language-neutral path of the About page (fase7-plan §2.4). */
+export const ABOUT_PATH = '/about';
+
+/** Language-neutral path of the writings index; its articles live under it. */
+export const WRITINGS_PATH = '/writings';
+
+/** Whether a language-neutral path is `base` or below it (`/works`, `/works/x`; not `/worksx`). */
+const isUnder = (path: string, base: string) => path === base || path.startsWith(`${base}/`);
+
 /**
  * The item a location marks as current: Trabajos on `/#works` and on any case
- * study, Inicio on the rest of the home, none elsewhere. Without a hash (SSR) the
- * home marks Inicio, as the reference does before it reads `location.hash`.
+ * study, Inicio on the rest of the home, Sobre mí on `/about` and on the writings
+ * (index and articles, as the reference does), none elsewhere. Without a hash (SSR)
+ * the home marks Inicio, as the reference does before it reads `location.hash`.
  */
 export function activeNavKey(pathname: string, hash = ''): NavKey | undefined {
   const { path } = splitLocale(pathname);
   if (path === '/') return hash === WORKS_HASH ? 'works' : 'home';
-  if (path === '/works' || path.startsWith('/works/')) return 'works';
+  if (isUnder(path, '/works')) return 'works';
+  if (path === ABOUT_PATH || isUnder(path, WRITINGS_PATH)) return 'about';
   return undefined;
 }
 
-/** `aria-current` of the active link: `location` for an in-page target, `page` otherwise. */
-export function ariaCurrentFor(href: string): 'page' | 'location' {
-  return href.includes('#') ? 'location' : 'page';
+export type NavAriaCurrent = 'page' | 'location' | 'true';
+
+/**
+ * `aria-current` of the active link: `location` for an in-page target; otherwise `page`
+ * when the link is the current page and `true` when it only stands for it (Sobre mí on
+ * the writings). Without a pathname a page link is `page`.
+ */
+export function ariaCurrentFor(href: string, pathname?: string): NavAriaCurrent {
+  if (href.includes('#')) return 'location';
+  if (pathname === undefined) return 'page';
+  const target = normalizePath(href.replace(/[?#].*$/, '') || '/');
+  return target === normalizePath(pathname) ? 'page' : 'true';
 }
 
 // ------------------------------------------------------------------ SH-01 / SH-02: sliding backgrounds
