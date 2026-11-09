@@ -1,0 +1,20 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import WritingView from '@/views/WritingView.astro';
+import { writingStaticPaths } from '@/lib/writings';
+
+// Drafts get a page only in `astro dev` (fase7-plan §2.3).
+export async function getStaticPaths() {
+  return writingStaticPaths(await getCollection('writings'), 'es', {
+    includeDrafts: import.meta.env.DEV,
+  });
+}
+
+interface Props {
+  entry: CollectionEntry<'writings'>;
+}
+
+const { entry } = Astro.props;
+---
+
+<WritingView locale="es" entry={entry} />

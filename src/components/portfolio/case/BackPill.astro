@@ -1,7 +1,8 @@
 ---
 /**
  * "Back" pill of a case (design-spec §3.2, §7.3; case.md §3.3): a fixed link to the works list of the
- * home (`/#works`, localised), rendered right after the header (BaseLayout `after-header` slot) so it
+ * home (`/#works`, localised) by default; a writing article points it at `/about` with its own
+ * labels (writings-spec §3.10). Rendered right after the header (BaseLayout `after-header` slot) so it
  * comes right after the chrome in the Tab order.
  *
  * - CA-04: the link enters with `back-pill-in` (opacity, y −8, blur 4; 300 ms) on load and every time
@@ -27,15 +28,16 @@ type Props = BackPillProps;
 
 const { locale } = Astro.props;
 const copy = getMessages(locale).case;
+const {
+  href = localizePath(`/${WORKS_HASH}`, locale),
+  label = copy.back,
+  accessibleLabel = copy.backLabel,
+  navLabel = copy.backNavLabel,
+} = Astro.props;
 ---
 
-<nav class="back-pill" aria-label={copy.backNavLabel} data-back-pill>
-  <a
-    class="back-pill__link"
-    href={localizePath(`/${WORKS_HASH}`, locale)}
-    aria-label={copy.backLabel}
-    data-mobile-chrome
-  >
+<nav class="back-pill" aria-label={navLabel} data-back-pill>
+  <a class="back-pill__link" href={href} aria-label={accessibleLabel} data-mobile-chrome>
     <span class="back-pill__arrow" aria-hidden="true">
       <svg class="back-pill__icon" viewBox="0 0 16 16" width="16" height="16" focusable="false">
         <path
@@ -48,7 +50,7 @@ const copy = getMessages(locale).case;
         ></path>
       </svg>
     </span>
-    <span class="back-pill__label">{copy.back}</span>
+    <span class="back-pill__label">{label}</span>
   </a>
 </nav>
 

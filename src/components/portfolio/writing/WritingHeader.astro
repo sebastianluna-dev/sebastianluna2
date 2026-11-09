@@ -1,0 +1,101 @@
+---
+/**
+ * Title block of a writing (writings-spec §3.1–§3.2, §3.9): the page's only h1 (Geist 500 48/52.8,
+ * 40/44 below 1200, −0.04em, balanced; `tabindex=-1` for RT-06) and, 16 below, the meta line: the long
+ * date in a `<time>`, a "·" and the reading time, Geist 14/18.9 in `--pf-text-secondary` at
+ * `--pf-meta-dim`, 8 apart. A draft (dev only) shows its chip first.
+ *
+ * WRITING_APPEAR: the h1 fades in at .05 (opacity only) and the meta rises at .10, both nested in the
+ * hero of WritingView, as in the reference.
+ */
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { WRITING_APPEAR } from '@/components/motion/presets';
+import type { Locale } from '@/i18n/locales';
+import { format, getMessages } from '@/i18n/t';
+import { formatWritingDate, writingDateTime } from '@/lib/writings';
+import Chip from '@/components/portfolio/ui/Chip.astro';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  date: Date;
+  minutes: number;
+  draft: boolean;
+}
+
+const { locale, title, date, minutes, draft } = Astro.props;
+const copy = getMessages(locale).writings;
+---
+
+<div class="writing-header">
+  <AppearMotion as="h1" appear={WRITING_APPEAR.heading} tabindex="-1" class="writing-header__title">
+    {title}
+  </AppearMotion>
+  <AppearMotion appear={WRITING_APPEAR.meta} class="writing-header__meta">
+    {draft && <Chip variant="plain">{copy.draft}</Chip>}
+    <p class="writing-header__facts">
+      <time class="writing-header__fact" datetime={writingDateTime(date)}>
+        {formatWritingDate(date, locale)}
+      </time>
+      <span class="writing-header__fact" aria-hidden="true">
+        ·
+      </span>
+      <span class="writing-header__fact">{format(copy.readingTime, { minutes })}</span>
+    </p>
+  </AppearMotion>
+</div>
+
+<style>
+  @layer pf {
+    .writing-header {
+      /* writings-spec §3.2, §3.9 */
+      --writing-meta-gap: 8px;
+      --writing-meta-size: 14px;
+      --writing-meta-lh: 1.35;
+      --writing-meta-ls: -0.02em;
+
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-text-gap);
+    }
+
+    .writing-header__title {
+      max-width: 100%;
+      margin: 0;
+      color: var(--pf-text);
+      font-family: var(--pf-font-sans);
+      font-size: var(--pf-type-case-title-size);
+      font-weight: 500;
+      line-height: var(--pf-type-case-title-lh);
+      letter-spacing: var(--pf-type-case-title-ls);
+      font-feature-settings: var(--pf-ffs-alt);
+      text-wrap: balance;
+      overflow-wrap: break-word;
+    }
+
+    .writing-header__meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--writing-meta-gap);
+    }
+
+    .writing-header__facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--writing-meta-gap);
+      margin: 0;
+      color: var(--pf-text-secondary);
+      font-family: var(--pf-font-sans);
+      font-size: var(--writing-meta-size);
+      line-height: var(--writing-meta-lh);
+      letter-spacing: var(--writing-meta-ls);
+      font-feature-settings: normal;
+    }
+
+    .writing-header__fact {
+      opacity: var(--pf-meta-dim);
+      white-space: nowrap;
+    }
+  }
+</style>

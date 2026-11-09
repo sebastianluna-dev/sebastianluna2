@@ -1,0 +1,83 @@
+---
+/**
+ * Table of a writing (writings-spec §3.5): replaces the Markdown `table`
+ * (`<Content components={{ table: WritingTable }} />` in WritingView) to wrap it in a horizontal
+ * scroller. Separate borders with radius 14, header cells on `--pf-writing-table-head` in serif bold,
+ * body cells on `--pf-writing-table-cell` with a hairline on top, serif 14/1.4 (13/1.35 below 1200),
+ * padding 14, top-aligned.
+ *
+ * The wrapper becomes focusable only while the table overflows (code-block.client.ts adds the tab
+ * stop), so keyboard users can scroll a wide table. That script is started by WritingView, outside
+ * the prose: a `<script>` here would be emitted right after the first table, as a sibling inside
+ * `.pf-writing-prose`, and break the adjacent-sibling rhythm (`.writing-table + p`).
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'table'>;
+
+const { class: className, ...attrs } = Astro.props;
+---
+
+<div class="writing-table" data-writing-scroll>
+  <table class:list={['writing-table__table', className]} {...attrs}>
+    <slot />
+  </table>
+</div>
+
+<style>
+  @layer pf {
+    .writing-table {
+      --writing-table-radius: 14px;
+      --writing-table-pad: 14px;
+      --writing-table-size: 14px;
+      --writing-table-lh: 1.4;
+      --writing-table-ls: -0.02em;
+
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      border-radius: var(--writing-table-radius);
+
+      @media (max-width: 1199.98px) {
+        --writing-table-size: 13px;
+        --writing-table-lh: 1.35;
+      }
+
+      &:focus-visible {
+        outline: var(--pf-focus-width) solid var(--pf-focus-ring);
+        outline-offset: var(--pf-focus-offset);
+      }
+    }
+
+    .writing-table__table {
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid var(--pf-writing-table-border);
+      border-radius: var(--writing-table-radius);
+      border-collapse: separate;
+      border-spacing: 0;
+      color: var(--pf-text-body);
+      font-family: var(--pf-font-serif);
+      font-size: var(--writing-table-size);
+      line-height: var(--writing-table-lh);
+      letter-spacing: calc(var(--writing-table-ls) + var(--pf-serif-ls-adjust));
+      overflow-wrap: normal;
+
+      & :global(th),
+      & :global(td) {
+        padding: var(--writing-table-pad);
+        text-align: start;
+        vertical-align: top;
+      }
+
+      & :global(th) {
+        background: var(--pf-writing-table-head);
+        font-weight: 700;
+      }
+
+      & :global(td) {
+        border-top: 1px solid var(--pf-writing-table-border);
+        background: var(--pf-writing-table-cell);
+      }
+    }
+  }
+</style>

@@ -1,0 +1,165 @@
+---
+/**
+ * A writing article of either language (writings-spec §3): the case geometry without its meta. The
+ * Back pill (to /about, with the writings labels) right after the header, then `main` (padding
+ * 120 20 40; 144 on top on phones) with the 560 column: the hero (title block 32 above the body)
+ * and, 60 below, the footer with the author.
+ *
+ * - WRITING_APPEAR (§4.1): hero 0, h1 .05 (opacity), meta .10, body .15, nested like the reference,
+ *   so the body adds its own rise to the hero's. The footer, the Back pill, the chats and the notes
+ *   keep their own motion or none.
+ * - The MDX maps `a`, `table` and `pre` onto WritingLink, WritingTable and CodeBlock (and `ul` / `ol`
+ *   onto WritingBulletList / WritingNumberedList, for `role="list"`); everything else is the
+ *   Markdown in `.pf-writing-prose` (src/styles/writing-prose.css). Their client script
+ *   (copy, scroll stops) starts here, outside the prose: a component `<script>` lands right after
+ *   the component's first instance and breaks the prose's adjacent-sibling rhythm.
+ * - Head: `og:type=article`, `article:published_time` / `modified_time` / `tag`, the cover as share
+ *   image when there is one, and `noindex` for a draft (drafts only exist in `astro dev`).
+ * - The twin in the other language must exist and be published whenever this one is (drafts follow
+ *   the routes' rule): the alternates of BaseLayout and the footer LocaleSwitch derive it from the
+ *   URL, since slugs are not translated.
+ */
+import { getImage } from 'astro:assets';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AppearMotion from '@/components/motion/AppearMotion.astro';
+import { WRITING_APPEAR } from '@/components/motion/presets';
+import type { Locale } from '@/i18n/locales';
+import { format, getMessages } from '@/i18n/t';
+import { localizePath } from '@/lib/i18n-paths';
+import { ABOUT_PATH } from '@/lib/pill-nav';
+import {
+  bodyText,
+  readingMinutes,
+  writingCounterpart,
+  writingSlug,
+  writingsForLocale,
+} from '@/lib/writings';
+import BackPill from '@/components/portfolio/case/BackPill.astro';
+import WritingHeader from '@/components/portfolio/writing/WritingHeader.astro';
+import WritingFooter from '@/components/portfolio/writing/WritingFooter.astro';
+import WritingLink from '@/components/portfolio/writing/WritingLink.astro';
+import WritingTable from '@/components/portfolio/writing/WritingTable.astro';
+import CodeBlock from '@/components/portfolio/writing/CodeBlock.astro';
+import WritingBulletList from '@/components/portfolio/writing/WritingBulletList.astro';
+import WritingNumberedList from '@/components/portfolio/writing/WritingNumberedList.astro';
+import '@/styles/writing-prose.css';
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<'writings'>;
+}
+
+/** Width of the share image (og:image), as for the case covers. */
+const OG_IMAGE_WIDTH = 1200;
+
+const { locale, entry } = Astro.props;
+const twinLocale: Locale = locale === 'es' ? 'en' : 'es';
+// The twin must be published too (same draft rule as the routes), or its alternate would 404.
+const twins = writingsForLocale(await getCollection('writings'), twinLocale, {
+  includeDrafts: import.meta.env.DEV,
+});
+if (!writingCounterpart(twins, entry, twinLocale)) {
+  throw new Error(
+    `Writing "${entry.id}" has no published ${twinLocale} twin (src/content/writings/${twinLocale}/${writingSlug(entry)}.mdx, same \`draft\`)`,
+  );
+}
+const { Content } = await render(entry);
+const { common, writings } = getMessages(locale);
+const { title, description, date, updated, tags, cover, draft } = entry.data;
+const documentTitle = format(writings.documentTitle, { title, site: common.siteName });
+const minutes = readingMinutes(bodyText(entry.body ?? ''), entry.data.readingMinutes);
+const share = cover
+  ? await getImage({ src: cover.src, width: OG_IMAGE_WIDTH, format: 'jpeg' })
+  : undefined;
+const ogImage =
+  cover && share
+    ? {
+        src: share.src,
+        alt: cover.alt,
+        width: Number(share.attributes.width),
+        height: Number(share.attributes.height),
+      }
+    : undefined;
+---
+
+<BaseLayout
+  locale={locale}
+  title={documentTitle}
+  description={description}
+  ogType="article"
+  noindex={draft}
+  image={ogImage}
+>
+  <Fragment slot="head">
+    <meta property="article:published_time" content={date.toISOString()} />
+    {updated && <meta property="article:modified_time" content={updated.toISOString()} />}
+    {tags.map((tag) => (
+      <meta property="article:tag" content={tag} />
+    ))}
+  </Fragment>
+  <BackPill
+    slot="after-header"
+    locale={locale}
+    href={localizePath(ABOUT_PATH, locale)}
+    label={writings.back}
+    accessibleLabel={writings.backLabel}
+    navLabel={writings.backNavLabel}
+  />
+  <div class="writing-page">
+    <article class="writing">
+      <AppearMotion appear={WRITING_APPEAR.hero} class="writing__hero">
+        <WritingHeader locale={locale} title={title} date={date} minutes={minutes} draft={draft} />
+        <AppearMotion appear={WRITING_APPEAR.body} class="writing__body pf-writing-prose">
+          <Content
+            components={{
+              a: WritingLink,
+              table: WritingTable,
+              pre: CodeBlock,
+              ul: WritingBulletList,
+              ol: WritingNumberedList,
+            }}
+          />
+        </AppearMotion>
+      </AppearMotion>
+      <WritingFooter locale={locale} />
+    </article>
+  </div>
+</BaseLayout>
+
+<script>
+  import { startCodeBlocks } from '@/components/portfolio/writing/code-block.client';
+
+  startCodeBlocks();
+</script>
+
+<style>
+  @layer pf {
+    .writing-page {
+      padding: var(--pf-writing-pad-top) var(--pf-gutter-case) var(--pf-case-pad-bottom);
+    }
+
+    /* The 560 column: hero, then the footer 60 below (writings-spec §3.2). */
+    .writing {
+      --writing-footer-gap: 60px;
+      --writing-hero-gap: 32px;
+
+      display: flex;
+      flex-direction: column;
+      gap: var(--writing-footer-gap);
+      width: min(var(--pf-text-col), 100%);
+      margin-inline: auto;
+    }
+
+    .writing__hero {
+      display: flex;
+      flex-direction: column;
+      gap: var(--writing-hero-gap);
+    }
+
+    /* A flex item, so the chats and side notes measure against the 560 column. */
+    .writing__body {
+      min-width: 0;
+    }
+  }
+</style>

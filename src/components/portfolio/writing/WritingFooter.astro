@@ -1,0 +1,174 @@
+---
+/**
+ * Footer of a writing (writings-spec §3.8): a 1 px divider, 24 above the author row: "Written by" in
+ * Geist 14 (`--pf-text-secondary` at `--pf-meta-dim`) and the link to Sebastian's LinkedIn, an emoji
+ * in a 22 px box and the handle in Geist 16/17.6, ink.
+ *
+ * - The SSR paints the first emoji of `writings.author.emoji`; once mounted, a random one (the five
+ *   hero objects; the reference picks among its own set the same way).
+ * - Hover and keyboard focus lift the link 2 px (180 ms) and tilt the emoji −12° at 1.12 (220 ms),
+ *   ease-out; nothing moves with reduced motion.
+ */
+import { PROFILE } from '@/data/profile';
+import type { Locale } from '@/i18n/locales';
+import { format, getMessages } from '@/i18n/t';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { author } = getMessages(locale).writings;
+const handle = PROFILE.linkedinHandle;
+const emoji = author.emoji;
+---
+
+<footer class="writing-footer">
+  <div class="writing-footer__divider" aria-hidden="true"></div>
+  <p class="writing-footer__row">
+    <span class="writing-footer__by">{author.writtenBy}</span>
+    <a
+      class="writing-footer__link"
+      href={PROFILE.linkedin}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={format(author.linkLabel, { handle })}
+    >
+      <span class="writing-footer__emoji" aria-hidden="true">
+        <span class="writing-footer__glyph" data-writing-emoji={JSON.stringify(emoji)}>
+          {emoji[0]}
+        </span>
+      </span>
+      <span class="writing-footer__handle">{handle}</span>
+    </a>
+  </p>
+</footer>
+
+<script>
+  import { pickEmoji } from '@/lib/writings';
+
+  // A random author emoji on every article the router brings in (the SSR shows the first one).
+  const shuffle = () => {
+    for (const glyph of document.querySelectorAll<HTMLElement>('[data-writing-emoji]')) {
+      try {
+        const set = JSON.parse(glyph.dataset.writingEmoji ?? '[]') as string[];
+        const next = pickEmoji(set);
+        if (next) glyph.textContent = next;
+      } catch {
+        // Keep the SSR emoji.
+      }
+    }
+  };
+
+  document.addEventListener('astro:page-load', shuffle);
+</script>
+
+<style>
+  @layer pf {
+    .writing-footer {
+      /* writings-spec §3.8 */
+      --writing-footer-gap: 24px;
+      --writing-footer-link-gap: 4px;
+      --writing-footer-emoji-box: 22px;
+      --writing-footer-emoji-size: 20px;
+      --writing-footer-lift: -2px;
+      --writing-footer-tilt: -12deg;
+      --writing-footer-grow: 1.12;
+
+      display: flex;
+      flex-direction: column;
+      gap: var(--writing-footer-gap);
+    }
+
+    .writing-footer__divider {
+      height: 1px;
+      border-radius: var(--pf-radius-md);
+      background: var(--pf-divider-solid);
+    }
+
+    .writing-footer__row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      column-gap: var(--writing-footer-link-gap);
+      row-gap: var(--pf-case-text-gap);
+      margin: 0;
+    }
+
+    .writing-footer__by {
+      color: var(--pf-text-secondary);
+      font-family: var(--pf-font-sans);
+      font-size: 14px;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+      opacity: var(--pf-meta-dim);
+    }
+
+    .writing-footer__link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--writing-footer-link-gap);
+      color: var(--pf-text);
+      text-decoration: none;
+      transition: translate var(--pf-writing-author-lift-duration) ease-out;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .writing-footer__emoji {
+      display: grid;
+      flex: none;
+      place-items: center;
+      width: var(--writing-footer-emoji-box);
+      height: var(--writing-footer-emoji-box);
+      font-size: var(--writing-footer-emoji-size);
+      line-height: 1;
+      transition:
+        rotate var(--pf-writing-emoji-duration) ease-out,
+        scale var(--pf-writing-emoji-duration) ease-out;
+    }
+
+    .writing-footer__handle {
+      font-family: var(--pf-font-sans);
+      font-size: 16px;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      font-feature-settings: var(--pf-ffs-alt);
+    }
+
+    .writing-footer__link:focus-visible {
+      translate: 0 var(--writing-footer-lift);
+
+      .writing-footer__emoji {
+        rotate: var(--writing-footer-tilt);
+        scale: var(--writing-footer-grow);
+      }
+    }
+
+    @media (hover: hover) {
+      .writing-footer__link:hover {
+        translate: 0 var(--writing-footer-lift);
+
+        .writing-footer__emoji {
+          rotate: var(--writing-footer-tilt);
+          scale: var(--writing-footer-grow);
+        }
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .writing-footer__link,
+      .writing-footer__emoji {
+        transition: none;
+      }
+
+      .writing-footer__link:is(:hover, :focus-visible) {
+        translate: none;
+
+        .writing-footer__emoji {
+          rotate: none;
+          scale: none;
+        }
+      }
+    }
+  }
+</style>

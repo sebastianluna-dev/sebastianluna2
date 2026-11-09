@@ -1,0 +1,148 @@
+/*
+ * Body of a writing article (writings-spec §3.3–§3.5): the `.pf-writing-prose` block that wraps the
+ * MDX `<Content />` in WritingView. Global because the Markdown markup carries no scope.
+ *
+ * - Scale: the case body (serif 18/27.9, 17/26.35 below 1200, `--pf-text-body`), h2 32/37.76
+ *   (28/33.6), h3 22/27.5 (20/26), both ink and balanced.
+ * - Rhythm (measured, the reference's "R2"): paragraph → paragraph 18 (16 below 1200); 56 (44) above
+ *   an h2 and 36 above an h3, 16 below either; 32 (28) around images and tables; 24 around code.
+ *   Only the elements of the body take these margins, so the chat asides and side notes keep their
+ *   own and the margins collapse around them (block flow).
+ * - Lists: a "•" (or "1.") hung in the reference's 2ch indent, no gap between items.
+ * - Links are WritingLink, figures WritingFigure, tables WritingTable and code CodeBlock: their own
+ *   look lives in each component; this file only places them.
+ * - The rules that reach inside lists and paragraphs stop at the chats and side notes, which style
+ *   their own text.
+ */
+@layer pf {
+  .pf-writing-prose {
+    /* Own values of the body (writings-spec §3.3, §3.6). */
+    /* The reference hangs its bullets in 2ch of its serif: 22.86 at 18 px, 1.27em (ours is narrower). */
+    --writing-list-indent: 1.27em;
+    --writing-code-gap: 24px;
+
+    color: var(--pf-text-body);
+    font-family: var(--pf-font-serif);
+    font-size: var(--pf-type-body-size);
+    font-weight: 400;
+    line-height: var(--pf-type-body-lh);
+    letter-spacing: calc(var(--pf-type-body-ls) + var(--pf-serif-ls-adjust));
+    text-wrap: wrap;
+    overflow-wrap: break-word;
+    hyphens: manual;
+
+    /* ---------- Rhythm (direct children only) ---------- */
+
+    & > :where(*) + :where(p, ul, ol, blockquote) {
+      margin-block-start: var(--pf-writing-para-gap);
+    }
+
+    & > :where(*) + :where(.writing-figure, .writing-table),
+    & > :where(.writing-figure, .writing-table) + :where(p, ul, ol, blockquote) {
+      margin-block-start: var(--pf-writing-media-gap);
+    }
+
+    & > :where(*) + :where(.code-block),
+    & > :where(.code-block) + :where(p, ul, ol, blockquote) {
+      margin-block-start: var(--writing-code-gap);
+    }
+
+    & > :where(*) + :where(h3, h4) {
+      margin-block-start: var(--pf-writing-h3-before);
+    }
+
+    & > :where(*) + :where(h2) {
+      margin-block-start: var(--pf-writing-h2-before);
+    }
+
+    & > :where(h2, h3, h4) + :where(*):not(:is([data-chat-aside], [data-side-notes])) {
+      margin-block-start: var(--pf-writing-heading-after);
+    }
+
+    /* ---------- Headings ---------- */
+
+    & > :where(h2, h3, h4) {
+      color: var(--pf-text);
+      font-family: var(--pf-font-serif);
+      font-weight: 400;
+      text-wrap: balance;
+    }
+
+    & > :where(h2) {
+      font-size: var(--pf-type-h2-alt-size);
+      line-height: var(--pf-type-h2-alt-lh);
+      letter-spacing: calc(var(--pf-type-h2-ls) + var(--pf-serif-ls-adjust));
+    }
+
+    & > :where(h3, h4) {
+      font-size: var(--pf-type-h3-size);
+      line-height: var(--pf-type-h3-lh);
+      letter-spacing: calc(var(--pf-type-h3-ls) + var(--pf-serif-ls-adjust));
+    }
+
+    /* Anchored headings (Markdown ids) clear the fixed chrome like the case sections do. */
+    & > :where(h2, h3, h4)[id] {
+      scroll-margin-top: var(--pf-case-scroll-margin);
+    }
+
+    /* ---------- Lists ---------- */
+
+    /* The markers are drawn in ::before; WritingView maps `ul` / `ol` onto WritingBulletList and
+       WritingNumberedList, which add role="list" so WebKit keeps announcing them without markers. */
+    & > :where(ul, ol) {
+      padding: 0;
+      list-style: none;
+    }
+
+    & > :where(ul, ol) > :where(li) {
+      position: relative;
+      padding-inline-start: var(--writing-list-indent);
+    }
+
+    & > :where(ul) > :where(li)::before {
+      position: absolute;
+      inset-inline-start: 0;
+      content: '•';
+    }
+
+    & > :where(ol) > :where(li)::before {
+      position: absolute;
+      inset-inline-start: 0;
+      content: counter(list-item) '.';
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ---------- Inline ---------- */
+
+    & > :where(p, ul, ol, blockquote, h2, h3, h4) :where(strong, b) {
+      font-weight: 700;
+    }
+
+    & > :where(p, ul, ol, blockquote) :where(em, i) {
+      font-style: italic;
+    }
+
+    & > :where(p, ul, ol, blockquote, h2, h3, h4) :where(code) {
+      padding: 0.1em 0.3em;
+      border-radius: var(--pf-radius-xs);
+      background: var(--pf-badge-bg);
+      color: var(--pf-text);
+      font-family: var(--pf-font-mono);
+      font-size: 0.85em;
+      letter-spacing: normal;
+    }
+
+    & > :where(blockquote) {
+      padding-inline-start: var(--pf-case-text-gap);
+      border-inline-start: 2px solid var(--pf-border-strong);
+      color: var(--pf-text);
+    }
+
+    & > :where(hr) {
+      height: 1px;
+      border: 0;
+      border-radius: var(--pf-radius-md);
+      background: var(--pf-divider-solid);
+    }
+  }
+}

@@ -20,6 +20,12 @@ export default defineConfig({
     mdx(),
     sitemap({ i18n: { defaultLocale: 'es', locales: { es: 'es-MX', en: 'en' } } }),
   ],
+  // Code blocks of the writings (fase7-plan §2.7): Shiki paints `--astro-code-*` variables, which
+  // CodeBlock maps onto the `--pf-code-*` tokens (light and dark, no client JS). MDX inherits it; the
+  // case studies have no code blocks.
+  markdown: {
+    shikiConfig: { theme: 'css-variables', wrap: true },
+  },
   i18n: {
     defaultLocale: 'es',
     locales: ['es', 'en'],

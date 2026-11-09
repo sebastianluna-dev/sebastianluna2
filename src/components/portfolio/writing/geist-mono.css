@@ -1,0 +1,12 @@
+/*
+ * Geist Mono (writings-spec §3.6): only the code blocks of the writings use it, so only CodeBlock
+ * imports this file and the face never loads on other pages. Variable woff2 copied from the npm
+ * `geist` package (src/assets/fonts/geist-mono-variable.woff2); same OFL as Geist (geist-ofl.txt).
+ */
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('../../../assets/fonts/geist-mono-variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}

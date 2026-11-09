@@ -1,0 +1,293 @@
+---
+/**
+ * Code block of a writing (writings-spec §3.6): replaces the `pre` that Shiki renders for a fenced
+ * block (`<Content components={{ pre: CodeBlock }} />` in WritingView), so the MDX only writes
+ * ```lang. A window frame: a 44 px header with three dots, the language and a Copy button, then the
+ * code in Geist Mono 13/20.54 with line numbers (a CSS counter on Shiki's `.line`), at most 560 tall
+ * and scrolling inside.
+ *
+ * - Colours: Shiki's `css-variables` theme paints `--astro-code-*`; the root maps them onto the
+ *   `--pf-code-*` tokens, so both themes switch in CSS with no client JS for the highlight.
+ * - Copy (code-block.client.ts): copies the code, swaps "Copy" for "Copied" for
+ *   `CODE_BLOCK.copiedResetMs` and announces it in a polite live region. Without JS, or without the
+ *   Clipboard API, the button stays hidden: the code is selectable either way.
+ * - The scroller becomes focusable only while it overflows (the script adds the tab stop, as the side
+ *   notes carousel does), so keyboard users can scroll a long block. WritingView starts that script,
+ *   outside the prose, so no `<script>` sibling breaks the `.code-block + p` rhythm.
+ */
+import { format, getMessages } from '@/i18n/t';
+import { splitLocale } from '@/lib/i18n-paths';
+import { codeGutterCh, codeLanguageLabel, countCodeLines } from '@/lib/writings';
+import './geist-mono.css';
+
+interface Props {
+  /** Set by Shiki on its `pre`. */
+  'data-language'?: string;
+  /** Overrides the language name in the header. */
+  label?: string;
+  [attribute: string]: unknown;
+}
+
+const { 'data-language': language, label } = Astro.props;
+const { locale } = splitLocale(Astro.url.pathname);
+const copy = getMessages(locale).writings.code;
+const name = label ?? codeLanguageLabel(language);
+const code = await Astro.slots.render('default');
+const gutter = codeGutterCh(countCodeLines(code));
+---
+
+<div
+  class="code-block"
+  role="group"
+  aria-label={format(copy.snippetLabel, { language: name })}
+  data-code-block
+>
+  <div class="code-block__header">
+    <span class="code-block__dots" aria-hidden="true">
+      <span class="code-block__dot code-block__dot_tone_rose"></span>
+      <span class="code-block__dot code-block__dot_tone_amber"></span>
+      <span class="code-block__dot code-block__dot_tone_green"></span>
+    </span>
+    <span class="code-block__label" aria-hidden="true">
+      {name}
+    </span>
+    <button
+      class="code-block__copy"
+      type="button"
+      aria-label={copy.copyLabel}
+      hidden
+      data-code-copy
+      data-label-idle={copy.copyLabel}
+      data-label-done={copy.copiedLabel}
+    >
+      <span class="code-block__copy-text code-block__copy-text_state_idle">{copy.copy}</span>
+      <span class="code-block__copy-text code-block__copy-text_state_done" aria-hidden="true">
+        {copy.copied}
+      </span>
+    </button>
+    <span class="sr-only" role="status" data-code-status data-message={copy.copiedLabel}></span>
+  </div>
+  <div class="code-block__scroller" data-code-scroller>
+    <pre
+      class="code-block__pre"
+      data-language={language}
+      style={`--code-gutter: ${gutter}ch`}
+      set:html={code}
+    />
+  </div>
+</div>
+
+<style>
+  @layer pf {
+    .code-block {
+      /* writings-spec §3.6: geometry of the frame (one component, same in both themes). */
+      --code-radius: 14px;
+      --code-header-height: 44px;
+      --code-dot: 8px;
+      --code-dot-gap: 5px;
+      --code-label-gap: 10px;
+      --code-max-height: 560px;
+      --code-number-gap: 16px;
+      /* The three dots keep their colour in both themes, as in the reference. */
+      --code-dot-rose: #fb7185;
+      --code-dot-amber: #fbbf24;
+      --code-dot-green: #86efac;
+      /* Shiki's css-variables theme → our tokens. Its "constant" scope covers numbers, constants,
+         objects and property names alike (as GitHub's theme does), so it takes the property blue. */
+      --astro-code-foreground: var(--pf-code-text);
+      --astro-code-background: var(--pf-code-bg);
+      --astro-code-token-comment: var(--pf-code-comment);
+      --astro-code-token-string: var(--pf-code-string);
+      --astro-code-token-string-expression: var(--pf-code-string);
+      --astro-code-token-constant: var(--pf-code-property);
+      --astro-code-token-keyword: var(--pf-code-keyword);
+      --astro-code-token-parameter: var(--pf-code-number);
+      --astro-code-token-link: var(--pf-code-property);
+      --astro-code-token-function: var(--pf-code-function);
+      --astro-code-token-punctuation: var(--pf-code-punctuation);
+
+      overflow: hidden;
+      border: 1px solid var(--pf-code-border);
+      border-radius: var(--code-radius);
+      background: var(--pf-code-bg);
+      color: var(--pf-code-text);
+      font-family: var(--pf-font-mono);
+      letter-spacing: normal;
+    }
+
+    .code-block__header {
+      display: flex;
+      align-items: center;
+      height: var(--code-header-height);
+      padding: 0 12px 0 14px;
+      border-bottom: 1px solid var(--pf-code-border);
+      background: var(--pf-code-header);
+    }
+
+    .code-block__dots {
+      display: flex;
+      flex: none;
+      gap: var(--code-dot-gap);
+    }
+
+    .code-block__dot {
+      width: var(--code-dot);
+      height: var(--code-dot);
+      border-radius: 999px;
+    }
+
+    .code-block__dot_tone_rose {
+      background: var(--code-dot-rose);
+    }
+
+    .code-block__dot_tone_amber {
+      background: var(--code-dot-amber);
+    }
+
+    .code-block__dot_tone_green {
+      background: var(--code-dot-green);
+    }
+
+    .code-block__label {
+      flex: 1;
+      min-width: 0;
+      margin-inline-start: var(--code-label-gap);
+      overflow: hidden;
+      color: var(--pf-code-label);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* Copy: 59 × 26, padding 7 8, radius 8; hover washes 10 % of its colour, press scales .96. */
+    .code-block__copy {
+      display: grid;
+      flex: none;
+      padding: 7px 8px;
+      border-radius: var(--pf-radius-badge);
+      color: var(--pf-code-label);
+      font-family: var(--pf-font-mono);
+      font-size: 12px;
+      line-height: 12px;
+      transition:
+        background-color var(--pf-code-hover-duration) ease-out,
+        scale var(--pf-code-hover-duration) ease-out;
+      -webkit-tap-highlight-color: transparent;
+
+      &[hidden] {
+        display: none;
+      }
+
+      &:focus-visible {
+        outline: var(--pf-focus-width) solid currentColor;
+        outline-offset: var(--pf-focus-offset);
+      }
+
+      &:active {
+        scale: var(--pf-press-scale);
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          background: color-mix(in oklab, currentColor 10%, transparent);
+        }
+      }
+    }
+
+    /* "Copy" and "Copied" share one grid cell; the hidden one waits small and blurred. */
+    .code-block__copy-text {
+      grid-area: 1 / 1;
+      text-align: center;
+      transition:
+        opacity var(--pf-code-swap-duration) var(--pf-ease-code-swap),
+        scale var(--pf-code-swap-duration) var(--pf-ease-code-swap),
+        filter var(--pf-code-swap-duration) var(--pf-ease-code-swap);
+    }
+
+    .code-block__copy-text_state_done,
+    .code-block__copy[data-copied] .code-block__copy-text_state_idle {
+      opacity: 0;
+      scale: 0.8;
+      filter: blur(2px);
+    }
+
+    .code-block__copy[data-copied] .code-block__copy-text_state_done {
+      opacity: 1;
+      scale: 1;
+      filter: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .code-block__copy {
+        transition: background-color var(--pf-code-hover-duration) ease-out;
+
+        &:active {
+          scale: none;
+        }
+      }
+
+      .code-block__copy-text,
+      .code-block__copy-text_state_done,
+      .code-block__copy[data-copied] .code-block__copy-text_state_idle {
+        scale: none;
+        filter: none;
+        transition: opacity var(--pf-code-hover-duration) ease-out;
+      }
+    }
+
+    .code-block__scroller {
+      max-height: var(--code-max-height);
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-color: var(--pf-code-gutter) transparent;
+      scrollbar-width: thin;
+
+      &:focus-visible {
+        outline: var(--pf-focus-width) solid var(--pf-focus-ring);
+        outline-offset: calc(-1 * var(--pf-focus-width));
+      }
+    }
+
+    /* Geist Mono 13/20.54, long lines wrap under their own code (not under the numbers). */
+    .code-block__pre {
+      margin: 0;
+      padding: 14px 16px 18px;
+      font-family: var(--pf-font-mono);
+      font-size: 13px;
+      line-height: 1.58;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      tab-size: 2;
+      counter-reset: code-line;
+
+      /* A grid drops the newline text nodes between Shiki's lines (no blank rows between blocks). */
+      & :global(code) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        font: inherit;
+      }
+
+      & :global(.line) {
+        position: relative;
+        display: block;
+        min-height: 1lh;
+        padding-inline-start: calc(var(--code-gutter) + var(--code-number-gap));
+        counter-increment: code-line;
+      }
+
+      & :global(.line)::before {
+        position: absolute;
+        inset-inline-start: 0;
+        width: var(--code-gutter);
+        color: var(--pf-code-gutter);
+        content: counter(code-line);
+        font-variant-numeric: tabular-nums;
+        text-align: end;
+        user-select: none;
+      }
+    }
+  }
+</style>

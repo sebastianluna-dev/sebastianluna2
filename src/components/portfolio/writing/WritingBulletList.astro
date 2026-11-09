@@ -1,0 +1,17 @@
+---
+/**
+ * Bulleted list of a writing body: replaces the Markdown `ul`
+ * (`<Content components={{ ul: WritingBulletList }} />` in WritingView) only to add `role="list"`.
+ * The prose hangs its own "•" in `::before` with `list-style: none` (writing-prose.css), and WebKit
+ * with VoiceOver stops announcing a list without markers unless it carries the role.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'ul'>;
+
+const attrs = Astro.props;
+---
+
+<ul role="list" {...attrs}>
+  <slot />
+</ul>

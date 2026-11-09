@@ -1,0 +1,64 @@
+---
+/**
+ * Link of a writing body (writings-spec §3.3, §4.2): replaces the Markdown `a`
+ * (`<Content components={{ a: WritingLink }} />` in WritingView). Grey (`--pf-text-secondary`) with a
+ * from-font underline at .18em, both turning ink on hover in 160 ms (the reference's link preset).
+ *
+ * Links to another site open in a new tab with `rel="noopener noreferrer"` and say so to screen
+ * readers (`common.opensInNewTab`, visually hidden); links inside the site stay in the router.
+ */
+import type { HTMLAttributes } from 'astro/types';
+import { SITE_URL } from '@/data/site';
+import { getMessages } from '@/i18n/t';
+import { splitLocale } from '@/lib/i18n-paths';
+import { isExternalHref } from '@/lib/writings';
+
+type Props = HTMLAttributes<'a'>;
+
+const { href, class: className, ...attrs } = Astro.props;
+const { locale } = splitLocale(Astro.url.pathname);
+const { common } = getMessages(locale);
+const target = typeof href === 'string' ? href : String(href ?? '');
+const external = isExternalHref(target, SITE_URL);
+// The slot goes in as a string so no formatter whitespace lands inside the underline (", " after a
+// link would otherwise show an underlined space before the comma).
+const escapeHtml = (text: string) =>
+  text.replace(/&/gu, '&amp;').replace(/</gu, '&lt;').replace(/>/gu, '&gt;');
+const content = await Astro.slots.render('default');
+const suffix = external ? `<span class="sr-only"> ${escapeHtml(common.opensInNewTab)}</span>` : '';
+---
+
+<a
+  class:list={['writing-link', className]}
+  href={target}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+  {...attrs}
+  set:html={content + suffix}
+/>
+
+<style>
+  @layer pf {
+    .writing-link {
+      color: var(--pf-text-secondary);
+      text-decoration-line: underline;
+      text-decoration-thickness: from-font;
+      text-decoration-color: currentColor;
+      text-underline-offset: 0.18em;
+      transition:
+        color var(--pf-writing-link-duration) var(--pf-ease-writing-link),
+        text-decoration-color var(--pf-writing-link-duration) var(--pf-ease-writing-link);
+      -webkit-tap-highlight-color: transparent;
+
+      @media (hover: hover) {
+        &:hover {
+          color: var(--pf-text);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+  }
+</style>

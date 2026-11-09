@@ -181,6 +181,14 @@ export interface WorksMapProps {
 /** Fixed "Back" pill to `/#works` (CA-04…CA-06). */
 export interface BackPillProps {
   locale: Locale;
+  /** Destination; defaults to the works list of the home (`/#works`, localised). */
+  href?: string;
+  /** Visible label; defaults to `case.back`. */
+  label?: string;
+  /** Accessible name of the link; defaults to `case.backLabel`. */
+  accessibleLabel?: string;
+  /** Accessible name of the wrapping `nav`; defaults to `case.backNavLabel`. */
+  navLabel?: string;
 }
 
 /** Previous / next case by `order`, without wrapping (CA-16). Renders nothing when both are null. */

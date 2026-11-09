@@ -1,0 +1,16 @@
+---
+/**
+ * Numbered list of a writing body: replaces the Markdown `ol`
+ * (`<Content components={{ ol: WritingNumberedList }} />` in WritingView) only to add `role="list"`,
+ * for the same reason as WritingBulletList. `start` and the other attributes pass through.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'ol'>;
+
+const attrs = Astro.props;
+---
+
+<ol role="list" {...attrs}>
+  <slot />
+</ol>
