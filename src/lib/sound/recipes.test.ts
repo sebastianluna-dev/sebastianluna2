@@ -1,12 +1,44 @@
 import { describe, expect, it } from 'vitest';
-import { SOUNDS, SOUND_ATTACK, soundLength, type SoundName } from './recipes';
+import {
+  CHANNEL_CUT,
+  NOISE_LENGTH,
+  SOUNDS,
+  SOUND_ATTACK,
+  SOUND_CHANNEL,
+  soundLength,
+  type SoundName,
+} from './recipes';
 
 const names = Object.keys(SOUNDS) as SoundName[];
 
 describe('interface sounds', () => {
-  it('has every sound the site plays, droid in three variants', () => {
-    expect(names.sort()).toEqual(['closeChat', 'droid', 'openChat', 'theme', 'typing']);
+  it('has every sound the site plays, droid in three variants and the book riffle in two', () => {
+    expect(names.sort()).toEqual([
+      'bookClose',
+      'bookOpen',
+      'closeChat',
+      'droid',
+      'openChat',
+      'theme',
+      'typing',
+    ]);
     expect(SOUNDS.droid).toHaveLength(3);
+    expect(SOUNDS.bookOpen).toHaveLength(2);
+    expect(SOUNDS.bookClose).toHaveLength(1);
+  });
+
+  it('puts only the two book sounds on one channel, so a new one cuts the previous', () => {
+    expect(SOUND_CHANNEL).toEqual({ bookOpen: 'book', bookClose: 'book' });
+    expect(CHANNEL_CUT).toBeGreaterThan(0);
+    expect(CHANNEL_CUT).toBeLessThanOrEqual(0.01);
+  });
+
+  it('keeps every noise part within the shared noise buffer, or it would go silent', () => {
+    for (const name of names) {
+      for (const part of SOUNDS[name].flat()) {
+        if (part.kind === 'noise') expect(part.duration).toBeLessThanOrEqual(NOISE_LENGTH);
+      }
+    }
   });
 
   it('keeps every sound short, as the reference (all under 0.65 s)', () => {
