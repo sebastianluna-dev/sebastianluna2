@@ -105,12 +105,17 @@
    * BL-13: the figure. `__figure` turns to the pointer (transform written by blue-eyes.client.ts),
    * `__float` bobs and breathes on its own, `__eyes` look further and each `__eye` blinks. Every
    * layer moves with a composited transform, so the blurred SVG is painted once.
+   *
+   * Never hit-testable: tilted in the button's perspective, Chrome maps screen points far up-left
+   * (beyond ~1100 px, behind the vanishing plane) onto the figure, so a click on the pill nav of a
+   * wide screen opened Blue. The untransformed button box takes every pointer event instead.
    */
   .pf-blue-launcher__figure {
     position: relative;
     display: block;
     width: 100%;
     height: 100%;
+    pointer-events: none;
     transition: transform var(--pf-blue-figure-follow) var(--pf-ease-out-quint);
     will-change: transform;
   }

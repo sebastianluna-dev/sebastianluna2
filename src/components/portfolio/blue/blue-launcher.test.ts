@@ -1,4 +1,5 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { getMessages } from '@/i18n/t';
 import BlueLauncher from './BlueLauncher.astro';
@@ -36,5 +37,13 @@ describe('BlueLauncher', () => {
     );
     expect(html).toContain('data-blue-eyes');
     expect(html.match(/class="pf-blue-launcher__eye[ "]/g)).toHaveLength(2);
+  });
+
+  it('never lets the tilted figure take a click: only the flat button box does', () => {
+    // Tilted in the button's perspective, Chrome hit-tested far screen points onto the figure, so a
+    // click on the pill nav of a wide screen opened Blue.
+    const css = readFileSync(new URL('./blue-launcher.css', import.meta.url), 'utf8');
+    const figure = /\.pf-blue-launcher__figure \{([^}]*)\}/.exec(css)?.[1] ?? '';
+    expect(figure).toContain('pointer-events: none');
   });
 });
