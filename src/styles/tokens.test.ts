@@ -59,6 +59,33 @@ describe('tokens.css', () => {
     expect(css).toContain(`--pf-meta-dim: ${opacity};`);
   });
 
+  it('ends the Experience dates at the meta dim of the CSS (about-spec §4.3)', () => {
+    const { opacity } = APPEAR_PRESETS.inViewFadeUpY8O040Tween024OutQuint.animate;
+    expect(css).toContain(`--pf-meta-dim: ${opacity};`);
+  });
+
+  it('keeps the 404 terminal fixed in both themes (404-spec §2)', () => {
+    const light = declarations(':root').filter((declaration) =>
+      declaration.startsWith('--pf-terminal-'),
+    );
+    expect(light.length).toBeGreaterThanOrEqual(11);
+    for (const selector of [":root[data-theme='dark']", ":root:not([data-theme='light'])"]) {
+      expect(declarations(selector).filter((d) => d.startsWith('--pf-terminal-'))).toEqual([]);
+    }
+  });
+
+  it('gives every code token a dark value (writings-spec §3.6)', () => {
+    const names = (selector: string) =>
+      declarations(selector)
+        .map((declaration) => declaration.split(':')[0])
+        .filter((name) => name.startsWith('--pf-code-') && !name.endsWith('-duration'));
+    const light = names(':root');
+    expect(light.length).toBeGreaterThanOrEqual(12);
+    for (const selector of [":root[data-theme='dark']", ":root:not([data-theme='light'])"]) {
+      expect(names(selector).sort()).toEqual([...light].sort());
+    }
+  });
+
   it('keeps the reduced hero fade in sync with its preset (HE-10)', () => {
     expect(css).toContain(`--pf-hero-scene-fade: ${REDUCED_HERO_FADE.durationMs}ms;`);
   });

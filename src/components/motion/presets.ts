@@ -169,6 +169,44 @@ export const APPEAR_PRESETS = {
     transition: { type: 'tween', duration: 0.24, ease: EASE_OUT_QUINT },
     timing: { durationMs: 240, easing: EASE_OUT_QUINT_CSS, fallbackEasing: EASE_OUT_QUINT_CSS },
   },
+  /** /about chip h1 (about-spec §4.2). */
+  fadeUpY2Tween018OutQuint: {
+    initial: { opacity: HIDDEN, y: 2 },
+    animate: { opacity: 1, y: 0 },
+    transition: { type: 'tween', duration: 0.18, ease: EASE_OUT_QUINT },
+    timing: { durationMs: 180, easing: EASE_OUT_QUINT_CSS, fallbackEasing: EASE_OUT_QUINT_CSS },
+  },
+  /** /about hero paragraphs (about-spec §4.2). */
+  fadeUpY8Tween024OutQuint: {
+    initial: { opacity: HIDDEN, y: 8 },
+    animate: { opacity: 1, y: 0 },
+    transition: { type: 'tween', duration: 0.24, ease: EASE_OUT_QUINT },
+    timing: { durationMs: 240, easing: EASE_OUT_QUINT_CSS, fallbackEasing: EASE_OUT_QUINT_CSS },
+  },
+  /** /about Email button and "My toolkit" label (about-spec §4.2); not the home tip's .24 s one. */
+  fadeUpY5Tween022OutQuint: {
+    initial: { opacity: HIDDEN, y: 5 },
+    animate: { opacity: 1, y: 0 },
+    transition: { type: 'tween', duration: 0.22, ease: EASE_OUT_QUINT },
+    timing: { durationMs: 220, easing: EASE_OUT_QUINT_CSS, fallbackEasing: EASE_OUT_QUINT_CSS },
+  },
+  /**
+   * /about Experience text (about-spec §4.3): reversible in-view appear, starts at opacity 0. Played
+   * by `experience-reveal.client.ts` with `ABOUT_EXPERIENCE_REVEAL`, not by the once-only engine.
+   */
+  inViewFadeUpY8Tween024OutQuint: {
+    initial: { opacity: 0, y: 8 },
+    animate: { opacity: 1, y: 0 },
+    transition: { type: 'tween', duration: 0.24, ease: EASE_OUT_QUINT },
+    timing: { durationMs: 240, easing: EASE_OUT_QUINT_CSS, fallbackEasing: EASE_OUT_QUINT_CSS },
+  },
+  /** /about Experience dates: as above, ending at the meta dim (.4, decisiones.md 20). */
+  inViewFadeUpY8O040Tween024OutQuint: {
+    initial: { opacity: 0, y: 8 },
+    animate: { opacity: 0.4, y: 0 },
+    transition: { type: 'tween', duration: 0.24, ease: EASE_OUT_QUINT },
+    timing: { durationMs: 240, easing: EASE_OUT_QUINT_CSS, fallbackEasing: EASE_OUT_QUINT_CSS },
+  },
   /** HE-18: hero object ending at 12°. */
   popInRotateS093R12SpringB020028: {
     initial: { opacity: HIDDEN, scale: 0.93, rotate: 0 },
@@ -420,6 +458,44 @@ export const CASE_FIGURE_APPEAR = {
 } as const satisfies Record<string, AppearSlot>;
 
 export type CaseFigureAppear = keyof typeof CASE_FIGURE_APPEAR;
+
+/** /about hero (about-spec §4.2): once, with the appear engine. `toolkitLabel` is the "My toolkit" h2. */
+export const ABOUT_APPEAR = {
+  avatar: { preset: 'fadeUpY7Tween030OutQuint', delay: 0 },
+  title: { preset: 'fadeUpY2Tween018OutQuint', delay: 0.1 },
+  intro: { preset: 'fadeUpY8Tween024OutQuint', delay: 0.18 },
+  story: { preset: 'fadeUpY8Tween024OutQuint', delay: 0.3 },
+  email: { preset: 'fadeUpY5Tween022OutQuint', delay: 0.42 },
+  toolkitLabel: { preset: 'fadeUpY5Tween022OutQuint', delay: 0.5 },
+} as const satisfies Record<string, AppearSlot>;
+
+/**
+ * /about Experience rows (about-spec §4.3): reversible, on every entry and exit, per element. An
+ * element enters when `isIntersecting && intersectionRatio >= threshold` and leaves below it; the
+ * delay applies both ways. Reduced motion or no JS: final state, never hidden.
+ */
+export const ABOUT_EXPERIENCE_REVEAL = {
+  threshold: 0.35,
+  once: false,
+  slots: {
+    label: { preset: 'inViewFadeUpY8Tween024OutQuint', delay: 0 },
+    date: { preset: 'inViewFadeUpY8O040Tween024OutQuint', delay: 0 },
+    title: { preset: 'inViewFadeUpY8Tween024OutQuint', delay: 0.08 },
+    body: { preset: 'inViewFadeUpY8Tween024OutQuint', delay: 0.16 },
+  },
+} as const satisfies {
+  threshold: number;
+  once: boolean;
+  slots: Record<string, AppearSlot>;
+};
+
+/** Writing article (writings-spec §4.1): nested blocks (hero > h1, meta, body), absolute delays like CA-01. */
+export const WRITING_APPEAR = {
+  hero: { preset: 'fadeUpY20SpringB000040', delay: 0 },
+  heading: { preset: 'fadeInSpringB000040', delay: 0.05 },
+  meta: { preset: 'fadeUpY20SpringB000040', delay: 0.1 },
+  body: { preset: 'fadeUpY20SpringB000040', delay: 0.15 },
+} as const satisfies Record<string, AppearSlot>;
 
 /** CA-01 stagger mode: `absolute`, identical to the reference (docs/decisiones.md). */
 export const APPEAR_STAGGER: StaggerMode = 'absolute';
@@ -789,4 +865,86 @@ export const CHAT_ASIDE = {
       fallOpaque: [0.15, 0.8],
     },
   },
+} as const;
+
+// ------------------------------------------------------------------ /about components
+
+/**
+ * /about "My toolkit" folder (about-spec §5.2), springs and timings only; the geometry lives in
+ * `src/lib/toolkit-folder.ts`. Springs are `motion/react` physical springs (stiffness k, damping c).
+ */
+export const TOOLKIT_FOLDER = {
+  /** One progress value drives open / close (0 closed, 1 open). */
+  progress: { type: 'spring', stiffness: 145, damping: 25, mass: 1 },
+  /** Whole scene follows the pointer over the closed folder, up to `maxX` / `maxY` degrees. */
+  tilt: { type: 'spring', stiffness: 180, damping: 28, mass: 1, maxX: 1, maxY: 1.5 },
+  /** Hover or visible focus on the lid: it turns `rotateX` degrees. */
+  peek: { type: 'spring', stiffness: 230, damping: 31, mass: 1, rotateX: -3 },
+  /** A stamp under a fine pointer (open folder only): rises `lift` px and tilts up to these degrees. */
+  stampHover: {
+    type: 'spring',
+    stiffness: 230,
+    damping: 31,
+    mass: 1,
+    lift: 6,
+    tiltX: 2.5,
+    tiltY: 3,
+  },
+  /** Collection name sliding to the active tab. */
+  labelSlide: { type: 'spring', stiffness: 300, damping: 35, mass: 1 },
+  /** Collection switch: progress dips to `dip` and the content swaps when it crosses `swapAt`. */
+  switch: { dip: -0.3, swapAt: -0.28 },
+  /** Floating tool name fade (ms). */
+  tagFadeMs: 120,
+} as const;
+
+/**
+ * /about Email "copied" bubble (about-spec §5.1): spring k480 c22 m1, shown `visibleMs`.
+ * Reduced motion: opacity only.
+ */
+export const ABOUT_EMAIL_BUBBLE = {
+  spring: { type: 'spring', stiffness: 480, damping: 22, mass: 1 },
+  visibleMs: 1600,
+  enter: { opacity: 0, y: 8, scale: 0.6, rotate: 8 },
+  rest: { opacity: 1, y: -10, scale: 1, rotate: -5 },
+  exit: { opacity: 0, y: -28, scale: 0.9 },
+} as const;
+
+// ------------------------------------------------------------------ writings components
+
+/** Writing code block (writings-spec §3.6): "Copied" goes back to "Copy" after this (ms). */
+export const CODE_BLOCK = {
+  copiedResetMs: 1400,
+} as const;
+
+// ------------------------------------------------------------------ 404
+
+/**
+ * RT-07…RT-09: the 404 terminal (404-spec §3, §5.2). Delays in seconds, by line index (the tenth
+ * line is the link). The pause after each typed character is
+ * `(1000 / charsPerSecond) · (jitter[0] + random · (jitter[1] − jitter[0])) · factor`.
+ */
+export const NOT_FOUND_TYPER = {
+  charsPerSecond: 80,
+  jitter: [0.6, 1.4],
+  pauseFactor: { punctuation: 2.6, space: 1.8, other: 1 },
+  /** Characters that take the punctuation factor. */
+  punctuation: '.,:;!?',
+  lines: [
+    { delay: 0 },
+    { delay: 0.2 },
+    { delay: 1, prefixDelay: 0 },
+    { delay: 0.15, prefixDelay: 0 },
+    { delay: 0.15, prefixDelay: 0 },
+    { delay: 0.6, prefixDelay: 0.15 },
+    { delay: 0.5 },
+    { delay: 0.5 },
+    { delay: 0.15 },
+    { delay: 0.6, prefixDelay: 0.2 },
+  ],
+  /** RT-09: final cursor, opacity keyframes over one `ease-in-out` iteration. */
+  cursorBlinkMs: 800,
+  cursorKeyframes: [0.2, 1, 0.2],
+  cursorEasing: 'ease-in-out',
+  cursorInitialOpacity: 0.25,
 } as const;

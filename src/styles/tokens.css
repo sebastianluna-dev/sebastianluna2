@@ -680,6 +680,120 @@
     --pf-blue-avatar-face-shadow:
       inset 0 2px 5px rgb(255 255 255 / 0.68), inset 0 -5px 8px rgb(0 99 193 / 0.24);
     --pf-blue-avatar-eye: linear-gradient(#fff, #e4f8ff);
+
+    /* ---------- Sheet pages: /about and the writings index (about-spec §3, writings-spec §2.2) ---------- */
+    --pf-sheet-col: 730px; /* page column */
+    --pf-sheet-label: 133px; /* left label column of a row */
+    --pf-sheet-content: 400px; /* content column, centred on the page */
+    --pf-sheet-row-gap: 32px; /* label → content */
+    --pf-sheet-pad-top: 100px;
+    --pf-about-section-gap: 120px;
+    --pf-about-exp-gap: 46px; /* between Experience rows */
+    --pf-about-avatar: 40px;
+    --pf-about-label-to-content: 32px; /* phone only: label above its content */
+    --pf-about-toolkit-label-gap: 8px; /* phone only: "My toolkit" label above the folder */
+
+    /* /about toolkit folder (about-spec §5.2). Same colours in both themes except floor and tag. */
+    --pf-folder-back: linear-gradient(180deg, #55b6e5, #2d8dbc);
+    --pf-folder-back-inset: inset 0 1px 1px #b3e9ff;
+    --pf-folder-tab: linear-gradient(#67c3ed, #51afdb);
+    --pf-folder-front: linear-gradient(170deg, #9bdffd, #73cbf3 34%, #54b3e7);
+    --pf-folder-front-border: #a5e4ff;
+    --pf-folder-front-border-bottom: #398dba;
+    --pf-folder-front-shadow: 0 9px 16px -8px rgb(22 56 76 / 0.33);
+    --pf-folder-floor: rgb(49 86 115 / 0.16);
+    --pf-folder-ink: #16476a; /* collection name */
+    --pf-folder-lamp-1: #70e7ff; /* interface, cyan */
+    --pf-folder-lamp-2: #ffb665; /* design, orange */
+    --pf-folder-lamp-3: #73f5ab; /* data, green */
+    --pf-folder-lamp-4: #cf9eff; /* quality, lilac */
+    --pf-folder-lamp-5: #ff879f; /* shipping, pink */
+    --pf-folder-lamp-halo-active: 0.62;
+    --pf-folder-lamp-halo-idle: 0.14;
+    --pf-folder-lamp-fog-active: 0; /* screen-blended fog: dark only */
+    --pf-folder-lamp-fog-idle: 0;
+    --pf-folder-tag-bg: rgb(248 251 253 / 0.96);
+    --pf-folder-tag-text: #26465a;
+    --pf-folder-stamp-shadow: drop-shadow(0 7px 7px rgb(9 31 48 / 0.24));
+    --pf-folder-sticker-bg: #fff; /* provisional sticker stamps (fase7-plan §1.3) */
+    --pf-folder-sticker-border: rgb(9 31 48 / 0.1);
+
+    /* /about readings: neutral books drawn in CSS (about-spec §5.3, fase7-plan §1.5); no theme change */
+    --pf-book-cover: linear-gradient(160deg, #e7e5e0 0%, #d5d2cb 100%);
+    --pf-book-page: #f8f6f1;
+    --pf-book-ink: #111; /* text of the inner page */
+    --pf-book-page-line: rgb(0 0 0 / 0.18);
+    --pf-book-spine: linear-gradient(90deg, rgb(0 0 0 / 0.2), rgb(0 0 0 / 0) 18%);
+    --pf-book-shine: linear-gradient(
+      90deg,
+      rgb(255 255 255 / 0) 0%,
+      rgb(255 255 255 / 0.35) 8%,
+      rgb(255 255 255 / 0) 16%
+    );
+    --pf-book-open-shadow:
+      0 1px 2px rgb(0 0 0 / 0.35), 0 7px 14px -4px rgb(0 0 0 / 0.32),
+      0 24px 30px -8px rgb(0 0 0 / 0.16);
+    --pf-book-perspective: 1200px;
+
+    /* /about Email "copied" bubble (about-spec §5.1): ink with inverted text, follows the theme */
+    --pf-bubble-bg: var(--pf-text);
+    --pf-bubble-text: var(--pf-text-inverse);
+    --pf-bubble-shadow: 0 4px 0 rgb(0 0 0 / 0.16);
+
+    /* ---------- Writings (writings-spec §2–§3, §5) ---------- */
+    --pf-writing-highlight: #f6f6f6; /* card focus highlight, table cells */
+    --pf-writing-card-gap: 28px;
+    --pf-writing-list-divider-gap: 60px;
+    --pf-writing-pad-top: 120px;
+    --pf-writing-para-gap: 18px;
+    --pf-writing-h2-before: 56px;
+    --pf-writing-h3-before: 36px;
+    --pf-writing-heading-after: 16px;
+    --pf-writing-media-gap: 32px;
+    --pf-writing-table-border: rgb(0 0 0 / 0.08);
+    --pf-writing-table-head: var(--pf-divider-solid);
+    --pf-writing-table-cell: var(--pf-writing-highlight);
+    /* Code block (writings-spec §3.6); Shiki's css-variables theme is mapped onto these by CodeBlock */
+    --pf-code-bg: #f7f7f8;
+    --pf-code-border: rgb(24 24 27 / 0.14);
+    --pf-code-header: #efeff1;
+    --pf-code-text: #27272a;
+    --pf-code-label: #5f5f67; /* 5.5:1 on the header (AA at 12 px) */
+    --pf-code-gutter: #8a8a93; /* 3.2:1, faint like the reference's line numbers */
+    --pf-code-comment: #71717a;
+    --pf-code-string: #047857;
+    --pf-code-number: #c2410c;
+    --pf-code-keyword: #7c3aed;
+    --pf-code-property: #2563eb;
+    --pf-code-function: #a16207;
+    --pf-code-punctuation: #52525b;
+
+    /* ---------- 404 terminal (404-spec §2): fixed, no dark override ---------- */
+    --pf-terminal-bg: #0a0a0a;
+    --pf-terminal-text: #fff;
+    --pf-terminal-caret: #e6edf3;
+    --pf-terminal-link: rgb(0 255 0);
+    --pf-terminal-font: 'Fragment Mono', 'Fragment Mono Fallback', ui-monospace, monospace;
+    --pf-terminal-size: 14px;
+    --pf-terminal-leading: 21px;
+    --pf-terminal-gap: 6px;
+    --pf-terminal-pad-d: 40px;
+    --pf-terminal-pad-t: 40px 32px;
+    --pf-terminal-pad-p: 40px 20px;
+
+    /* ---------- Phase 7 durations and easings (fase7-plan §5.2) ---------- */
+    --pf-book-open-duration: 360ms;
+    --pf-book-close-duration: 520ms;
+    --pf-book-spine-open-duration: 300ms;
+    --pf-book-spine-close-duration: 440ms;
+    --pf-ease-book: cubic-bezier(0.16, 1, 0.3, 1);
+    --pf-writing-link-duration: 160ms;
+    --pf-ease-writing-link: cubic-bezier(0.44, 0, 0.56, 1);
+    --pf-writing-author-lift-duration: 180ms;
+    --pf-writing-emoji-duration: 220ms;
+    --pf-code-hover-duration: var(--pf-dur-press);
+    --pf-code-swap-duration: 200ms;
+    --pf-ease-code-swap: cubic-bezier(0.2, 0, 0, 1);
   }
 
   @supports (corner-shape: superellipse(2)) {
@@ -698,6 +812,9 @@
       --pf-type-h3-size: 20px;
       --pf-type-h3-lh: 1.3;
       --pf-type-body-size: 17px;
+      --pf-writing-para-gap: 16px;
+      --pf-writing-h2-before: 44px;
+      --pf-writing-media-gap: 28px;
     }
   }
 
@@ -731,6 +848,9 @@
       --pf-chat-typing-height: 35px;
       --pf-nav-height: 52px;
       --pf-toggle-right: 24px;
+      --pf-sheet-pad-top: 150px;
+      --pf-about-exp-gap: 48px;
+      --pf-writing-pad-top: 144px;
     }
   }
 
@@ -842,6 +962,28 @@
     --pf-blue-send-ink: #0f0f0f;
     --pf-blue-icon-muted: rgb(255 255 255 / 0.4);
     --pf-blue-text-muted: rgb(255 255 255 / 0.55);
+    --pf-folder-floor: rgb(0 0 0 / 0.42);
+    --pf-folder-lamp-halo-active: 1;
+    --pf-folder-lamp-halo-idle: 0.34;
+    --pf-folder-lamp-fog-active: 0.92;
+    --pf-folder-lamp-fog-idle: 0.26;
+    --pf-folder-tag-bg: rgb(35 43 49 / 0.94);
+    --pf-folder-tag-text: #edf6fb;
+    --pf-writing-highlight: rgb(245 245 245 / 0.12);
+    --pf-writing-table-border: rgb(255 255 255 / 0.08);
+    --pf-code-bg: #101012;
+    --pf-code-border: rgb(255 255 255 / 0.12);
+    --pf-code-header: #18181b;
+    --pf-code-text: #e4e4e7;
+    --pf-code-label: #a1a1aa;
+    --pf-code-gutter: #71717a;
+    --pf-code-comment: #a1a1aa;
+    --pf-code-string: #a7f3d0;
+    --pf-code-number: #fdba74;
+    --pf-code-keyword: #c4b5fd;
+    --pf-code-property: #93c5fd;
+    --pf-code-function: #fcd34d;
+    --pf-code-punctuation: #d4d4d8;
   }
 
   /* ---------- Dark theme without JS: follow the system (keep identical to the block above) ---------- */
@@ -953,6 +1095,28 @@
       --pf-blue-send-ink: #0f0f0f;
       --pf-blue-icon-muted: rgb(255 255 255 / 0.4);
       --pf-blue-text-muted: rgb(255 255 255 / 0.55);
+      --pf-folder-floor: rgb(0 0 0 / 0.42);
+      --pf-folder-lamp-halo-active: 1;
+      --pf-folder-lamp-halo-idle: 0.34;
+      --pf-folder-lamp-fog-active: 0.92;
+      --pf-folder-lamp-fog-idle: 0.26;
+      --pf-folder-tag-bg: rgb(35 43 49 / 0.94);
+      --pf-folder-tag-text: #edf6fb;
+      --pf-writing-highlight: rgb(245 245 245 / 0.12);
+      --pf-writing-table-border: rgb(255 255 255 / 0.08);
+      --pf-code-bg: #101012;
+      --pf-code-border: rgb(255 255 255 / 0.12);
+      --pf-code-header: #18181b;
+      --pf-code-text: #e4e4e7;
+      --pf-code-label: #a1a1aa;
+      --pf-code-gutter: #71717a;
+      --pf-code-comment: #a1a1aa;
+      --pf-code-string: #a7f3d0;
+      --pf-code-number: #fdba74;
+      --pf-code-keyword: #c4b5fd;
+      --pf-code-property: #93c5fd;
+      --pf-code-function: #fcd34d;
+      --pf-code-punctuation: #d4d4d8;
     }
   }
 }
