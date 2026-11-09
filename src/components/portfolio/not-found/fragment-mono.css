@@ -1,0 +1,33 @@
+/*
+ * Fragment Mono 400, the face of the 404 terminal (404-spec §2). Only NotFoundView imports this file
+ * and preloads the font, so no other page downloads it.
+ *
+ * The woff2 is the Google Fonts "latin" subset (the one the reference serves too): it has no ✓, ✕ or
+ * █, which fall back to the system monospace. Those glyphs only live in the aria-hidden prefixes and
+ * caret, never in the typed text, whose width is counted in `ch`.
+ * Licence: src/assets/fonts/fragment-mono-ofl.txt.
+ */
+@font-face {
+  font-family: 'Fragment Mono';
+  src: url('../../../assets/fonts/fragment-mono-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/*
+ * Metric fallback while the face loads: Fragment Mono advances 0.618 em (618/1000) and Menlo or
+ * Courier New about 0.602 em, so size-adjust 102.66% keeps every column (and `1ch`) in place.
+ * ascent/descent-override = 950 / 250 units ÷ size-adjust.
+ */
+@font-face {
+  font-family: 'Fragment Mono Fallback';
+  src: local('Menlo'), local('Courier New');
+  size-adjust: 102.66%;
+  ascent-override: 92.54%;
+  descent-override: 24.35%;
+  line-gap-override: 0%;
+}

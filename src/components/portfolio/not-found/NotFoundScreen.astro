@@ -1,0 +1,154 @@
+---
+/**
+ * One language of the 404 terminal (404-spec §2–§6, fase7-plan §3): nine lines and the link home,
+ * all of them with their full text in the SSR. `typer.client.ts` reveals them (RT-07…RT-09) through
+ * `data-state`, `data-caret` and `--typed`; without JS or with reduced motion everything is visible.
+ *
+ * - Line 6 (`heading`) is the page's `h1`. Prefixes, the caret and the final cursor are aria-hidden,
+ *   so the link's name is just its text.
+ * - The block hides itself when JS has set the document's `lang` to the other language; without JS
+ *   both languages show, one under the other (404-spec §7).
+ * - Fixed colours in both themes (`--pf-terminal-*` has no dark override).
+ */
+import { HTML_LANG, type Locale } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { localizePath } from '@/lib/i18n-paths';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = getMessages(locale).notFound;
+---
+
+<section
+  class="not-found-screen"
+  lang={HTML_LANG[locale]}
+  data-typer-screen
+  data-typer-title={copy.meta.title}
+>
+  {/* `set:text` everywhere: the spans are `white-space: pre`, so template whitespace would show. */}
+  {copy.lines.map((line) => {
+    const Tag = line.heading ? 'h1' : 'p';
+    return (
+      <Tag class="not-found-screen__line" data-typer-line>
+        {line.prefix && (
+          <span
+            class="not-found-screen__prefix"
+            aria-hidden="true"
+            data-typer-prefix
+            set:text={line.prefix}
+          />
+        )}
+        <span class="not-found-screen__text" data-typer-text set:text={line.text} />
+        <span class="not-found-screen__caret" aria-hidden="true" set:text={copy.caret} />
+      </Tag>
+    );
+  })}
+  <p class="not-found-screen__line" data-typer-line>
+    {/* One line, no whitespace inside: prefix and text share a line box, so the underline is continuous. */}
+    <!-- prettier-ignore -->
+    <a class="not-found-screen__link" href={localizePath('/', locale)}><span class="not-found-screen__prefix" aria-hidden="true" data-typer-prefix set:text={copy.back.prefix} /><span class="not-found-screen__text" data-typer-text set:text={copy.back.text} /></a>
+    <span class="not-found-screen__caret" aria-hidden="true" set:text={copy.caret} />
+    <span
+      class="not-found-screen__cursor"
+      aria-hidden="true"
+      data-typer-cursor
+      set:text={copy.cursor}
+    />
+  </p>
+</section>
+
+<style>
+  @layer pf {
+    .not-found-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--pf-terminal-gap);
+      max-inline-size: 100%;
+      font-family: var(--pf-terminal-font);
+      font-size: var(--pf-terminal-size);
+      font-weight: 400;
+      line-height: var(--pf-terminal-leading);
+      letter-spacing: 0;
+      color: var(--pf-terminal-text);
+
+      /* With JS the inline head script has set the document's language: show only that terminal. */
+      :global(:root.js:lang(es)) &:lang(en),
+      :global(:root.js:lang(en)) &:lang(es) {
+        display: none;
+      }
+
+      /* Pre-typing states: only with JS and motion allowed, and gone once the typer is done. */
+      @media (prefers-reduced-motion: no-preference) {
+        :global(:root.js) &:not([data-typer='done']) {
+          /* Kept in the accessibility tree and the Tab order (the link finishes the typing on focus). */
+          & .not-found-screen__line:not([data-state]) {
+            opacity: 0;
+          }
+
+          & .not-found-screen__line[data-state='typing'] .not-found-screen__text {
+            display: inline-block;
+            inline-size: calc(var(--typed, 0) * 1ch);
+            overflow: clip;
+            /* The link's underline does not reach inside an inline-block. */
+            text-decoration: inherit;
+          }
+
+          & .not-found-screen__line[data-caret] .not-found-screen__caret {
+            display: inline;
+          }
+
+          & .not-found-screen__cursor {
+            visibility: hidden;
+          }
+        }
+      }
+    }
+
+    .not-found-screen__line {
+      display: flex;
+      align-items: baseline;
+      max-inline-size: 100%;
+      font: inherit;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .not-found-screen__prefix,
+    .not-found-screen__text {
+      flex: none;
+      white-space: pre;
+    }
+
+    .not-found-screen__caret {
+      display: none;
+      flex: none;
+      margin-inline-start: 2px;
+      color: var(--pf-terminal-caret);
+    }
+
+    .not-found-screen__link {
+      flex: none;
+      color: var(--pf-terminal-link);
+      text-decoration: underline;
+      text-decoration-color: currentColor;
+      cursor: pointer;
+
+      /* The reference has no focus style of its own; green on black, 14.4:1. */
+      &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+      }
+    }
+
+    .not-found-screen__cursor {
+      display: inline-block;
+      flex: none;
+      margin-inline-start: 2px;
+      color: var(--pf-terminal-caret);
+    }
+  }
+</style>

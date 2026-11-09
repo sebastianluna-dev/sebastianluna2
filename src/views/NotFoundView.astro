@@ -1,0 +1,99 @@
+---
+/**
+ * The single static, bilingual 404 (fase7-plan §3, 404-spec): a full document without BaseLayout, so
+ * no pill nav, theme cord, Stellar, footer or Blue. `noindex`, no canonical and no alternates (it
+ * answers any URL).
+ *
+ * - <head>, in order: layer order, theme bootstrap (swaps `no-js` for `js` and keeps `data-theme`
+ *   stamped across router swaps) and the 404 language bootstrap (English `lang` and title under
+ *   `/en`). Then <ClientRouter/>, so "Back to the start" plays the site's route transition (RT-10).
+ * - Both terminals are in the SSR; CSS shows the one of the document's language, or both without JS.
+ * - `data-page="404"` is read by route-transitions.client.ts to fix `lang` when the router swaps
+ *   this page in for a broken `/en/…` link.
+ * - The terminal is dark in both themes (`color-scheme: dark`, background on <html>).
+ */
+import { ClientRouter } from 'astro:transitions';
+import layersCss from '@/styles/layers.css?raw';
+import '@/styles/reset.css';
+import '@/styles/tokens.css';
+import '@/components/portfolio/not-found/fragment-mono.css';
+import monoUrl from '@/assets/fonts/fragment-mono-latin-400-normal.woff2?url';
+import { HTML_LANG, LOCALES } from '@/i18n/locales';
+import { getMessages } from '@/i18n/t';
+import { themeInlineScript } from '@/components/portfolio/theme/theme.inline';
+import { notFoundInlineScript } from '@/components/portfolio/not-found/not-found.inline';
+import NotFoundScreen from '@/components/portfolio/not-found/NotFoundScreen.astro';
+
+const es = getMessages('es').notFound;
+const en = getMessages('en').notFound;
+const languageScript = notFoundInlineScript({ lang: HTML_LANG.en, title: en.meta.title });
+---
+
+<!doctype html>
+<html lang={HTML_LANG.es} class="no-js" data-page="404">
+  <head>
+    <meta charset="utf-8" />
+    <style is:inline set:html={layersCss} />
+    <script is:inline set:html={themeInlineScript} />
+    <script is:inline set:html={languageScript} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>{es.meta.title}</title>
+    <meta name="description" content={es.meta.description} />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href={monoUrl} as="font" type="font/woff2" crossorigin />
+    <ClientRouter />
+  </head>
+  <body>
+    <main class="not-found" tabindex="-1">
+      {LOCALES.map((locale) => (
+        <NotFoundScreen locale={locale} />
+      ))}
+    </main>
+
+    <script>
+      import { startNotFoundTyper } from '@/components/portfolio/not-found/typer.client';
+      import { startRouteTransitions } from '@/components/motion/route-transitions.client';
+
+      startNotFoundTyper();
+      startRouteTransitions();
+    </script>
+  </body>
+</html>
+
+<style>
+  @layer pf {
+    :global(html[data-page='404']) {
+      color-scheme: dark;
+      background: var(--pf-terminal-bg);
+      color: var(--pf-terminal-text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .not-found {
+      /* Between the two terminals of the no-JS render: the gap of the reference's container. */
+      --not-found-gap: 32px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--not-found-gap);
+      padding: var(--pf-terminal-pad-d);
+
+      /* Focus target after a router navigation (RT-06); no ring, like the main of the other pages. */
+      &:focus {
+        outline: none;
+      }
+
+      @media (max-width: 1199.98px) {
+        padding: var(--pf-terminal-pad-t);
+      }
+
+      @media (max-width: 809.98px) {
+        padding: var(--pf-terminal-pad-p);
+      }
+    }
+  }
+</style>

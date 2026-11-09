@@ -12,7 +12,12 @@
  *   restored it inside a persisted element (the pill nav); otherwise it moves, without scrolling, to
  *   the heading of the hash target or to the page's `h1[tabindex=-1]` (else `main`), so it no longer
  *   falls back to `body`. The route announcer of ClientRouter still reads the title.
+ * - 404 (fase7-plan §3.1): the single static 404 is bilingual and ships `lang="es"`; when the router
+ *   swaps it in for a broken `/en/…` URL, its `lang` follows the destination before the swap (its
+ *   head script only runs on a full load).
  */
+import { HTML_LANG } from '@/i18n/locales';
+import { splitLocale } from '@/lib/i18n-paths';
 import { prefersReducedMotion } from '@/lib/motion-policy';
 import { retimeKeyframes, routePlan } from '@/lib/route-transitions';
 
@@ -59,6 +64,8 @@ function choreograph(): void {
 }
 
 const PERSISTED = '[data-astro-transition-persist]';
+/** `data-page` of the static 404 document (NotFoundView). */
+const NOT_FOUND_PAGE = '404';
 const FOCUS_TARGET = '[tabindex="-1"]';
 
 /** RT-06: the heading of the hash target, else the page's h1, else main. */
@@ -92,8 +99,16 @@ export function startRouteTransitions(): void {
   if (started) return;
   started = true;
   document.addEventListener('astro:before-swap', (event) => {
-    const transition = (event as Event & { viewTransition?: ViewTransition }).viewTransition;
-    transition?.ready.then(choreograph, () => {});
+    const swap = event as Event & {
+      viewTransition?: ViewTransition;
+      newDocument?: Document;
+      to?: URL;
+    };
+    const next = swap.newDocument?.documentElement;
+    if (next?.dataset.page === NOT_FOUND_PAGE && swap.to) {
+      next.lang = HTML_LANG[splitLocale(swap.to.pathname).locale];
+    }
+    swap.viewTransition?.ready.then(choreograph, () => {});
   });
   // astro:after-swap only fires for ClientRouter navigations, so the first page load keeps its focus.
   let navigated = false;
