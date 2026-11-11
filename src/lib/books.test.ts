@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bookLabel, bookTitleSize } from './books';
+import { bookLabel, bookTitleSize, readingsVisible } from './books';
 
 describe('bookTitleSize', () => {
   it('follows the measured steps of the reference', () => {
@@ -32,5 +32,14 @@ describe('bookLabel', () => {
       'Title, Author, 2020 · Essay',
     );
     expect(bookLabel({ title: 'Title', author: ' ', meta: '' })).toBe('Title');
+  });
+});
+
+describe('readingsVisible', () => {
+  it('hides the empty shelf in production only, and shows real books everywhere', () => {
+    expect(readingsVisible(0, false)).toBe(false);
+    expect(readingsVisible(0, true)).toBe(true);
+    expect(readingsVisible(3, false)).toBe(true);
+    expect(readingsVisible(3, true)).toBe(true);
   });
 });

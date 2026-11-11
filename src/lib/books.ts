@@ -32,3 +32,12 @@ export function bookLabel(book: { title: string; author: string; meta: string })
     .filter(Boolean)
     .join(', ');
 }
+
+/**
+ * Whether /about shows the Readings section. While Sebastian has not given his list, the production
+ * build hides it (his call, 2026-11-10) and `astro dev` keeps the neutral books to work on; real
+ * books show it everywhere.
+ */
+export function readingsVisible(books: number, dev: boolean): boolean {
+  return dev || books > 0;
+}

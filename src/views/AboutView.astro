@@ -2,8 +2,9 @@
 /**
  * /about of either language (about-spec §2–§3, fase7-plan §1): the 730 page column, centred, 100 px
  * from the top (150 on phones), with five sections 120 px apart: hero, toolkit, experience, readings
- * and writings (the shared `WritingsList`, h2 and `#writings`, which ends with the 400 × 1 divider
- * 60 px below). The footer follows straight after.
+ * (hidden in production while the list is empty, `readingsVisible`) and writings (the shared
+ * `WritingsList`, h2 and `#writings`, which ends with the 400 × 1 divider 60 px below). The footer
+ * follows straight after.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import type { Locale } from '@/i18n/locales';
@@ -14,6 +15,8 @@ import BookShelf from '@/components/portfolio/about/BookShelf.astro';
 import ExperienceList from '@/components/portfolio/about/ExperienceList.astro';
 import ToolkitSection from '@/components/portfolio/about/ToolkitSection.astro';
 import WritingsList from '@/components/portfolio/writing/WritingsList.astro';
+import { READINGS } from '@/data/readings';
+import { readingsVisible } from '@/lib/books';
 
 interface Props {
   locale: Locale;
@@ -22,6 +25,7 @@ interface Props {
 const { locale } = Astro.props;
 const { about } = getMessages(locale);
 const readingsId = 'about-readings-heading';
+const showReadings = readingsVisible(READINGS.length, import.meta.env.DEV);
 ---
 
 <BaseLayout locale={locale} title={about.meta.title} description={about.meta.description}>
@@ -30,11 +34,13 @@ const readingsId = 'about-readings-heading';
       <AboutHero locale={locale} />
       <ToolkitSection locale={locale} />
       <ExperienceList locale={locale} />
-      <section class="about-page__readings" aria-labelledby={readingsId}>
-        <AboutRow heading={about.readings.heading} headingId={readingsId}>
-          <BookShelf locale={locale} />
-        </AboutRow>
-      </section>
+      {showReadings && (
+        <section class="about-page__readings" aria-labelledby={readingsId}>
+          <AboutRow heading={about.readings.heading} headingId={readingsId}>
+            <BookShelf locale={locale} />
+          </AboutRow>
+        </section>
+      )}
       <WritingsList locale={locale} headingLevel="h2" id="writings" />
     </div>
   </div>
