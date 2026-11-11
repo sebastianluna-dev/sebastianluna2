@@ -53,7 +53,7 @@ describe('classifyHref', () => {
   });
 
   it('opens files such as the CV in a new tab, never through the router', () => {
-    const cv = '/cv/es/cv-sebastian-luna-senior-frontend-developer.pdf';
+    const cv = '/cv/es/cv-sebastian-luna-ai-product-engineer.pdf';
     expect(classifyHref(cv)).toEqual({ kind: 'external', href: cv });
     expect(classifyHref(`https://www.sebastianluna.dev${cv}`, SITE)).toEqual({
       kind: 'external',

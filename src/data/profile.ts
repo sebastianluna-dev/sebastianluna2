@@ -53,9 +53,14 @@ export const CONTACT_EMAILS: Record<Locale, string> = {
  * both downloads land with the same file name.
  */
 export const CV_FILES: Record<Locale, string> = {
-  es: '/cv/es/cv-sebastian-luna-senior-frontend-developer.pdf',
-  en: '/cv/en/cv-sebastian-luna-senior-frontend-developer.pdf',
+  es: '/cv/es/cv-sebastian-luna-ai-product-engineer.pdf',
+  en: '/cv/en/cv-sebastian-luna-ai-product-engineer.pdf',
 };
+
+/** The name the CV is saved under when a link downloads it (`download`): the file's own, per language. */
+export function cvDownloadName(locale: Locale): string {
+  return CV_FILES[locale].split('/').pop() ?? 'cv-sebastian-luna.pdf';
+}
 
 export function mailtoHref(locale: Locale): string {
   return `mailto:${CONTACT_EMAILS[locale]}`;
@@ -68,6 +73,8 @@ export interface SocialLink {
   href: string;
   /** Opens in a new tab (its accessible name gets the "opens in a new tab" suffix). */
   external: boolean;
+  /** Saves the file under this name instead of opening it: the CV. */
+  download?: string;
 }
 
 /** The footer's profile buttons, in order. Labels: `footer.social.<key>`. */
@@ -76,6 +83,6 @@ export function socialLinks(locale: Locale): SocialLink[] {
     { key: 'linkedin', href: PROFILE.linkedin, external: true },
     { key: 'github', href: PROFILE.github, external: true },
     { key: 'email', href: mailtoHref(locale), external: false },
-    { key: 'cv', href: CV_FILES[locale], external: true },
+    { key: 'cv', href: CV_FILES[locale], external: true, download: cvDownloadName(locale) },
   ];
 }
