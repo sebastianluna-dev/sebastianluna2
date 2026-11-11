@@ -22,12 +22,12 @@ export const hero = {
     /** First paragraph; `metal` is the word painted with the liquid-metal gradient. */
     first: {
       before:
-        'Desarrollador frontend senior, diseñador de interfaces y entrenador de ajedrez, con seis años de experiencia en ',
+        'Product engineer full-stack, diseñador de interfaces y entrenador de ajedrez, con más de seis años en ',
       metal: 'React',
-      after: ', Next.js y TypeScript.',
+      after: ', Next.js, Node.js y PostgreSQL.',
     },
     second:
-      'Convierto necesidades de negocio en productos: diseño la interfaz, escribo el código y lo llevo a producción en salud, educación, música y turismo.',
+      'Llevo productos de la idea a producción: hablo con quien los usará, diseño la interfaz y programo backend y frontend, con agentes de IA bajo mi dirección.',
   },
   ctas: {
     contact: 'Contacto',

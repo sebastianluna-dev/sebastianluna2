@@ -18,12 +18,12 @@ export const hero = {
   bio: {
     first: {
       before:
-        'Senior frontend developer, interface designer, and chess coach with six years of experience in ',
+        'Full-stack product engineer, interface designer, and chess coach with 6+ years in ',
       metal: 'React',
-      after: ', Next.js, and TypeScript.',
+      after: ', Next.js, Node.js, and PostgreSQL.',
     },
     second:
-      'I turn business needs into products: I design the interface, write the code, and ship it to production across health, education, music, and tourism.',
+      'I take products from idea to production: I talk with the people who will use them, design the interface, and build backend and frontend, with AI agents under my direction.',
   },
   ctas: {
     contact: 'Contact',
