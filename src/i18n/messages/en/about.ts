@@ -4,13 +4,13 @@ export const about = {
   meta: {
     title: 'About | Sebastian Luna',
     description:
-      "How I started, the tools I work with, and where I've worked: the story of Sebastian Luna, senior frontend developer in Boca del Río, Veracruz.",
+      "How I started, the tools I work with, and where I've worked: the story of Sebastian Luna, AI Product Engineer in Boca del Río, Veracruz.",
   },
   hero: {
     avatarAlt: 'Photo of Sebastian Luna',
     title: 'About',
     paragraphs: [
-      "I'm a senior frontend developer, interface designer, and chess coach based in Boca del Río, Veracruz. My interest in technology started as a kid with video games, and in 2019 I taught myself to code through online courses. That curiosity became my career.",
+      "I'm an AI Product Engineer and the founder of 365 Días de Ajedrez, based in Boca del Río, Veracruz. My interest in technology started as a kid with video games, and in 2019 I taught myself to code through online courses. That curiosity became my career.",
       "For six years I've turned business needs into products with React, Next.js, and TypeScript: I design the interface, write the code, and ship it to production. Today I build with Claude Code under my own technical direction, and my favorite part is still the client conversation.",
     ],
     email: {

@@ -4,14 +4,14 @@ export const about = {
   meta: {
     title: 'Sobre mí | Sebastian Luna',
     description:
-      'Cómo empecé, con qué herramientas trabajo y por dónde he pasado: la historia de Sebastian Luna, desarrollador frontend senior en Boca del Río, Veracruz.',
+      'Cómo empecé, con qué herramientas trabajo y por dónde he pasado: la historia de Sebastian Luna, AI Product Engineer en Boca del Río, Veracruz.',
   },
   hero: {
     avatarAlt: 'Foto de Sebastian Luna',
     /** The page h1, painted as a chip. */
     title: 'Sobre mí',
     paragraphs: [
-      'Soy desarrollador frontend senior, diseñador de interfaces y entrenador de ajedrez en Boca del Río, Veracruz. Mi interés por la tecnología empezó de niño con los videojuegos, y en 2019 aprendí a programar por mi cuenta con cursos en línea. Esa curiosidad se volvió mi profesión.',
+      'Soy AI Product Engineer y founder de 365 Días de Ajedrez, en Boca del Río, Veracruz. Mi interés por la tecnología empezó de niño con los videojuegos, y en 2019 aprendí a programar por mi cuenta con cursos en línea. Esa curiosidad se volvió mi profesión.',
       'Llevo seis años convirtiendo necesidades de negocio en productos con React, Next.js y TypeScript: diseño la interfaz, escribo el código y lo llevo a producción. Hoy trabajo con Claude Code bajo mi dirección técnica, y lo que más disfruto sigue siendo hablar con el cliente.',
     ],
     email: {
