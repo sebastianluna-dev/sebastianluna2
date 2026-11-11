@@ -27,7 +27,7 @@ export const hero = {
       after: ', Next.js, Node.js y PostgreSQL.',
     },
     second:
-      'Llevo productos de la idea a producción: hablo con quien los usará, diseño la interfaz y programo backend y frontend, con agentes de IA bajo mi dirección.',
+      'Llevo productos de la idea a producción: defino qué construir, diseño la interfaz y programo backend y frontend, con agentes de IA bajo mi dirección.',
   },
   ctas: {
     contact: 'Contacto',

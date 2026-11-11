@@ -23,7 +23,7 @@ export const hero = {
       after: ', Next.js, Node.js, and PostgreSQL.',
     },
     second:
-      'I take products from idea to production: I talk with the people who will use them, design the interface, and build backend and frontend, with AI agents under my direction.',
+      'I take products from idea to production: I define what to build, design the interface, and write the backend and the frontend, with AI agents under my direction.',
   },
   ctas: {
     contact: 'Contact',
