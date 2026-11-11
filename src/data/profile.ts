@@ -39,10 +39,13 @@ export function avatarWidths(...cssPx: number[]): number[] {
   return [...new Set(widths)].filter((width) => width <= avatar.width).sort((a, b) => a - b);
 }
 
-/** The address to write to, one per language; both reach the same inbox. */
+/** The one address Sebastian is written to, everywhere on the site. */
+export const CONTACT_EMAIL = 'sebastian.luna.developer@gmail.com';
+
+/** The address per language: the same in both (kept per locale for every caller). */
 export const CONTACT_EMAILS: Record<Locale, string> = {
-  es: 'contacto@sebastianluna.dev',
-  en: 'contact@sebastianluna.dev',
+  es: CONTACT_EMAIL,
+  en: CONTACT_EMAIL,
 };
 
 /**

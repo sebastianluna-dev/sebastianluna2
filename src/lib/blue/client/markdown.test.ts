@@ -24,7 +24,7 @@ describe('classifyHref', () => {
   });
 
   it('accepts mailto only with a real address', () => {
-    expect(classifyHref('mailto:contacto@sebastianluna.dev')?.kind).toBe('mailto');
+    expect(classifyHref('mailto:sebastian.luna.developer@gmail.com')?.kind).toBe('mailto');
     expect(classifyHref('mailto:nope')).toBeNull();
   });
 
@@ -107,7 +107,7 @@ describe('parseInline', () => {
   });
 
   it('autolinks bare URLs without trailing punctuation, and emails', () => {
-    expect(parseInline('Ver https://github.com/x. O contacto@sebastianluna.dev.')).toEqual([
+    expect(parseInline('Ver https://github.com/x. O sebastian.luna.developer@gmail.com.')).toEqual([
       { type: 'text', text: 'Ver ' },
       {
         type: 'link',
@@ -119,8 +119,8 @@ describe('parseInline', () => {
       {
         type: 'link',
         kind: 'mailto',
-        href: 'mailto:contacto@sebastianluna.dev',
-        children: [{ type: 'text', text: 'contacto@sebastianluna.dev' }],
+        href: 'mailto:sebastian.luna.developer@gmail.com',
+        children: [{ type: 'text', text: 'sebastian.luna.developer@gmail.com' }],
       },
       { type: 'text', text: '.' },
     ]);

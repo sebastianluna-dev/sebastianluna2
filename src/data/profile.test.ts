@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AVATAR_IMAGE, PROFILE, avatarWidths } from './profile';
+import { AVATAR_IMAGE, CONTACT_EMAILS, PROFILE, avatarWidths, mailtoHref } from './profile';
 
 describe('avatar', () => {
   it('is a square source large enough for the 60 px home avatar at 3x', () => {
@@ -19,5 +19,14 @@ describe('avatar', () => {
 
   it('serves AVIF with a WebP fallback', () => {
     expect(AVATAR_IMAGE.formats).toEqual(['avif', 'webp']);
+  });
+});
+
+describe('contact email', () => {
+  it('is Sebastian’s Gmail address in both languages and in every mailto link', () => {
+    for (const locale of ['es', 'en'] as const) {
+      expect(CONTACT_EMAILS[locale]).toBe('sebastian.luna.developer@gmail.com');
+      expect(mailtoHref(locale)).toBe('mailto:sebastian.luna.developer@gmail.com');
+    }
   });
 });
