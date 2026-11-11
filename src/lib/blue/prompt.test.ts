@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { CONTACT_EMAILS, CV_FILES, PROFILE } from '@/data/profile';
 import { LOCALES } from '@/i18n/locales';
+import { localePrefix, localizePath } from '@/lib/i18n-paths';
 import { CASE_SECTION_IDS } from '@/lib/works';
 import { blueKnowledge } from './knowledge';
 import { blueInstructions, buildBlueSystem } from './prompt';
@@ -44,10 +45,10 @@ describe('buildBlueSystem', () => {
   it('answers in the language of the visitor, else of the page, and links its own cases', () => {
     expect(blueInstructions('es')).toContain('Answer in the language the visitor writes in');
     expect(blueInstructions('es')).toContain('use Spanish, the language of this page');
-    expect(blueInstructions('es')).toContain('/works/');
+    expect(blueInstructions('es')).toContain('they start with /es/works/)');
     expect(blueInstructions('es')).toContain(CONTACT_EMAILS.es);
     expect(blueInstructions('en')).toContain('use English, the language of this page');
-    expect(blueInstructions('en')).toContain('/en/works/');
+    expect(blueInstructions('en')).toContain('they start with /works/)');
     expect(blueInstructions('en')).toContain(CONTACT_EMAILS.en);
   });
 
@@ -70,27 +71,27 @@ describe('buildBlueSystem', () => {
 describe('blueKnowledge', () => {
   it.each(LOCALES)('links every section of every %s case, and only existing ones', (locale) => {
     const text = blueKnowledge(locale);
-    const prefix = locale === 'es' ? '/works/' : '/en/works/';
+    const prefix = `${localePrefix(locale)}/works/`;
     for (const slug of slugs(locale)) {
       for (const id of CASE_SECTION_IDS) expect(text).toContain(`](${prefix}${slug}#${id})`);
     }
     const links = [...text.matchAll(/\]\((\/[^)]*)\)/g)].map((m) => m[1]);
     for (const link of links) {
-      const match = link.match(/^(?:\/en)?\/works\/([^#]+)#(.+)$/);
+      const match = link.match(/^(?:\/es)?\/works\/([^#]+)#(.+)$/);
       if (match) {
         expect(link.startsWith(prefix)).toBe(true);
         expect(slugs(locale)).toContain(match[1]);
         expect(CASE_SECTION_IDS).toContain(match[2]);
       } else {
-        expect([locale === 'es' ? '/#works' : '/en#works', CV_FILES[locale]]).toContain(link);
+        expect([localizePath('/#works', locale), CV_FILES[locale]]).toContain(link);
       }
     }
   });
 
   it.each(LOCALES)('links only sections that exist in the %s case files', (locale) => {
     const text = blueKnowledge(locale);
-    const prefix = locale === 'es' ? '/works/' : '/en/works/';
-    for (const [, slug, id] of text.matchAll(/\]\((?:\/en)?\/works\/([^#)]+)#([^)]+)\)/g)) {
+    const prefix = `${localePrefix(locale)}/works/`;
+    for (const [, slug, id] of text.matchAll(/\]\((?:\/es)?\/works\/([^#)]+)#([^)]+)\)/g)) {
       const mdx = readFileSync(`src/content/works/${locale}/${slug}.mdx`, 'utf8');
       expect(mdx, `${prefix}${slug}#${id}`).toContain(`<CaseSection id="${id}"`);
     }
