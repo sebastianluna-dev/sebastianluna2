@@ -4,7 +4,7 @@ import WorkView from '@/views/WorkView.astro';
 import { workStaticPaths } from '@/lib/works';
 
 export async function getStaticPaths() {
-  return workStaticPaths(await getCollection('works'), 'es');
+  return workStaticPaths(await getCollection('works'), 'en');
 }
 
 interface Props {
@@ -14,4 +14,4 @@ interface Props {
 const { entry } = Astro.props;
 ---
 
-<WorkView locale="es" entry={entry} />
+<WorkView locale="en" entry={entry} />

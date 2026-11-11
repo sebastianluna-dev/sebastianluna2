@@ -29,7 +29,7 @@
 
 ## SEO
 
-- **The empty writings index is indexable** (priority: low, decisiones.md «Índice /writings en el sitemap aunque esté vacío»). Until an article is published, `/writings` and `/en/writings` are in the sitemap with only the empty state, thin content for a search engine. Approach: `noindex={writingsForLocale(all, locale).length === 0}` in WritingsIndexView plus a sitemap `filter` in astro.config, if Sebastian prefers it.
+- **The empty writings index is indexable** (priority: low, decisiones.md «Índice /writings en el sitemap aunque esté vacío»). Until an article is published, `/writings` and `/es/writings` are in the sitemap with only the empty state, thin content for a search engine. Approach: `noindex={writingsForLocale(all, locale).length === 0}` in WritingsIndexView plus a sitemap `filter` in astro.config, if Sebastian prefers it.
 
 ## Effects and WebGL
 

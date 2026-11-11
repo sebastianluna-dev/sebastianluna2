@@ -3,7 +3,7 @@ import { SITE_URL } from '@/data/site';
 
 export { SITE_URL };
 
-/** URL prefix of a language: none for Spanish, `/en` for English. */
+/** URL prefix of a language: none for English, `/es` for Spanish. */
 export function localePrefix(locale: Locale): string {
   return locale === DEFAULT_LOCALE ? '' : `/${locale}`;
 }
@@ -14,7 +14,7 @@ export function normalizePath(path: string): string {
   return withSlash.length > 1 ? withSlash.replace(/\/+$/, '') || '/' : withSlash;
 }
 
-/** Splits a pathname into its language and the language-neutral path (`/en/works/x` → `en`, `/works/x`). */
+/** Splits a pathname into its language and the language-neutral path (`/es/works/x` → `es`, `/works/x`). */
 export function splitLocale(pathname: string): { locale: Locale; path: string } {
   const path = normalizePath(pathname);
   for (const locale of LOCALES) {
@@ -27,8 +27,8 @@ export function splitLocale(pathname: string): { locale: Locale; path: string } 
 }
 
 /**
- * Puts a language-neutral href in a language: `/works/x` → `/en/works/x`,
- * `/#works` → `/en#works`. Query and hash are kept.
+ * Puts a language-neutral href in a language: `/works/x` → `/es/works/x`,
+ * `/#works` → `/es#works`. Query and hash are kept.
  */
 export function localizePath(href: string, locale: Locale): string {
   const match = /^([^?#]*)(.*)$/.exec(href);
@@ -59,7 +59,7 @@ export interface Alternate {
   href: string;
 }
 
-/** `<link rel="alternate">` entries: one per language plus `x-default` (Spanish). */
+/** `<link rel="alternate">` entries: one per language plus `x-default` (English). */
 export function alternates(pathname: string): Alternate[] {
   const { path } = splitLocale(pathname);
   return [

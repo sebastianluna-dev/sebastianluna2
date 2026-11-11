@@ -5,15 +5,15 @@ import { getMessages } from '@/i18n/t';
 import { TERMINAL_MAX_CHARS, notFoundLocale, terminalLineLength, terminalLines } from './not-found';
 
 describe('notFoundLocale', () => {
-  it('reads English under /en', () => {
-    for (const path of ['/en', '/en/', '/en/x', '/en/works/nope', '/en/x/y/']) {
-      expect(notFoundLocale(path)).toBe('en');
+  it('reads Spanish under /es', () => {
+    for (const path of ['/es', '/es/', '/es/x', '/es/works/nope', '/es/x/y/']) {
+      expect(notFoundLocale(path)).toBe('es');
     }
   });
 
-  it('reads Spanish anywhere else', () => {
-    for (const path of ['/', '/x', '/english', '/enx/y', '/works/en', '/404', '/EN/x']) {
-      expect(notFoundLocale(path)).toBe('es');
+  it('reads English anywhere else', () => {
+    for (const path of ['/', '/x', '/espanol', '/esx/y', '/works/es', '/404', '/ES/x']) {
+      expect(notFoundLocale(path)).toBe('en');
     }
   });
 });

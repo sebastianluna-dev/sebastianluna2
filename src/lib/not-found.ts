@@ -10,7 +10,7 @@ import type { TyperLine } from '@/lib/typer';
 /** Widest line, prefix included, that fits the 350 px of a phone without wrapping (404-spec §4). */
 export const TERMINAL_MAX_CHARS = 32;
 
-/** Language of a missing URL: English under `/en`, Spanish anywhere else (same rule as `splitLocale`). */
+/** Language of a missing URL: Spanish under `/es`, English anywhere else (same rule as `splitLocale`). */
 export function notFoundLocale(pathname: string): Locale {
   return splitLocale(pathname).locale;
 }

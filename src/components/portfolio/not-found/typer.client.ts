@@ -11,7 +11,7 @@
  *   finishes at once.
  * - When the last line is done, the final cursor blinks with WAAPI (`NOT_FOUND_TYPER`).
  * - Sets the title of the terminal's language: after a router swap into the 404 the head script
- *   has not run, so a broken `/en/…` link would keep the Spanish title.
+ *   has not run, so a broken `/es/…` link would keep the English title.
  * - Starts on load and on `astro:page-load` (arrival through <ClientRouter/>), stops on
  *   `astro:before-swap`, and marks the scripts as ready (otherwise the theme bootstrap's rescue would
  *   drop the page to the no-JS render after 4 s).

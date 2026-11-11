@@ -91,8 +91,8 @@ describe('counterpart and workHref', () => {
   });
 
   it('builds language-prefixed links', () => {
-    expect(workHref('reto-md', 'es')).toBe('/works/reto-md');
-    expect(workHref('reto-md', 'en')).toBe('/en/works/reto-md');
+    expect(workHref('reto-md', 'en')).toBe('/works/reto-md');
+    expect(workHref('reto-md', 'es')).toBe('/es/works/reto-md');
   });
 });
 
@@ -149,10 +149,10 @@ describe('caseNeighbours', () => {
   it('links the neighbours in the page language, without wrapping', () => {
     expect(caseNeighbours(titled, 'a', 'en')).toEqual({
       previous: null,
-      next: { title: 'EN/B', href: '/en/works/b' },
+      next: { title: 'EN/B', href: '/works/b' },
     });
     expect(caseNeighbours(titled, 'c', 'en')).toEqual({
-      previous: { title: 'EN/B', href: '/en/works/b' },
+      previous: { title: 'EN/B', href: '/works/b' },
       next: null,
     });
   });

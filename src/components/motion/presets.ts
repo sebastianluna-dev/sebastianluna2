@@ -540,7 +540,7 @@ export const ROPE_TUG_MS = 140;
 // ------------------------------------------------------------------ component timings
 /** HE-01 / HE-03: values of the reference SelectedNameMenu (hero.md §2). */
 export const HERO_SCENE = {
-  /** `sessionStorage` key prefix; the route is appended (`pf-hero-seen:/en`). */
+  /** `sessionStorage` key prefix; the route is appended (`pf-hero-seen:/es`). */
   storageKey: 'pf-hero-seen',
   /** DOM id of the scene root. */
   id: 'hero-scene',

@@ -5,7 +5,7 @@ import { writingStaticPaths } from '@/lib/writings';
 
 // Drafts get a page only in `astro dev` (fase7-plan §2.3).
 export async function getStaticPaths() {
-  return writingStaticPaths(await getCollection('writings'), 'es', {
+  return writingStaticPaths(await getCollection('writings'), 'en', {
     includeDrafts: import.meta.env.DEV,
   });
 }
@@ -17,4 +17,4 @@ interface Props {
 const { entry } = Astro.props;
 ---
 
-<WritingView locale="es" entry={entry} />
+<WritingView locale="en" entry={entry} />

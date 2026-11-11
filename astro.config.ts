@@ -18,7 +18,7 @@ export default defineConfig({
   integrations: [
     react(),
     mdx(),
-    sitemap({ i18n: { defaultLocale: 'es', locales: { es: 'es-MX', en: 'en' } } }),
+    sitemap({ i18n: { defaultLocale: 'en', locales: { es: 'es-MX', en: 'en' } } }),
   ],
   // Code blocks of the writings (fase7-plan §2.7): Shiki paints `--astro-code-*` variables, which
   // CodeBlock maps onto the `--pf-code-*` tokens (light and dark, no client JS). MDX inherits it; the
@@ -26,8 +26,17 @@ export default defineConfig({
   markdown: {
     shikiConfig: { theme: 'css-variables', wrap: true },
   },
+  // English moved to the root and Spanish to /es (decisiones.md 32): the old English URLs answer
+  // with a permanent redirect to the same page, so shared links keep working.
+  redirects: {
+    '/en': '/',
+    '/en/about': '/about',
+    '/en/works/[slug]': '/works/[slug]',
+    '/en/writings': '/writings',
+    '/en/writings/[slug]': '/writings/[slug]',
+  },
   i18n: {
-    defaultLocale: 'es',
+    defaultLocale: 'en',
     locales: ['es', 'en'],
     routing: { prefixDefaultLocale: false },
   },

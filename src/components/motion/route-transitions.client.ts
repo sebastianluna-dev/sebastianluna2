@@ -12,8 +12,8 @@
  *   restored it inside a persisted element (the pill nav); otherwise it moves, without scrolling, to
  *   the heading of the hash target or to the page's `h1[tabindex=-1]` (else `main`), so it no longer
  *   falls back to `body`. The route announcer of ClientRouter still reads the title.
- * - 404 (fase7-plan §3.1): the single static 404 is bilingual and ships `lang="es"`; when the router
- *   swaps it in for a broken `/en/…` URL, its `lang` follows the destination before the swap (its
+ * - 404 (fase7-plan §3.1): the single static 404 is bilingual and ships `lang="en"`; when the router
+ *   swaps it in for a broken `/es/…` URL, its `lang` follows the destination before the swap (its
  *   head script only runs on a full load).
  */
 import { HTML_LANG } from '@/i18n/locales';

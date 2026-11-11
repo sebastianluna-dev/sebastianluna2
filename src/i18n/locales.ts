@@ -1,9 +1,9 @@
-// The two languages of the site. Spanish lives at the root, English under /en.
+// The two languages of the site. English lives at the root, Spanish under /es.
 export const LOCALES = ['es', 'en'] as const;
 
 export type Locale = (typeof LOCALES)[number];
 
-export const DEFAULT_LOCALE: Locale = 'es';
+export const DEFAULT_LOCALE: Locale = 'en';
 
 /** `lang` of <html>. */
 export const HTML_LANG: Record<Locale, string> = { es: 'es', en: 'en' };

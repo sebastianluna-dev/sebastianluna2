@@ -92,10 +92,10 @@ describe('writingsForLocale', () => {
 
 describe('routes', () => {
   it('builds localised links', () => {
-    expect(writingsIndexHref('es')).toBe('/writings');
-    expect(writingsIndexHref('en')).toBe('/en/writings');
-    expect(writingHref('x', 'es')).toBe('/writings/x');
-    expect(writingHref('x', 'en')).toBe('/en/writings/x');
+    expect(writingsIndexHref('en')).toBe('/writings');
+    expect(writingsIndexHref('es')).toBe('/es/writings');
+    expect(writingHref('x', 'en')).toBe('/writings/x');
+    expect(writingHref('x', 'es')).toBe('/es/writings/x');
   });
 
   it('generates no page for a draft unless asked', () => {
@@ -196,7 +196,7 @@ describe('article body helpers', () => {
   it('tells external links from the site and relative ones', () => {
     const site = 'https://www.sebastianluna.dev';
     expect(isExternalHref('https://github.com/sebastianluna-dev', site)).toBe(true);
-    expect(isExternalHref('https://www.sebastianluna.dev/en', site)).toBe(false);
+    expect(isExternalHref('https://www.sebastianluna.dev/es', site)).toBe(false);
     expect(isExternalHref('/#works', site)).toBe(false);
     expect(isExternalHref('mailto:hola@example.com', site)).toBe(false);
   });
