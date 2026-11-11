@@ -11,7 +11,8 @@ function mp3Rate(bytes: Uint8Array): number {
   if (bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33) {
     at = 10 + (((bytes[6]! << 21) | (bytes[7]! << 14) | (bytes[8]! << 7) | bytes[9]!) >>> 0);
   }
-  while (at < bytes.length - 3 && !(bytes[at] === 0xff && (bytes[at + 1]! & 0xe0) === 0xe0)) at += 1;
+  while (at < bytes.length - 3 && !(bytes[at] === 0xff && (bytes[at + 1]! & 0xe0) === 0xe0))
+    at += 1;
   const mpeg1 = (bytes[at + 1]! & 0x18) === 0x18;
   const index = (bytes[at + 2]! >> 2) & 0x3;
   return mpeg1 ? ([44100, 48000, 32000][index] ?? 0) : 0;
@@ -42,7 +43,11 @@ describe('recorded sounds', () => {
 
   it('keeps the eight CC0 recordings Sebastian chose from, with their license', () => {
     // Dotfiles (a .DS_Store Finder leaves) are not part of the set.
-    expect(readdirSync(BOOKS).filter((file) => !file.startsWith('.')).sort()).toEqual([
+    expect(
+      readdirSync(BOOKS)
+        .filter((file) => !file.startsWith('.'))
+        .sort(),
+    ).toEqual([
       'LICENSE.txt',
       'README.md',
       'book-close.mp3',
