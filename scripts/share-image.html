@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+  Source of src/assets/share/share-default.png, the default share image (og:image) of the pages
+  without a cover: Sebastian's portrait in the middle and the hero objects on two dotted orbits
+  ("Órbita", picked 2026-11-10). No text: the og:title under the card names him and his role.
+  Render at 2x, 1200 × 630 CSS px (README "Share image"):
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu \
+      --hide-scrollbars --allow-file-access-from-files --force-device-scale-factor=2 \
+      --window-size=1200,630 --virtual-time-budget=3000 \
+      --screenshot="$PWD/src/assets/share/share-default.png" "file://$PWD/scripts/share-image.html"
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Share image</title>
+<style>
+  html, body { margin: 0; }
+  body { width: 1200px; height: 630px; overflow: hidden; }
+  .card {
+    position: relative; width: 1200px; height: 630px; overflow: hidden;
+    background: radial-gradient(ellipse 60% 75% at 50% 50%, #eef5ff 0%, #fff 70%);
+  }
+  .ring {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    border: 1.5px dashed rgb(0 122 255 / 0.28); border-radius: 50%;
+  }
+  .obj { position: absolute; display: block; filter: drop-shadow(0 10px 16px rgb(0 0 0 / 0.1)); }
+  .face {
+    position: absolute; left: 480px; top: 195px; width: 240px; height: 240px; border-radius: 50%;
+    overflow: hidden; box-shadow: 0 0 0 8px #fff, 0 18px 50px rgb(0 60 140 / 0.18);
+  }
+  .face img { display: block; width: 100%; height: 100%; object-fit: cover; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="ring" style="width: 430px; height: 430px"></div>
+  <div class="ring" style="width: 720px; height: 720px"></div>
+  <img class="obj" src="../src/assets/hero-objects/knight.svg" style="left: 395px; top: 95px; width: 105px; transform: rotate(-10deg)" alt="">
+  <img class="obj" src="../src/assets/hero-objects/violin.svg" style="left: 690px; top: 92px; width: 100px; transform: rotate(20deg)" alt="">
+  <img class="obj" src="../src/assets/hero-objects/stethoscope.svg" style="left: 760px; top: 360px; width: 110px; transform: rotate(-4deg)" alt="">
+  <img class="obj" src="../src/assets/hero-objects/sailboat.svg" style="left: 330px; top: 380px; width: 100px; transform: rotate(-8deg)" alt="">
+  <img class="obj" src="../src/assets/hero-objects/keycap.svg" style="left: 160px; top: 210px; width: 105px; transform: rotate(-10deg)" alt="">
+  <img class="obj" src="../src/assets/hero-objects/rook.svg" style="left: 960px; top: 150px; width: 78px; transform: rotate(8deg)" alt="">
+  <img class="obj" src="../src/assets/hero-objects/lifebuoy.svg" style="left: 985px; top: 420px; width: 82px" alt="">
+  <img class="obj" src="../src/assets/hero-objects/capsule.svg" style="left: 175px; top: 455px; width: 64px; transform: rotate(-30deg)" alt="">
+  <div class="face"><img src="../src/assets/portrait/avatar-sebastian-luna.jpg" alt=""></div>
+</div>
+</body>
+</html>

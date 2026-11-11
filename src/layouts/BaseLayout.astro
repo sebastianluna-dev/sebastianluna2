@@ -4,6 +4,7 @@
  * theme bootstrap), <ClientRouter/>, skip link, header with the pill nav and the
  * theme cord, <main id="main">, the footer and the Blue launcher, plus the dark star field behind everything. The 404 does not use it (design-spec §9.1).
  */
+import { getImage } from 'astro:assets';
 import { ClientRouter } from 'astro:transitions';
 import layersCss from '@/styles/layers.css?raw';
 import '@/styles/reset.css';
@@ -13,6 +14,7 @@ import '@/styles/portfolio.css';
 import '@/styles/view-transitions.css';
 import geistUrl from '@/assets/fonts/geist-variable.woff2?url';
 import serifUrl from '@/assets/fonts/noto-serif-latin-wdth-normal.woff2?url';
+import shareDefault from '@/assets/share/share-default.png';
 import { HTML_LANG, OG_LOCALE, type Locale } from '@/i18n/locales';
 import { getMessages } from '@/i18n/t';
 import { absoluteUrl, alternates, canonicalUrl } from '@/lib/i18n-paths';
@@ -33,7 +35,10 @@ interface Props {
   description?: string;
   /** Keeps the page out of search results. */
   noindex?: boolean;
-  /** Share image (a case cover); `src` may be relative, it is made absolute. */
+  /**
+   * Share image (a case or article cover); `src` may be relative, it is made absolute. Without one,
+   * the page shares the default card (`src/assets/share/share-default.png`).
+   */
   image?: { src: string; alt: string; width: number; height: number };
   /** `og:type`: `article` for a case study, `website` otherwise. */
   ogType?: 'website' | 'article';
@@ -43,6 +48,17 @@ const { locale, title, description, noindex = false, image, ogType = 'website' }
 const { common } = getMessages(locale);
 const pageTitle = title ?? common.meta.title;
 const pageDescription = description ?? common.meta.description;
+/** Width of the share image (og:image), the size social previews ask for. */
+const SHARE_WIDTH = 1200;
+const defaultShare = image
+  ? undefined
+  : await getImage({ src: shareDefault, width: SHARE_WIDTH, format: 'jpeg' });
+const shareImage: NonNullable<Props['image']> = image ?? {
+  src: defaultShare?.src ?? shareDefault.src,
+  alt: common.meta.imageAlt,
+  width: Number(defaultShare?.attributes.width ?? shareDefault.width),
+  height: Number(defaultShare?.attributes.height ?? shareDefault.height),
+};
 const pathname = Astro.url.pathname;
 const canonical = canonicalUrl(pathname);
 const otherLocale: Locale = locale === 'es' ? 'en' : 'es';
@@ -77,15 +93,11 @@ const otherLocale: Locale = locale === 'es' ? 'en' : 'es';
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={OG_LOCALE[locale]} />
     <meta property="og:locale:alternate" content={OG_LOCALE[otherLocale]} />
-    {image && (
-      <>
-        <meta property="og:image" content={absoluteUrl(image.src)} />
-        <meta property="og:image:width" content={String(image.width)} />
-        <meta property="og:image:height" content={String(image.height)} />
-        <meta property="og:image:alt" content={image.alt} />
-      </>
-    )}
-    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    <meta property="og:image" content={absoluteUrl(shareImage.src)} />
+    <meta property="og:image:width" content={String(shareImage.width)} />
+    <meta property="og:image:height" content={String(shareImage.height)} />
+    <meta property="og:image:alt" content={shareImage.alt} />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <slot name="head" />
     <ClientRouter />

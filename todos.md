@@ -6,6 +6,5 @@
 - Phase 5: swap each `<DemoSlot name="…">` for its `<DemoFrame>`; the names are also in the frontmatter `demos`.
 - Contrast (decisiones.md 20): when Sebastian picks the new `--pf-meta-dim`, also change the end opacity of the `fadeUpY20O040SpringB000040` preset (`tokens.test.ts` fails until both match).
 - When the first real article is published, delete both `src/content/writings/{es,en}/articulo-de-ejemplo.mdx` (marked example drafts, `draft: true`).
-- Writings: add a default share image (`og:image`) for `/writings` and for articles without `cover`, and one for `/about`, once Sebastian provides them.
 - /about readings: when Sebastian sends his list, fill `src/data/readings.ts` (`{ title, author, meta }`); the neutral books disappear by themselves.
 - /about: replace the toolkit sticker stamps (`simple-icons`) if Sebastian prefers his own illustrations; the collections are in `src/data/toolkit.ts`.
