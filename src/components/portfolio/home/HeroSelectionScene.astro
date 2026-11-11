@@ -15,7 +15,7 @@
  */
 import type { Locale } from '@/i18n/locales';
 import { getMessages } from '@/i18n/t';
-import { CONTACT_EMAILS, CV_FILES } from '@/data/profile';
+import { CONTACT_EMAILS, CV_FILES, cvDownloadName } from '@/data/profile';
 import { FEATURES } from '@/data/features';
 import { heroSceneInlineScript } from './hero-scene.inline';
 
@@ -95,6 +95,7 @@ const rail = (kind: ActionKind) => [ICONS[kind], ICONS.check, ICONS[kind]] as co
       <a
         class="hero-scene__action"
         href={CV_FILES[locale]}
+        download={cvDownloadName(locale)}
         target="_blank"
         rel="noopener noreferrer"
         data-hero-action="cv"

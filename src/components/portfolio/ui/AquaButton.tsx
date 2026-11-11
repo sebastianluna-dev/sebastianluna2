@@ -41,6 +41,8 @@ export interface AquaButtonProps {
    * (decisiones.md 22). Without JS, or without the handler, the `mailto:` href opens as usual.
    */
   copyEmail?: string;
+  /** Saves the linked file under this name instead of opening it (the CV). */
+  download?: string;
 }
 
 const VARIANT_SPRING = AQUA_SPRINGS.variants;
@@ -73,6 +75,7 @@ export function AquaButton({
   accessibleName,
   icon,
   copyEmail,
+  download,
 }: AquaButtonProps) {
   const anchorRef = useRef<HTMLAnchorElement>(null);
   const bodyRef = useRef<HTMLSpanElement>(null);
@@ -265,6 +268,7 @@ export function AquaButton({
       aria-label={!icon && accessibleName ? accessibleName : undefined}
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
+      download={download}
       draggable={false}
       data-copy-email={copyEmail}
       onPointerLeave={onPointerLeave}
