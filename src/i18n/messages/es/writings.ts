@@ -2,7 +2,7 @@
 export const writings = {
   meta: {
     title: 'Escritos | Sebastian Luna',
-    description: 'Artículos de Sebastian Luna sobre su trabajo de diseño y desarrollo frontend.',
+    description: 'Artículos de Sebastian Luna sobre cómo diseña y construye productos.',
   },
   /** Chip: h1 on the index, h2 on /about; also the accessible name of the section. */
   heading: 'Escritos',

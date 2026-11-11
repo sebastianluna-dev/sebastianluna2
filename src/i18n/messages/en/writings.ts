@@ -3,7 +3,7 @@ import type { writings as reference } from '../es/writings';
 export const writings = {
   meta: {
     title: 'Writings | Sebastian Luna',
-    description: 'Articles by Sebastian Luna about his design and frontend development work.',
+    description: 'Articles by Sebastian Luna about how he designs and builds products.',
   },
   heading: 'Writings',
   empty: 'No writings published yet. They will show up here once they are ready.',
