@@ -4,7 +4,7 @@ export const common = {
   meta: {
     title: 'Sebastian Luna | AI Product Engineer · Full-Stack',
     description:
-      'Portafolio de Sebastian Luna, product engineer full-stack en Boca del Río, Veracruz. Diseño la interfaz, programo backend y frontend, y me quedo hasta que el producto está en producción.',
+      'Portafolio de Sebastian Luna, AI Product Engineer y founder de 365 Días de Ajedrez, en Boca del Río, Veracruz. Diseño la interfaz, programo backend y frontend, y me quedo hasta que el producto está en producción.',
   },
   skipToContent: 'Saltar al contenido',
   opensInNewTab: '(se abre en otra pestaña)',

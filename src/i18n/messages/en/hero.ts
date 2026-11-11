@@ -18,7 +18,7 @@ export const hero = {
   bio: {
     first: {
       before:
-        'Full-stack product engineer, interface designer, and chess coach with 6+ years in ',
+        'AI Product Engineer and founder of 365 Días de Ajedrez. 6+ years building full-stack products with ',
       metal: 'React',
       after: ', Next.js, Node.js, and PostgreSQL.',
     },

@@ -22,7 +22,7 @@ export const hero = {
     /** First paragraph; `metal` is the word painted with the liquid-metal gradient. */
     first: {
       before:
-        'Product engineer full-stack, diseñador de interfaces y entrenador de ajedrez, con más de seis años en ',
+        'AI Product Engineer y founder de 365 Días de Ajedrez. Más de seis años construyendo productos full-stack con ',
       metal: 'React',
       after: ', Next.js, Node.js y PostgreSQL.',
     },
