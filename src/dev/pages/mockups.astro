@@ -20,7 +20,27 @@ const WHITE = '#fdf6ec';
 const CREAM = '#fcead5';
 
 const screens = [
-  { src: hero, label: 'Hero', ground: INK, focusX: 46, focusY: 52 },
+  {
+    src: hero,
+    label: 'Hero',
+    ground: INK,
+    focusX: 46,
+    focusY: 52,
+    // Picked by Sebastian on 2026-11-14.
+    fixed: {
+      rx: '6deg',
+      ry: '5deg',
+      rz: '-1deg',
+      zoom: '1.2',
+      cx: '0%',
+      cy: '0%',
+      x: '10%',
+      y: '0%',
+      depth: '500px',
+      blur: '1.5px',
+      focus: '38%',
+    },
+  },
   { src: repertorio, label: 'Repertorio y reproductor', ground: WHITE, focusX: 38, focusY: 50 },
   { src: programa, label: 'Programa de mano', ground: CREAM, focusX: 46, focusY: 48 },
   { src: contacto, label: 'Carta de contacto', ground: CREAM, focusX: 62, focusY: 52 },

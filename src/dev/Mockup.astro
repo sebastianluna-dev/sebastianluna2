@@ -19,10 +19,19 @@ interface Props {
   focusY?: number;
   /** Multiplies the shared zoom: a tall capture needs to come closer than a wide one. */
   zoom?: number;
+  /**
+   * A composition Sebastian already picked for this screen: the ranges of the menu («Copiar
+   * valores»), by control id without the `mockup-` prefix. The screen then ignores the menu.
+   */
+  fixed?: Readonly<Record<string, string>>;
 }
 
-const { src, label, ground, focusX = 50, focusY = 50, zoom = 1 } = Astro.props;
-const style = `--mockup-ground:${ground};--mockup-fx:${focusX}%;--mockup-fy:${focusY}%;--mockup-own-zoom:${zoom};--mockup-ratio:${src.width} / ${src.height}`;
+const { src, label, ground, focusX = 50, focusY = 50, zoom = 1, fixed } = Astro.props;
+// Set on the figure, these win over the same properties the menu paints on <html>.
+const pinned = Object.entries(fixed ?? {})
+  .map(([id, value]) => `--opt-mockup-${id}:${value}`)
+  .join(';');
+const style = `--mockup-ground:${ground};--mockup-fx:${focusX}%;--mockup-fy:${focusY}%;--mockup-own-zoom:${zoom};--mockup-ratio:${src.width} / ${src.height};${pinned}`;
 ---
 
 <figure class="mockup" style={style}>
@@ -47,7 +56,10 @@ const style = `--mockup-ground:${ground};--mockup-fx:${focusX}%;--mockup-fy:${fo
       />
     </div>
   </div>
-  <figcaption class="mockup__label">{label}</figcaption>
+  <figcaption class="mockup__label">
+    {label}
+    {fixed && <span class="mockup__pinned">· fijado</span>}
+  </figcaption>
 </figure>
 
 <style>
