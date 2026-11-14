@@ -70,16 +70,18 @@ Cada caso tiene seis secciones con ancla: `overview` (resumen), `challenge` (ret
 - **Herramientas**: Next.js, React, TypeScript, PostgreSQL, Prisma, Material Web, Chessground, chessops, Stockfish, LiveKit, Storybook, Vitest, Vercel.
 - **Enlaces**: [resumen](/es/works/365-dias-de-ajedrez#overview) · [reto](/es/works/365-dias-de-ajedrez#challenge) · [enfoque](/es/works/365-dias-de-ajedrez#approach) · [investigación](/es/works/365-dias-de-ajedrez#research) · [soluciones de diseño](/es/works/365-dias-de-ajedrez#design) · [resultado](/es/works/365-dias-de-ajedrez#outcome)
 
-### Cuarteto Fratres · sitio de un cuarteto de cuerdas · 2026
+### Cuarteto Fratres · marca y sitio de un cuarteto de cuerdas · 2026
 
-- **Rol**: diseñador y desarrollador; producto, diseño, desarrollo, modelado del CMS y despliegue. Sitio: https://cuartetofratres.com
-- **Qué es**: el sitio de un cuarteto de cuerdas de Boca del Río, Veracruz, para presentar su propuesta musical y facilitar contrataciones para conciertos, bodas y eventos privados. Una sola página: próximas fechas, presentación, los cuatro músicos, repertorio con reproductor y formulario de contacto.
+- **Rol**: diseñador de marca, diseñador de producto y desarrollador; un encargo pagado. Dibujó el monograma CF en Illustrator, diseñó la tipografía de títulos Fratres Display (solo mayúsculas, empezada con ChatGPT y redibujada a mano en Illustrator; no parte de otra fuente), definió la paleta, tomó las fotografías (iPhone 17 Pro Max y Canon EOS 90D), y diseñó y desarrolló el sitio y su CMS. Sitio: https://cuartetofratres.com
+- **Qué es**: la identidad y el sitio de un cuarteto de cuerdas de Boca del Río, Veracruz, que no tenía presencia en línea. Una página: la portada con los cuatro músicos, el repertorio con su reproductor, el grupo, los músicos (cada uno con su propia página), la cartelera de próximas fechas y un formulario de contacto.
 - **Lo más fuerte**:
-  - Payload CMS dentro de la misma aplicación de Next.js (en /admin, sobre PostgreSQL): el grupo publica fechas, ajusta su repertorio y atiende solicitudes sin tocar código. Cada sección pide sus datos a un servicio con contenido de respaldo, así que la página nunca queda en blanco.
-  - Un reproductor dibujado como partitura: la barra de progreso es un pentagrama cuyas notas se encienden al avanzar, accesible con teclado; un minirreproductor fijo aparece si la tarjeta sale de pantalla. Aún no hay grabaciones: simula la reproducción con la duración de cada obra.
-  - El formulario se envía a una server action, funciona antes de que cargue el JavaScript, y cada solicitud se guarda en el CMS con su estado.
-  - Al guardar en el CMS, el cambio se ve en la siguiente visita; integración continua con estilo, tipos, pruebas y compilación en cada push.
-- **Herramientas**: Figma, Next.js, React, TypeScript, Payload CMS, PostgreSQL, Vercel Blob, Vitest, Vercel.
+  - La portada pone a los cuatro músicos sobre un fondo casi negro, la sala antes del concierto, con pentagramas detrás que llevan música real: compases del Cuarteto núm. 2 de Borodín y del Canon de Pachelbel, grabados nota por nota sobre pentagramas curvos, con la tinta adelgazada sobre cada cara. Sebastian es estudiante de música principiante, y por eso la notación es real.
+  - Piezas que se comportan como objetos: el repertorio es un disco con lista numerada y filtros por ocasión, y un minirreproductor que acompaña en una esquina; cada fecha se abre como un programa de mano impreso; el formulario de contacto es una hoja rayada.
+  - Dos tipografías con trabajos distintos: Fratres Display solo en la portada, el nombre de cada músico en su página y los carteles; Italianno para los títulos de sección.
+  - Payload CMS dentro de la misma aplicación de Next.js: los músicos publican fechas, reordenan el repertorio y atienden solicitudes; sin fechas próximas, la cartelera se retira de la página.
+  - Rendimiento medido: el pintado más grande en un teléfono con conexión lenta pasó de 2.6 s a 1.3 s y el HTML de la portada de 463 KB a 139 KB, al precargar las tipografías correctas y servir la música grabada como archivos estáticos; 126 pruebas cubren la lógica.
+  - Hecho con agentes de IA (sobre todo Claude Code): Sebastian dirige y decide, pide varias direcciones por cada decisión visual y revisa cada cambio en el navegador en dos anchos.
+- **Herramientas**: Illustrator, ChatGPT, Claude Code, Next.js, React, TypeScript, Payload CMS, PostgreSQL, Vitest, Vercel.
 - **Enlaces**: [resumen](/es/works/cuarteto-fratres#overview) · [reto](/es/works/cuarteto-fratres#challenge) · [enfoque](/es/works/cuarteto-fratres#approach) · [investigación](/es/works/cuarteto-fratres#research) · [soluciones de diseño](/es/works/cuarteto-fratres#design) · [resultado](/es/works/cuarteto-fratres#outcome)
 
 ### Reto MD · red de sitios médicos · 2021–2023

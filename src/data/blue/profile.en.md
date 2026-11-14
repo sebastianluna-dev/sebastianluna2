@@ -70,16 +70,18 @@ Each case has six anchored sections: `overview`, `challenge`, `approach`, `resea
 - **Tools**: Next.js, React, TypeScript, PostgreSQL, Prisma, Material Web, Chessground, chessops, Stockfish, LiveKit, Storybook, Vitest, Vercel.
 - **Links**: [overview](/works/365-dias-de-ajedrez#overview) · [challenge](/works/365-dias-de-ajedrez#challenge) · [approach](/works/365-dias-de-ajedrez#approach) · [research](/works/365-dias-de-ajedrez#research) · [design solutions](/works/365-dias-de-ajedrez#design) · [outcome](/works/365-dias-de-ajedrez#outcome)
 
-### Cuarteto Fratres · string quartet website · 2026
+### Cuarteto Fratres · brand and website for a string quartet · 2026
 
-- **Role**: designer and developer; product, design, development, CMS modeling, and deployment. Site: https://cuartetofratres.com
-- **What it is**: the website of a string quartet from Boca del Río, Veracruz, to showcase their music and support bookings for concerts, weddings, and private events. A single page: upcoming dates, the group, the four musicians, the repertoire with a player, and a contact form.
+- **Role**: brand designer, product designer and developer; a paid commission. He drew the CF monogram in Illustrator, designed the display typeface Fratres Display (capitals only, started with ChatGPT and redrawn by hand in Illustrator; not derived from another font), set the palette, took the photographs (iPhone 17 Pro Max and Canon EOS 90D), and designed and built the site and its CMS. Site: https://cuartetofratres.com
+- **What it is**: the identity and the website of a string quartet from Boca del Río, Veracruz, which had no online presence. One page: the hero with the four musicians, the repertoire with its player, the group, the musicians (each with a page of their own), the bill of upcoming dates and a contact form.
 - **Strongest points**:
-  - Payload CMS inside the same Next.js application (at /admin, on PostgreSQL): the group publishes dates, adjusts its repertoire, and handles requests without touching code. Each section asks a service for its data, with launch content as a fallback, so the page never goes blank.
-  - A player drawn as a score: the progress bar is a staff whose notes light up as the piece advances, usable with the keyboard; a fixed mini player appears when the card leaves the screen. There are no recordings yet: it simulates playback with each piece's duration.
-  - The form posts to a server action, works before the JavaScript loads, and every request is stored in the CMS with its status.
-  - A save in the CMS shows on the next visit; continuous integration checks style and types, runs the tests, and builds the site on every push.
-- **Tools**: Figma, Next.js, React, TypeScript, Payload CMS, PostgreSQL, Vercel Blob, Vitest, Vercel.
+  - The hero puts the four musicians on a near-black ground, the hall before the concert, with staff lines behind them carrying real music: bars of Borodin's String Quartet No. 2 and Pachelbel's Canon, engraved note by note along curved staves, with the ink thinned over each face. Sebastian is a beginner music student, which is why the notation is real.
+  - Pieces that behave like objects: the repertoire is a record with a numbered track list and filters by occasion, and a mini player that follows in a corner; each date opens as a printed concert programme; the contact form is a sheet of ruled paper.
+  - Two typefaces with different jobs: Fratres Display only for the hero, each musician's name on their page and the posters; Italianno for the section titles.
+  - Payload CMS inside the same Next.js application: the musicians publish dates, reorder the repertoire and triage requests; with no upcoming date the bill leaves the page.
+  - Measured performance: largest paint on a throttled phone from 2.6 s to 1.3 s and the home HTML from 463 KB to 139 KB, by preloading the right fonts and serving the engraved music as static files; 126 tests cover the logic.
+  - Built with AI agents (mainly Claude Code): Sebastian directs and decides, asks for several directions per visual decision and checks every change in the browser at two widths.
+- **Tools**: Illustrator, ChatGPT, Claude Code, Next.js, React, TypeScript, Payload CMS, PostgreSQL, Vitest, Vercel.
 - **Links**: [overview](/works/cuarteto-fratres#overview) · [challenge](/works/cuarteto-fratres#challenge) · [approach](/works/cuarteto-fratres#approach) · [research](/works/cuarteto-fratres#research) · [design solutions](/works/cuarteto-fratres#design) · [outcome](/works/cuarteto-fratres#outcome)
 
 ### Reto MD · network of medical sites · 2021–2023
