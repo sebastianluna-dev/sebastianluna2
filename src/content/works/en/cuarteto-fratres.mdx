@@ -44,6 +44,8 @@ import {
   SideNote,
   SideNotes,
 } from '@/components/portfolio/case';
+import DemoFrame from '@/components/demo-frame/DemoFrame.astro';
+import { HeroLayers } from '@demos/cuarteto-fratres/hero-layers/HeroLayers';
 import cartelera from '@/assets/works/cuarteto-fratres/screens/cartelera.jpg';
 import contacto from '@/assets/works/cuarteto-fratres/screens/contacto.jpg';
 import cuarteto from '@/assets/works/cuarteto-fratres/screens/cuarteto.jpg';
@@ -123,10 +125,13 @@ I am a beginner music student. That is not a credential, but it is why I could r
 
 It got there by subtraction. The first version used a photograph of the quartet in a hall; portraits cut out on black were stronger. The first staves were decorative curves; any musician would have seen that at once, so they became notation.
 
-<DemoSlot
+<DemoFrame
+  project="cuarteto-fratres"
   name="hero-layers"
   caption="The hero taken apart: musicians, staves, notes and the ink that thins over each face."
-/>
+>
+  <HeroLayers client:visible locale="en" />
+</DemoFrame>
 
 <Gallery variant="pair-2col-phone">
   <Figure

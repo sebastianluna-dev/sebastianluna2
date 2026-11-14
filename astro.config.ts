@@ -1,3 +1,4 @@
+import { readdirSync } from 'node:fs';
 import { defineConfig, envField } from 'astro/config';
 import type { AstroIntegration } from 'astro';
 import mdx from '@astrojs/mdx';
@@ -16,6 +17,15 @@ const devPages: AstroIntegration = {
     'astro:config:setup': ({ command, injectRoute }) => {
       if (command !== 'dev') return;
       injectRoute({ pattern: '/dev/mockups', entrypoint: './src/dev/pages/mockups.astro' });
+      // One preview per demo of a case, at the two widths a case shows it: every page of
+      // src/dev/pages/demos becomes /dev/demos/<name>.
+      for (const page of readdirSync(new URL('./src/dev/pages/demos', import.meta.url))) {
+        if (!page.endsWith('.astro')) continue;
+        injectRoute({
+          pattern: `/dev/demos/${page.replace(/\.astro$/, '')}`,
+          entrypoint: `./src/dev/pages/demos/${page}`,
+        });
+      }
     },
   },
 };

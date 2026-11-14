@@ -1,0 +1,97 @@
+/*
+ * Tokens of the Cuarteto Fratres demos: the site's own palette and faces (its globals.css), scoped
+ * to the demo root. A demo sets `data-ground` on its outer element to say what it stands on, which
+ * tunes the rail and the focus ring.
+ */
+@layer demos {
+  @font-face {
+    font-family: 'CF Fratres Display';
+    src: url('./assets/fonts/fratres-display.woff2') format('woff2');
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'CF Italianno';
+    src: url('./assets/fonts/italianno-400-latin.woff2') format('woff2');
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'CF Instrument Serif';
+    src: url('./assets/fonts/instrument-serif-400-italic-latin.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'CF Barlow Condensed';
+    src: url('./assets/fonts/barlow-condensed-500-latin.woff2') format('woff2');
+    font-weight: 500;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'CF Barlow Condensed';
+    src: url('./assets/fonts/barlow-condensed-600-latin.woff2') format('woff2');
+    font-weight: 600;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'CF Mulish';
+    src: url('./assets/fonts/mulish-latin.woff2') format('woff2');
+    font-weight: 200 1000;
+    font-display: swap;
+  }
+
+  .demo-root[data-demo='cuarteto-fratres'] {
+    --d-ink: #0c0e10;
+    --d-ink-deep: #0a0b0e;
+    --d-ink-soft: #1b1f25;
+    --d-ivory: #f2f4f3;
+    --d-white: #fdf6ec;
+    --d-cream: #fcead5;
+    --d-cream-soft: #f9ebd7;
+    --d-cream-hover: #f1dcc0;
+    --d-muted-on-ink: rgb(242 244 243 / 0.62);
+    --d-divider-on-ink: rgb(242 244 243 / 0.16);
+    --d-muted-on-light: #605d5d;
+    --d-soft-on-light: #3a3d42;
+    --d-divider-on-light: rgb(18 20 24 / 0.14);
+
+    --d-font-display: 'CF Fratres Display', Georgia, serif;
+    --d-font-title: 'CF Italianno', 'CF Instrument Serif', cursive;
+    --d-font-accent: 'CF Instrument Serif', Georgia, serif;
+    --d-font-label: 'CF Barlow Condensed', 'Arial Narrow', sans-serif;
+    --d-font-body: 'CF Mulish', system-ui, sans-serif;
+    /* The demo's own controls (the rail, captions): the site's body face. */
+    --d-font-ui: 'CF Mulish', system-ui, sans-serif;
+
+    --d-ease-stage: cubic-bezier(0.2, 0.7, 0.1, 1);
+    --d-radius: 20px;
+    --d-filter-musicians: saturate(0.83);
+
+    font-family: var(--d-font-body);
+
+    & [data-ground='ink'] {
+      --d-rail-bg: rgb(242 244 243 / 0.08);
+      --d-rail-text: rgb(242 244 243 / 0.66);
+      --d-rail-text-strong: #f2f4f3;
+      --d-rail-active-bg: #f2f4f3;
+      --d-rail-active-text: #0c0e10;
+      --d-focus: #f2f4f3;
+    }
+
+    & [data-ground='light'] {
+      --d-rail-bg: rgb(12 14 16 / 0.06);
+      --d-rail-text: #605d5d;
+      --d-rail-text-strong: #0c0e10;
+      --d-rail-active-bg: #0c0e10;
+      --d-rail-active-text: #fdf6ec;
+      --d-focus: #0c0e10;
+    }
+  }
+}

@@ -1,0 +1,166 @@
+@layer demos {
+  .demo {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-bottom: 20px;
+    border-radius: var(--d-radius);
+    background: var(--d-ink-deep);
+    overflow: hidden;
+
+    /* The window on the stage: wider than tall, as the first screen of the site. */
+    & .demo__frame {
+      position: relative;
+      aspect-ratio: 720 / 500;
+      overflow: hidden;
+      background: var(--d-ink-deep);
+    }
+
+    /* The site's stage: its width follows its height (1.22), standing on the bottom edge. Every
+       layer below is placed in percent of this box, with the site's own numbers. */
+    & .demo__stage {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      height: 84%;
+      aspect-ratio: 1.22;
+      translate: -50% 0;
+    }
+
+    & .demo__glow {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      width: 110%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, rgb(242 244 243 / 0.1), transparent);
+      transform: translate(-50%, -50%);
+    }
+
+    /* Lines and music share one box, so the notes land on the lines; both sway together. */
+    & .demo__staff,
+    & .demo__music {
+      position: absolute;
+      left: -30%;
+      top: 4%;
+      width: 160%;
+      height: 86%;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      animation: hero-layers-drift 16s ease-in-out infinite alternate;
+    }
+
+    & .demo__staff {
+      mask-image: radial-gradient(60% 56% at 50% 46%, #000 30%, transparent 100%);
+    }
+
+    & .demo__music {
+      mask-image: radial-gradient(78% 74% at 50% 46%, #000 52%, transparent 100%);
+    }
+
+    & .demo__figure {
+      position: absolute;
+      left: var(--x);
+      top: var(--top);
+      z-index: var(--layer);
+      height: var(--height);
+      aspect-ratio: 2 / 3;
+      translate: -50% 0;
+    }
+
+    /* Fading at the bottom and on the edges the photo itself cuts, never at the top. */
+    & .demo__portrait {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: var(--d-filter-musicians);
+      mask-image:
+        linear-gradient(90deg, transparent, #000 var(--fade-left)),
+        linear-gradient(270deg, transparent, #000 var(--fade-right)),
+        linear-gradient(0deg, transparent 2%, #000 var(--fade-bottom));
+      mask-composite: intersect;
+      opacity: 0;
+      transform: translateY(18px);
+      transition:
+        opacity 0.6s ease calc(var(--order) * 0.08s),
+        transform 0.9s var(--d-ease-stage) calc(var(--order) * 0.08s);
+    }
+
+    & .demo__floor {
+      position: absolute;
+      left: -50%;
+      right: -50%;
+      bottom: 0;
+      z-index: 5;
+      height: 30%;
+      background: linear-gradient(0deg, var(--d-ink-deep) 6%, transparent);
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    /* What each step has reached: 1 staves, 2 music, 3 musicians, 4 the site's own weights. While
+       the layers are being introduced they are bright enough to read. */
+    & .demo__stage:not([data-reached='0']) .demo__staff {
+      opacity: 0.5;
+    }
+
+    & .demo__stage[data-reached='2'] .demo__music_ink_plain,
+    & .demo__stage[data-reached='3'] .demo__music_ink_plain {
+      opacity: 0.85;
+    }
+
+    & .demo__stage[data-reached='3'] .demo__portrait,
+    & .demo__stage[data-reached='4'] .demo__portrait {
+      opacity: 1;
+      transform: none;
+    }
+
+    & .demo__stage[data-reached='3'] .demo__floor,
+    & .demo__stage[data-reached='4'] .demo__floor {
+      opacity: 1;
+    }
+
+    & .demo__stage[data-reached='4'] .demo__staff {
+      opacity: 0.07;
+    }
+
+    & .demo__stage[data-reached='4'] .demo__music_ink_thinned {
+      opacity: 0.3;
+    }
+
+    /* Narrow column: the stage takes the whole width instead of following the height. */
+    @container demo (max-width: 480px) {
+      & .demo__frame {
+        aspect-ratio: 350 / 300;
+      }
+
+      & .demo__stage {
+        width: 104%;
+        height: auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      & .demo__staff,
+      & .demo__music {
+        animation: none;
+      }
+
+      & .demo__portrait {
+        transform: none;
+        transition: opacity 0.2s ease;
+      }
+    }
+  }
+
+  @keyframes hero-layers-drift {
+    0% {
+      transform: translate3d(-0.9%, 0.3%, 0) rotate(-0.3deg);
+    }
+
+    100% {
+      transform: translate3d(0.9%, -0.5%, 0) rotate(0.3deg);
+    }
+  }
+}

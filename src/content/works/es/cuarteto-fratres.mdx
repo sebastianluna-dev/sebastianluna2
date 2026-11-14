@@ -52,6 +52,8 @@ import {
   SideNote,
   SideNotes,
 } from '@/components/portfolio/case';
+import DemoFrame from '@/components/demo-frame/DemoFrame.astro';
+import { HeroLayers } from '@demos/cuarteto-fratres/hero-layers/HeroLayers';
 import cartelera from '@/assets/works/cuarteto-fratres/screens/cartelera.jpg';
 import contacto from '@/assets/works/cuarteto-fratres/screens/contacto.jpg';
 import cuarteto from '@/assets/works/cuarteto-fratres/screens/cuarteto.jpg';
@@ -131,10 +133,13 @@ Soy estudiante de música, todavía principiante. No es una credencial, pero por
 
 Llegó ahí quitando cosas. La primera versión usaba una fotografía del cuarteto en una sala; los retratos recortados sobre negro tenían más fuerza. Los primeros pentagramas eran curvas decorativas; cualquier músico lo habría notado al instante, así que se volvieron notación.
 
-<DemoSlot
+<DemoFrame
+  project="cuarteto-fratres"
   name="hero-layers"
   caption="La portada por partes: músicos, pentagramas, notas y la tinta que se adelgaza sobre cada cara."
-/>
+>
+  <HeroLayers client:visible locale="es" />
+</DemoFrame>
 
 <Gallery variant="pair-2col-phone">
   <Figure

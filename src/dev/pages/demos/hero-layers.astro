@@ -1,0 +1,50 @@
+---
+/**
+ * Preview of the «hero-layers» demo of Cuarteto Fratres (`/dev/demos/hero-layers`, only under `astro dev`):
+ * the demo at the two widths a case shows it, the 720 column and a 350 phone column, in both languages.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DemoFrame from '@/components/demo-frame/DemoFrame.astro';
+import { HeroLayers } from '@demos/cuarteto-fratres/hero-layers/HeroLayers';
+---
+
+<BaseLayout locale="es" title="Demo · hero-layers" noindex>
+  <div class="demo-preview">
+    <h1 class="demo-preview__title">hero-layers</h1>
+    <div class="demo-preview__wide">
+      <DemoFrame project="cuarteto-fratres" name="hero-layers" caption="720 · English">
+        <HeroLayers client:load locale="en" />
+      </DemoFrame>
+    </div>
+    <div class="demo-preview__narrow">
+      <DemoFrame project="cuarteto-fratres" name="hero-layers-narrow" caption="350 · español">
+        <HeroLayers client:load locale="es" />
+      </DemoFrame>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  @layer pf {
+    .demo-preview {
+      display: grid;
+      gap: 48px;
+      justify-items: center;
+      padding: var(--pf-case-pad-top) var(--pf-gutter-case) var(--pf-case-pad-bottom);
+
+      & .demo-preview__title {
+        margin: 0;
+        color: var(--pf-text);
+        font: 500 24px / 1.2 var(--pf-font-sans);
+      }
+
+      & .demo-preview__wide {
+        width: min(720px, 100%);
+      }
+
+      & .demo-preview__narrow {
+        width: min(350px, 100%);
+      }
+    }
+  }
+</style>
