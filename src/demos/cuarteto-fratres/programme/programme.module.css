@@ -1,0 +1,578 @@
+@layer demos {
+  /* The event window of the site (event-dialog.comp.css) at about 0.72 of its size, so the 920 px
+     sheet fits the 720 column; the phone layout keeps the site's own numbers. */
+  .demo {
+    --stage-height: 600px;
+    --sheet-max: calc(var(--stage-height) - 48px);
+    --sheet-ink-line: rgb(12 14 16 / 0.22);
+    --gutter: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-bottom: 20px;
+    border-radius: var(--d-radius);
+    background: var(--d-ink-deep);
+    overflow: hidden;
+
+    /* The bill under the backdrop: fixed height, so no state moves the rail. */
+    & .demo__stage {
+      position: relative;
+      display: grid;
+      place-items: center;
+      height: var(--stage-height);
+      overflow: hidden;
+      background: var(--d-ink-soft);
+    }
+
+    & .demo__bill {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 18px;
+      padding: 18px 28px 56px;
+    }
+
+    & .demo__bill-title {
+      grid-column: 1 / -1;
+      justify-self: center;
+      color: rgb(242 244 243 / 0.16);
+      font: 400 88px / 1 var(--d-font-title);
+    }
+
+    & .demo__bill-card {
+      margin-top: 40px;
+      border-radius: 14px;
+      background: rgb(10 11 14 / 0.5);
+    }
+
+    & .demo__bill-card_tone_cream {
+      background: rgb(252 234 213 / 0.16);
+    }
+
+    /* The sheet: the cream programme, its own focus colour on the cream. */
+    & .demo__sheet {
+      --d-focus: var(--d-ink);
+
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 190px minmax(0, 1fr);
+      width: calc(100% - 56px);
+      max-height: var(--sheet-max);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--d-cream);
+      color: var(--d-ink);
+      box-shadow: 0 30px 80px rgb(0 0 0 / 0.45);
+      scrollbar-width: thin;
+      scrollbar-color: rgb(12 14 16 / 0.4) var(--d-cream);
+
+      &[data-reopened] {
+        animation: programme-in 0.45s var(--d-ease-stage);
+      }
+
+      & :focus-visible {
+        outline: 2px solid var(--d-focus);
+        outline-offset: 3px;
+      }
+
+      & :where(h3, h4, p, ol, ul) {
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    & .demo__handle {
+      display: none;
+    }
+
+    & .demo__close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 1px solid rgb(12 14 16 / 0.5);
+      border-radius: 50%;
+      background: var(--d-cream);
+      color: var(--d-ink);
+      cursor: pointer;
+      transition:
+        background 0.25s ease,
+        color 0.25s ease;
+
+      &:hover {
+        background: var(--d-ink);
+        color: var(--d-cream);
+      }
+    }
+
+    & .demo__side {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 0;
+      padding: 26px 0 26px 26px;
+    }
+
+    /* The calendar leaf: weekday, the day large, month and year, the hour. */
+    & .demo__calendar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 13px 9px 14px;
+      border-radius: 10px;
+      box-shadow: inset 0 0 0 1px var(--sheet-ink-line);
+      text-align: center;
+    }
+
+    & .demo__weekday {
+      color: var(--d-muted-on-light);
+      font: 500 11px / 1 var(--d-font-label);
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+    }
+
+    & .demo__day {
+      margin: 9px 0 4px;
+      font: 400 80px / 0.85 var(--d-font-display);
+    }
+
+    & .demo__month {
+      font: 600 13px / 1 var(--d-font-label);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+
+    & .demo__hour {
+      align-self: stretch;
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px solid var(--d-divider-on-light);
+      font: italic 400 19px / 1 var(--d-font-accent);
+    }
+
+    & .demo__media {
+      position: relative;
+      flex: 1;
+      min-height: 130px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--d-cream-hover);
+    }
+
+    & .demo__photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 46% 42%;
+      filter: var(--d-filter-musicians);
+    }
+
+    /* The text column scrolls on its own when a long programme does not fit. */
+    & .demo__body {
+      max-height: var(--sheet-max);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 30px 32px 26px 30px;
+    }
+
+    & .demo__city {
+      max-width: calc(100% - 44px);
+      font: 400 38px / 0.8 var(--d-font-title);
+    }
+
+    & .demo__title {
+      margin-top: 6px;
+      max-width: 10em;
+      font: 400 36px / 0.92 var(--d-font-display);
+      text-transform: uppercase;
+      text-wrap: balance;
+    }
+
+    & .demo__description {
+      margin-top: 12px;
+      max-width: 46ch;
+      color: var(--d-soft-on-light);
+      font-size: 13.5px;
+      line-height: 1.65;
+      text-wrap: pretty;
+    }
+
+    & .demo__program-block {
+      margin-top: 18px;
+    }
+
+    & .demo__program-label,
+    & .demo__fact-label {
+      font: 500 11px / 1 var(--d-font-label);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    & .demo__program-label {
+      padding-bottom: 8px;
+      border-bottom: 1.5px solid var(--d-ink);
+    }
+
+    & .demo__program {
+      list-style: none;
+    }
+
+    /* The dotted leader of a printed programme, title to composer. */
+    & .demo__program-item {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--d-divider-on-light);
+    }
+
+    & .demo__program-title {
+      font: italic 400 18px / 1.2 var(--d-font-accent);
+    }
+
+    & .demo__program-leader {
+      flex: 1;
+      min-width: 18px;
+      border-bottom: 1.5px dotted rgb(12 14 16 / 0.4);
+      translate: 0 -4px;
+    }
+
+    & .demo__program-composer {
+      flex: none;
+      max-width: 45%;
+      font: 500 10.5px / 1.2 var(--d-font-label);
+      letter-spacing: 0.14em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    /* Venue and tickets side by side under the programme. */
+    & .demo__facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 20px;
+      margin-top: 16px;
+    }
+
+    & .demo__fact-label {
+      color: var(--d-muted-on-light);
+    }
+
+    & .demo__fact-main {
+      display: block;
+      margin-top: 6px;
+      font: italic 400 17px / 1.15 var(--d-font-accent);
+    }
+
+    & .demo__fact-detail {
+      display: block;
+      margin-top: 3px;
+      color: var(--d-muted-on-light);
+      font-size: 12px;
+    }
+
+    & .demo__prices {
+      list-style: none;
+    }
+
+    & .demo__link {
+      display: inline-block;
+      margin-top: 8px;
+      color: inherit;
+      font: 600 11.5px / 1.2 var(--d-font-label);
+      letter-spacing: 0.14em;
+      text-decoration: underline;
+      text-transform: uppercase;
+      text-underline-offset: 4px;
+
+      &:hover {
+        text-decoration-thickness: 2px;
+      }
+    }
+
+    & .demo__actions {
+      margin-top: 20px;
+    }
+
+    /* The site's ink pill button. */
+    & .demo__button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px;
+      padding: 0 20px;
+      border-radius: 999px;
+      background: var(--d-ink);
+      color: var(--d-ivory);
+      font: 600 12.5px / 1 var(--d-font-label);
+      letter-spacing: 0.16em;
+      text-decoration: none;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: background 0.3s ease;
+
+      &:hover {
+        background: var(--d-ink-soft);
+      }
+    }
+
+    & .demo__icon {
+      flex: none;
+      width: 16px;
+      height: 16px;
+      transition: transform 0.45s var(--d-ease-stage);
+    }
+
+    & .demo__button:hover .demo__icon,
+    & .demo__button:focus-visible .demo__icon {
+      transform: translateX(4px);
+    }
+
+    /* The phone: the site's sheet risen from the bottom with a handle; calendar and photo share
+       the top row, the whole sheet scrolls and the action stays at its foot. */
+    @container demo (max-width: 480px) {
+      --stage-height: 620px;
+
+      & .demo__sheet {
+        position: absolute;
+        inset: 44px 0 0;
+        display: block;
+        width: auto;
+        max-height: none;
+        padding: 14px var(--gutter) 0;
+        border-radius: 24px 24px 0 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+
+        &[data-reopened] {
+          animation-name: programme-rise;
+        }
+      }
+
+      & .demo__handle {
+        display: block;
+        width: 44px;
+        height: 5px;
+        margin: 0 auto 14px;
+        border-radius: 9px;
+        background: rgb(12 14 16 / 0.25);
+      }
+
+      & .demo__close {
+        top: 18px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+      }
+
+      & .demo__side {
+        flex-direction: row;
+        gap: 14px;
+        padding: 0;
+      }
+
+      & .demo__calendar {
+        flex: none;
+        width: 104px;
+        padding: 12px 8px;
+        border-radius: 14px;
+      }
+
+      & .demo__weekday {
+        font-size: 12px;
+        letter-spacing: 0.18em;
+      }
+
+      & .demo__day {
+        margin: 8px 0 4px;
+        font-size: 64px;
+      }
+
+      & .demo__month {
+        font-size: 14px;
+        letter-spacing: 0.24em;
+      }
+
+      & .demo__year {
+        display: none;
+      }
+
+      & .demo__hour {
+        margin-top: 8px;
+        padding-top: 8px;
+        font-size: 20px;
+      }
+
+      & .demo__media {
+        min-height: 0;
+        border-radius: 14px;
+      }
+
+      & .demo__body {
+        max-height: none;
+        overflow: visible;
+        padding: 0;
+      }
+
+      & .demo__city {
+        margin-top: 22px;
+        font-size: 44px;
+      }
+
+      & .demo__title {
+        font-size: 40px;
+      }
+
+      & .demo__description {
+        margin-top: 16px;
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      & .demo__program-block {
+        margin-top: 26px;
+      }
+
+      & .demo__program-label,
+      & .demo__fact-label {
+        font-size: 13px;
+      }
+
+      & .demo__program-label {
+        padding-bottom: 10px;
+      }
+
+      & .demo__program-item {
+        flex-wrap: wrap;
+        gap: 4px 10px;
+        padding: 13px 0;
+      }
+
+      & .demo__program-title {
+        font-size: 22px;
+      }
+
+      & .demo__program-leader {
+        display: none;
+      }
+
+      & .demo__program-composer {
+        flex-basis: 100%;
+        max-width: none;
+        font-size: 13px;
+        text-align: left;
+      }
+
+      & .demo__facts {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+        margin-top: 22px;
+      }
+
+      & .demo__fact-main {
+        margin-top: 8px;
+        font-size: 22px;
+      }
+
+      & .demo__fact-detail {
+        margin-top: 4px;
+        font-size: 14px;
+      }
+
+      & .demo__link {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+
+      & .demo__actions {
+        position: sticky;
+        bottom: 0;
+        margin: 26px calc(-1 * var(--gutter)) 0;
+        padding: 18px var(--gutter) 20px;
+        background: linear-gradient(transparent, var(--d-cream) 18px);
+      }
+
+      & .demo__button {
+        justify-content: center;
+        width: 100%;
+        min-height: 48px;
+        font-size: 15px;
+      }
+
+      & .demo__icon {
+        width: 18px;
+        height: 18px;
+      }
+
+      & .demo__bill {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 0 20px;
+      }
+
+      & .demo__bill-title {
+        font-size: 64px;
+      }
+
+      & .demo__bill-card:not(:first-of-type) {
+        display: none;
+      }
+    }
+
+    @media (pointer: coarse) {
+      & .demo__close {
+        width: 44px;
+        height: 44px;
+      }
+
+      & .demo__button {
+        min-height: 44px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      & .demo__sheet[data-reopened] {
+        animation: programme-fade 0.2s ease;
+      }
+
+      & .demo__icon {
+        transition: none;
+      }
+
+      & .demo__button:hover .demo__icon,
+      & .demo__button:focus-visible .demo__icon {
+        transform: none;
+      }
+    }
+  }
+
+  @keyframes programme-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+  }
+
+  @keyframes programme-rise {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes programme-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}
