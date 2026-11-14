@@ -55,6 +55,10 @@ const style = `--mockup-ground:${ground};--mockup-fx:${focusX}%;--mockup-fy:${fo
     .mockup {
       margin: 0;
 
+      /* Where the frame looks: the screen's own point, shifted by the menu («Centro»). */
+      --mockup-cx: calc(var(--mockup-fx) + var(--opt-mockup-cx, 0%));
+      --mockup-cy: calc(var(--mockup-fy) + var(--opt-mockup-cy, 0%));
+
       & .mockup__frame {
         position: relative;
         aspect-ratio: 4 / 3;
@@ -73,8 +77,8 @@ const style = `--mockup-ground:${ground};--mockup-fx:${focusX}%;--mockup-fy:${fo
         top: calc(50% + var(--opt-mockup-y, 0%));
         width: calc(100% * var(--opt-mockup-zoom, 1.45) * var(--mockup-own-zoom));
         aspect-ratio: var(--mockup-ratio);
-        transform-origin: var(--mockup-fx) var(--mockup-fy);
-        transform: translate(calc(-1 * var(--mockup-fx)), calc(-1 * var(--mockup-fy)))
+        transform-origin: var(--mockup-cx) var(--mockup-cy);
+        transform: translate(calc(-1 * var(--mockup-cx)), calc(-1 * var(--mockup-cy)))
           rotateX(var(--opt-mockup-rx, 8deg)) rotateY(var(--opt-mockup-ry, -16deg))
           rotateZ(var(--opt-mockup-rz, 2deg));
         box-shadow: 0 40px 120px rgb(0 0 0 / 0.25);
@@ -92,8 +96,8 @@ const style = `--mockup-ground:${ground};--mockup-fx:${focusX}%;--mockup-fy:${fo
       & .mockup__image_layer_blur {
         filter: blur(var(--opt-mockup-blur, 5px));
         mask-image: radial-gradient(
-          ellipse var(--opt-mockup-focus, 42%) var(--opt-mockup-focus, 42%) at var(--mockup-fx)
-            var(--mockup-fy),
+          ellipse var(--opt-mockup-focus, 42%) var(--opt-mockup-focus, 42%) at var(--mockup-cx)
+            var(--mockup-cy),
           transparent 45%,
           #000 100%
         );
