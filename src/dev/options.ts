@@ -54,6 +54,253 @@ export const OPTION_GROUPS: readonly OptionGroup[] = [
     ],
   },
   {
+    id: 'cuarteto-sections',
+    label: 'Cuarteto · títulos de sección',
+    where: '/works/cuarteto-fratres',
+    controls: [
+      {
+        kind: 'choice',
+        id: 'section-cuarteto-fratres-overview',
+        label: 'Overview',
+        initial: 'draft',
+        options: [
+          {
+            id: 'draft',
+            label: 'Sin lugar en internet',
+            text: {
+              en: 'A string quartet with no place online',
+              es: 'Un cuarteto de cuerdas sin lugar en internet',
+            },
+          },
+          {
+            id: 'brief',
+            label: 'El cuarteto y el encargo',
+            text: {
+              en: 'The quartet and the brief',
+              es: 'El cuarteto y el encargo',
+            },
+          },
+          {
+            id: 'start',
+            label: 'Empezar sin presencia',
+            text: {
+              en: 'Starting without a web presence',
+              es: 'Empezar sin presencia en línea',
+            },
+          },
+          {
+            id: 'who',
+            label: 'Quién es',
+            text: {
+              en: 'Who Cuarteto Fratres is',
+              es: 'Quién es Cuarteto Fratres',
+            },
+          },
+        ],
+      },
+      {
+        kind: 'choice',
+        id: 'section-cuarteto-fratres-challenge',
+        label: 'Challenge',
+        initial: 'draft',
+        options: [
+          {
+            id: 'draft',
+            label: 'Dos públicos, un tono',
+            text: {
+              en: 'Two audiences, one tone',
+              es: 'Dos públicos, un mismo tono',
+            },
+          },
+          {
+            id: 'visitors',
+            label: 'Visitantes y músicos',
+            text: {
+              en: 'Visitors and musicians',
+              es: 'Visitantes y músicos',
+            },
+          },
+          {
+            id: 'booking',
+            label: 'Contratar y publicar',
+            text: {
+              en: 'Booking and publishing',
+              es: 'Contratar y publicar',
+            },
+          },
+          {
+            id: 'jobs',
+            label: 'Dos trabajos',
+            text: {
+              en: 'Two jobs for one site',
+              es: 'Dos trabajos para un solo sitio',
+            },
+          },
+        ],
+      },
+      {
+        kind: 'choice',
+        id: 'section-cuarteto-fratres-approach',
+        label: 'Approach',
+        initial: 'draft',
+        options: [
+          {
+            id: 'draft',
+            label: 'Primero la marca',
+            text: {
+              en: 'A brand before a website',
+              es: 'Primero la marca, después el sitio',
+            },
+          },
+          {
+            id: 'building',
+            label: 'Construir la identidad',
+            text: {
+              en: 'Building the visual identity',
+              es: 'Construir la identidad visual',
+            },
+          },
+          {
+            id: 'triad',
+            label: 'Identidad, tipo y foto',
+            text: {
+              en: 'Identity, type and photography',
+              es: 'Identidad, tipografía y fotografía',
+            },
+          },
+          {
+            id: 'hero',
+            label: 'Del monograma al hero',
+            text: {
+              en: 'From monogram to hero',
+              es: 'Del monograma a la portada',
+            },
+          },
+        ],
+      },
+      {
+        kind: 'choice',
+        id: 'section-cuarteto-fratres-research',
+        label: 'Research',
+        initial: 'draft',
+        options: [
+          {
+            id: 'draft',
+            label: 'Cómo tomé las decisiones',
+            text: {
+              en: 'How I made decisions',
+              es: 'Cómo tomé las decisiones',
+            },
+          },
+          {
+            id: 'eye',
+            label: 'IA y decidir a ojo',
+            text: {
+              en: 'Working with AI, deciding by eye',
+              es: 'Trabajar con IA, decidir a ojo',
+            },
+          },
+          {
+            id: 'assisted',
+            label: 'Desarrollo asistido',
+            text: {
+              en: 'AI-assisted build and review',
+              es: 'Desarrollo y revisión asistidos por IA',
+            },
+          },
+          {
+            id: 'checks',
+            label: 'Iteraciones y pruebas',
+            text: {
+              en: 'Iterations and checks',
+              es: 'Iteraciones y comprobaciones',
+            },
+          },
+        ],
+      },
+      {
+        kind: 'choice',
+        id: 'section-cuarteto-fratres-design',
+        label: 'Design',
+        initial: 'draft',
+        options: [
+          {
+            id: 'draft',
+            label: 'Como sus objetos',
+            text: {
+              en: 'Pieces that behave like their objects',
+              es: 'Piezas que se comportan como sus objetos',
+            },
+          },
+          {
+            id: 'interactions',
+            label: 'Diseñar las interacciones',
+            text: {
+              en: 'Designing the interactions',
+              es: 'Diseñar las interacciones',
+            },
+          },
+          {
+            id: 'triad',
+            label: 'Repertorio, eventos, contacto',
+            text: {
+              en: 'Repertoire, events and contact',
+              es: 'Repertorio, eventos y contacto',
+            },
+          },
+          {
+            id: 'core',
+            label: 'Secciones centrales',
+            text: {
+              en: 'The site’s core sections',
+              es: 'Las secciones centrales del sitio',
+            },
+          },
+        ],
+      },
+      {
+        kind: 'choice',
+        id: 'section-cuarteto-fratres-outcome',
+        label: 'Outcome',
+        initial: 'draft',
+        options: [
+          {
+            id: 'draft',
+            label: 'El cuarteto la maneja',
+            text: {
+              en: 'A brand the quartet runs itself',
+              es: 'Una marca que el cuarteto maneja solo',
+            },
+          },
+          {
+            id: 'update',
+            label: 'Un sitio que actualizan',
+            text: {
+              en: 'A site the quartet can update',
+              es: 'Un sitio que el cuarteto puede actualizar',
+            },
+          },
+          {
+            id: 'cms',
+            label: 'CMS y rendimiento',
+            text: {
+              en: 'CMS and performance',
+              es: 'CMS y rendimiento',
+            },
+          },
+          {
+            id: 'shipped',
+            label: 'Qué se entregó',
+            text: {
+              en: 'What shipped and what changed',
+              es: 'Qué se entregó y qué cambió',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: 'mockup',
     label: 'Mockups · perspectiva',
     where: '/dev/mockups',

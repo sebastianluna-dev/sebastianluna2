@@ -29,6 +29,10 @@ const appear = CASE_SECTION_APPEAR[id];
 const html = Astro.slots.has('default') ? await Astro.slots.render('default') : '';
 const { prose, rest } = splitLeadingProse(html);
 const headingId = `${id}-title`;
+// Under `astro dev` the options menu (src/dev) may swap the h2 for a variant under review.
+const titleOption = import.meta.env.DEV
+  ? `section-${Astro.url.pathname.split('/').filter(Boolean).pop()}-${id}`
+  : undefined;
 ---
 
 <section
@@ -47,6 +51,7 @@ const headingId = `${id}-title`;
       id={headingId}
       tabindex="-1"
       class="case-section__title"
+      data-opt-text={titleOption}
     >
       {title}
     </AppearMotion>
