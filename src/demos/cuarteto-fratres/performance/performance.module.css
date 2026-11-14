@@ -1,0 +1,453 @@
+@layer demos {
+  .demo {
+    /* The chart's own values: the room kept after the axis end for the value labels, the two
+       tones (the old figures dimmed, the new ones in full ivory) and the count-up curve. */
+    --perf-room: 150px;
+    --perf-before: rgb(242 244 243 / 0.42);
+    --perf-after: var(--d-ivory);
+    --perf-rest: rgb(242 244 243 / 0.3);
+    --perf-music: rgb(242 244 243 / 0.62);
+    --perf-line: rgb(242 244 243 / 0.08);
+    --perf-ease: cubic-bezier(0.33, 1, 0.68, 1);
+    --perf-time: 0.9s;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-bottom: 20px;
+    border-radius: var(--d-radius);
+    background: var(--d-ink-deep);
+    color: var(--d-ivory);
+    overflow: hidden;
+
+    /* One reserved height for every state, so the rail never moves. */
+    & .demo__scene {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      height: 400px;
+      padding: 28px 36px 0;
+    }
+
+    & .demo__kicker {
+      margin: 0;
+      color: var(--d-muted-on-ink);
+      font: 600 15px / 1.2 var(--d-font-label);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    & .demo__chart {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    & .demo__alt {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    & .demo__method {
+      min-height: calc(3 * 1.45em);
+      margin: 0;
+      padding-top: 12px;
+      border-top: 1px solid var(--d-divider-on-ink);
+      color: var(--d-muted-on-ink);
+      font: 400 12.5px / 1.45 var(--d-font-body);
+    }
+
+    /* ----- Bars on one axis ----- */
+
+    & .chart {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    & .chart__rows {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    & .chart__row,
+    & .chart__group {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    & .chart__label {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      color: var(--d-ivory);
+      font: 600 14px / 1.2 var(--d-font-label);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    & .chart__verdict {
+      padding: 1px 7px;
+      border: 1px solid var(--d-divider-on-ink);
+      border-radius: 999px;
+      color: var(--d-muted-on-ink);
+      font: 500 13px / 1.3 var(--d-font-label);
+      letter-spacing: 0.08em;
+    }
+
+    & .bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    /* The bar is a share of the plot width (the row minus the label room), so every bar of a
+       chart is to scale against the same zero. */
+    & .bar__fill {
+      position: relative;
+      flex: none;
+      width: calc((100% - var(--perf-room)) * var(--share));
+      border-radius: 0 4px 4px 0;
+      overflow: hidden;
+    }
+
+    & .bar__fill_tone_before {
+      background: var(--perf-before);
+    }
+
+    & .bar__fill_tone_after {
+      background: var(--perf-after);
+    }
+
+    & .bar_size_large .bar__fill {
+      height: 22px;
+    }
+
+    & .bar_size_medium .bar__fill {
+      height: 12px;
+    }
+
+    & .bar_size_small .bar__fill {
+      height: 6px;
+      border-radius: 0 3px 3px 0;
+    }
+
+    & .bar__value {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      flex: none;
+      white-space: nowrap;
+    }
+
+    & .bar__number {
+      font-family: var(--d-font-display);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    & .bar__unit,
+    & .bar__prefix {
+      color: var(--d-muted-on-ink);
+      font: 500 15px / 1 var(--d-font-label);
+      letter-spacing: 0.06em;
+    }
+
+    & .bar__prefix {
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    & .bar_size_large .bar__number {
+      font-size: 40px;
+    }
+
+    & .bar_size_medium .bar__number {
+      font-size: 24px;
+    }
+
+    & .bar_size_small .bar__number {
+      font-size: 17px;
+    }
+
+    & .bar_size_small .bar__unit,
+    & .bar_size_small .bar__prefix {
+      font-size: 13px;
+    }
+
+    /* The music inside the old page: the brighter part of its bar, from zero. */
+    & .bar__share {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: calc(var(--part) * 100% - 2px);
+      background: var(--perf-music);
+    }
+
+    & .bar__fill:has(.bar__share) {
+      background: var(--perf-rest);
+    }
+
+    & .share {
+      width: calc((100% - var(--perf-room)) * var(--share));
+    }
+
+    & .share__bracket {
+      display: block;
+      height: 7px;
+      border: 1px solid var(--d-muted-on-ink);
+      border-top: 0;
+    }
+
+    & .share__label {
+      margin: 0;
+      color: var(--d-muted-on-ink);
+      font: 400 13px / 1.4 var(--d-font-body);
+    }
+
+    & .share__number {
+      color: var(--d-ivory);
+      font: 600 14px / 1 var(--d-font-label);
+      letter-spacing: 0.04em;
+    }
+
+    /* Gridlines and ticks in the bars' coordinates. */
+    & .grid {
+      position: absolute;
+      inset: 0 0 22px;
+      pointer-events: none;
+    }
+
+    & .grid__line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: calc((100% - var(--perf-room)) * var(--share));
+      width: 1px;
+      background: var(--perf-line);
+    }
+
+    & .axis {
+      position: relative;
+      height: 16px;
+      border-top: 1px solid var(--d-divider-on-ink);
+      margin-right: var(--perf-room);
+    }
+
+    & .axis__tick {
+      position: absolute;
+      top: 4px;
+      left: calc(100% * var(--share));
+      translate: -50% 0;
+      color: var(--d-muted-on-ink);
+      font: 500 12px / 1 var(--d-font-label);
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+
+      &:first-child {
+        translate: 0 0;
+      }
+    }
+
+    /* Secondary facts of the weight state. */
+    & .facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 32px;
+      margin: 0;
+    }
+
+    & .facts__item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    & .facts__term {
+      color: var(--d-muted-on-ink);
+      font: 500 13px / 1.3 var(--d-font-label);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    & .facts__value {
+      margin: 0;
+      color: var(--d-ivory);
+      font: 400 15px / 1.3 var(--d-font-body);
+      white-space: nowrap;
+    }
+
+    & .stamp {
+      align-self: flex-start;
+      margin: 0;
+      padding: 3px 10px;
+      border: 1px solid var(--d-ivory);
+      border-radius: 4px;
+      color: var(--d-ivory);
+      font: 600 13px / 1.2 var(--d-font-label);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    /* ----- Lighthouse rings ----- */
+
+    & .rings {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 20px 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    & .rings__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    & .ring {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 112px;
+      aspect-ratio: 1;
+    }
+
+    & .ring__svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      rotate: -90deg;
+    }
+
+    & .ring__track,
+    & .ring__arc {
+      fill: none;
+      stroke-width: 5;
+    }
+
+    & .ring__track {
+      stroke: var(--d-divider-on-ink);
+    }
+
+    /* The arc is the score out of 100 of the circle. */
+    & .ring__arc {
+      stroke: var(--d-ivory);
+      stroke-dasharray: var(--score) 100;
+    }
+
+    & .ring__number {
+      font: 400 36px / 1 var(--d-font-display);
+      font-variant-numeric: tabular-nums;
+    }
+
+    & .rings__label {
+      color: var(--d-ivory);
+      font: 600 14px / 1.2 var(--d-font-label);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-wrap: balance;
+    }
+
+    /* ----- Entering a state: the bars grow and the rings fill with the count-up. ----- */
+
+    &[data-animate='true'] {
+      & .bar__fill {
+        animation: perf-grow var(--perf-time) var(--perf-ease) both;
+      }
+
+      & .ring__arc {
+        animation: perf-ring var(--perf-time) var(--perf-ease) both;
+      }
+
+      & .share,
+      & .share__label {
+        animation: perf-fade 0.4s ease calc(var(--perf-time) * 0.6) both;
+      }
+    }
+
+    /* Narrow column: tighter room and figures, the rings two by two. */
+    @container demo (max-width: 480px) {
+      --perf-room: 100px;
+
+      & .demo__scene {
+        height: 470px;
+        padding: 22px 18px 0;
+      }
+
+      & .demo__kicker {
+        font-size: 14px;
+      }
+
+      & .bar_size_large .bar__number {
+        font-size: 30px;
+      }
+
+      & .bar_size_medium .bar__number {
+        font-size: 21px;
+      }
+
+      & .bar__prefix {
+        font-size: 13px;
+      }
+
+      & .rings {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      & .ring {
+        width: 92px;
+      }
+
+      & .ring__number {
+        font-size: 30px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &[data-animate='true'] {
+        & .bar__fill,
+        & .ring__arc,
+        & .share,
+        & .share__label {
+          animation: none;
+        }
+      }
+    }
+  }
+
+  @keyframes perf-grow {
+    from {
+      width: 0;
+    }
+  }
+
+  @keyframes perf-ring {
+    from {
+      stroke-dasharray: 0 100;
+    }
+  }
+
+  @keyframes perf-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}
