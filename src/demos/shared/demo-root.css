@@ -1,0 +1,32 @@
+/*
+ * The seam between the portfolio and a demo: `.demo-root` starts from the browser's defaults, so
+ * nothing of the portfolio's theme leaks into the UI of the reviewed app, and every project paints
+ * itself from its own `--d-*` tokens (src/demos/<project>/tokens.css).
+ */
+@layer demos {
+  .demo-root {
+    all: initial;
+    display: block;
+    box-sizing: border-box;
+    container-type: inline-size;
+    container-name: demo;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    & *,
+    & *::before,
+    & *::after {
+      box-sizing: border-box;
+    }
+
+    & button {
+      font: inherit;
+      color: inherit;
+    }
+
+    & img,
+    & svg {
+      display: block;
+    }
+  }
+}

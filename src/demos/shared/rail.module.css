@@ -1,0 +1,75 @@
+@layer demos {
+  .rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    & .rail__group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 999px;
+      background: var(--d-rail-bg);
+    }
+
+    & .rail__option {
+      min-height: 36px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--d-rail-text);
+      font: 500 14px / 1 var(--d-font-ui);
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition:
+        background 0.25s ease,
+        color 0.25s ease;
+
+      &:hover {
+        color: var(--d-rail-text-strong);
+      }
+
+      &[aria-checked='true'] {
+        background: var(--d-rail-active-bg);
+        color: var(--d-rail-active-text);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--d-focus);
+        outline-offset: 2px;
+      }
+    }
+
+    /* The caption of the chosen state; two lines reserved so the demo does not jump. */
+    & .rail__status {
+      max-width: 46ch;
+      min-height: 2.9em;
+      margin: 0;
+      color: var(--d-rail-text);
+      font: 400 15px / 1.45 var(--d-font-ui);
+      text-align: center;
+      text-wrap: balance;
+    }
+
+    /* Narrow column: the pills wrap, so the group is a rounded box and not a capsule. */
+    @container demo (max-width: 480px) {
+      & .rail__group {
+        border-radius: 24px;
+      }
+
+      & .rail__option {
+        padding: 0 12px;
+      }
+    }
+
+    @media (pointer: coarse) {
+      & .rail__option {
+        min-height: 44px;
+      }
+    }
+  }
+}

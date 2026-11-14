@@ -102,7 +102,11 @@ function sectionOutline(id: string, source: string, images: Map<string, string>)
     })),
     chats: chatMessageCounts(source),
     notes: noteCounts(withoutChats),
-    demos: openingTags(withoutChats, 'DemoSlot').map((tag) => stringAttribute(tag, 'name') ?? ''),
+    // A demo is a reserved slot (`DemoSlot`) or a mounted one (`DemoFrame`); both carry its key.
+    demos: [
+      ...openingTags(withoutChats, 'DemoSlot'),
+      ...openingTags(withoutChats, 'DemoFrame'),
+    ].map((tag) => stringAttribute(tag, 'name') ?? ''),
     h3: [...withoutChats.matchAll(/^###\s/gm)].length,
   };
 }

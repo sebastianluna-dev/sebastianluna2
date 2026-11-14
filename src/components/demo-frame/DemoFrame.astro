@@ -1,0 +1,47 @@
+---
+/**
+ * The one seam between the portfolio and a live demo (`src/demos/<project>/**`): a case block that
+ * holds the demo inside `.demo-root`, where nothing of the portfolio's theme reaches (CSS layer
+ * `demos`, `all: initial`, the project's own `--d-*` tokens), and its caption in the body style.
+ *
+ * The demo goes in the slot as a React island, imported statically by the MDX (a dynamic tag cannot
+ * hydrate): `<DemoFrame project="…" name="…" caption="…"><Demo client:visible locale="en" /></DemoFrame>`.
+ * The island renders on the server with its real controls and reserves its own height, so the page
+ * neither jumps on hydration nor goes blank without JavaScript.
+ */
+import '@demos/shared/demo-root.css';
+
+interface Props {
+  /** Folder of `src/demos`: scopes the project's tokens (`data-demo`). */
+  project: string;
+  /** Key of the demo, the one the case lists in its frontmatter `demos`. */
+  name: string;
+  /** One line under the demo, in the body style. */
+  caption?: string;
+}
+
+const { project, name, caption } = Astro.props;
+---
+
+<figure class="demo-frame" data-case-block data-demo-frame={name}>
+  <div class="demo-root" data-demo={project}>
+    <slot />
+  </div>
+  {caption && <figcaption class="demo-frame__caption pf-prose">{caption}</figcaption>}
+</figure>
+
+<style>
+  @layer pf {
+    .demo-frame {
+      display: flex;
+      flex-direction: column;
+      gap: var(--pf-case-text-gap);
+      margin: 0;
+
+      & .demo-frame__caption {
+        width: min(var(--pf-text-col), 100%);
+        margin-inline: auto;
+      }
+    }
+  }
+</style>

@@ -50,7 +50,9 @@ Text.
 
 </CaseSubsection>
 
-<DemoSlot name="two" />
+<DemoFrame project="sample" name="two">
+  <Demo client:visible locale="en" />
+</DemoFrame>
 
 </CaseSection>
 `;
