@@ -46,7 +46,6 @@ import {
   CaseSection,
   CaseSubsection,
   ChatAside,
-  DemoSlot,
   Figure,
   Gallery,
   SideNote,
@@ -54,6 +53,11 @@ import {
 } from '@/components/portfolio/case';
 import DemoFrame from '@/components/demo-frame/DemoFrame.astro';
 import { HeroLayers } from '@demos/cuarteto-fratres/hero-layers/HeroLayers';
+import { Brand } from '@demos/cuarteto-fratres/brand/Brand';
+import { Player } from '@demos/cuarteto-fratres/player/Player';
+import { Programme } from '@demos/cuarteto-fratres/programme/Programme';
+import { Letter } from '@demos/cuarteto-fratres/letter/Letter';
+import { Performance } from '@demos/cuarteto-fratres/performance/Performance';
 import alfonsoPhoto from '@/assets/works/cuarteto-fratres/avatars/alfonso-perez.jpg';
 import jesusPhoto from '@/assets/works/cuarteto-fratres/avatars/jesus-medina.jpg';
 import josePhoto from '@/assets/works/cuarteto-fratres/avatars/jose-sanchez.jpg';
@@ -123,10 +127,13 @@ Las fotografías también son mías, unas con un iPhone 17 Pro Max y otras con u
   ]}
 />
 
-<DemoSlot
+<DemoFrame
+  project="cuarteto-fratres"
   name="brand"
   caption="El monograma CF, punto por punto, y Fratres Display con tus propias palabras."
-/>
+>
+  <Brand client:visible locale="es" />
+</DemoFrame>
 
 <CaseSubsection kicker="Dirección visual" appear>
 
@@ -231,10 +238,13 @@ Las secciones de repertorio, eventos y contacto toman sus modales de un disco, u
 
 El repertorio es un tocadiscos. La obra que suena gira en un disco con la fotografía del cuarteto como etiqueta. La lista de al lado está numerada, y cada renglón muestra su número, un ícono de reproducir bajo el puntero o unas barras de nivel en movimiento mientras suena, como las aplicaciones de música nos enseñaron a leer. Los filtros ordenan las obras por ocasión: cámara, latinoamericana, bodas, pop. Si sigues bajando mientras suena la música, el disco te acompaña en una esquina de la pantalla. El reproductor está hecho para alojar las grabaciones del propio cuarteto.
 
-<DemoSlot
+<DemoFrame
+  project="cuarteto-fratres"
   name="player"
   caption="El repertorio: el disco, la lista numerada, los filtros y el reproductor que te sigue."
-/>
+>
+  <Player client:visible locale="es" />
+</DemoFrame>
 
 <Gallery variant="lead">
   <Figure
@@ -250,10 +260,13 @@ El repertorio es un tocadiscos. La obra que suena gira en un disco con la fotogr
 
 Cada fecha de la cartelera se abre como un programa de mano impreso: una hoja de calendario con el día, las obras con una línea de puntos hasta su compositor, el lugar y el precio. En el teléfono sube desde abajo como una hoja de papel, con su botón fijo al pie. Lo elegí entre tres direcciones; las otras dos eran un boleto y una fotografía a toda la ventana.
 
-<DemoSlot
+<DemoFrame
+  project="cuarteto-fratres"
   name="programme"
   caption="La ventana de una fecha, con boletos, sin boletos y con un programa largo."
-/>
+>
+  <Programme client:visible locale="es" />
+</DemoFrame>
 
 <Gallery variant="lead">
   <Figure
@@ -268,7 +281,13 @@ Cada fecha de la cartelera se abre como un programa de mano impreso: una hoja de
 
 El formulario de contacto es una hoja rayada: tres campos, cada uno escrito sobre un renglón, con las rayas a la misma distancia, como en una hoja de verdad. Pide solo lo que el cuarteto necesita para responder con una propuesta: quién eres, cómo encontrarte y la ocasión.
 
-<DemoSlot name="letter" caption="La carta de contacto: vacía, con errores y enviada." />
+<DemoFrame
+  project="cuarteto-fratres"
+  name="letter"
+  caption="La carta de contacto: vacía, con errores y enviada."
+>
+  <Letter client:visible locale="es" />
+</DemoFrame>
 
 <Gallery variant="lead">
   <Figure
@@ -324,10 +343,13 @@ Cuarteto Fratres tiene hoy un nombre que se puede buscar, un logo, una tipograf�
 
 Con una conexión de teléfono lenta, el elemento más grande tardaba 2.6 segundos en pintarse; lo dejé en 1.3. La auditoría apuntaba a otro lado; encontré una tipografía que llegaba tarde y música duplicada dentro de la página: la tipografía de títulos era el último archivo en llegar, y la música grabada iba incrustada dos veces, 375 KB en total. Precargar las dos tipografías correctas y servir la música como archivos estáticos bajó la página de 463 KB a 139 KB. También probé incrustar el CSS, medí que empeoraba las cosas y lo quité. Lighthouse móvil marca 98 en rendimiento y 100 en accesibilidad, buenas prácticas y SEO, y 126 pruebas cubren la lógica.
 
-<DemoSlot
+<DemoFrame
+  project="cuarteto-fratres"
   name="performance"
   caption="Antes y después: pintado más grande, peso de la página y Lighthouse."
-/>
+>
+  <Performance client:visible locale="es" />
+</DemoFrame>
 
 </CaseSubsection>
 
