@@ -45,6 +45,9 @@ interface Props {
 }
 
 const { locale, title, description, noindex = false, image, ogType = 'website' } = Astro.props;
+// Variants under review (src/dev). Imported only under `astro dev`, so a build drops the module,
+// its script and its styles altogether.
+const DevOptions = import.meta.env.DEV ? (await import('@/dev/DevOptions.astro')).default : null;
 const { common } = getMessages(locale);
 const pageTitle = title ?? common.meta.title;
 const pageDescription = description ?? common.meta.description;
@@ -118,6 +121,7 @@ const otherLocale: Locale = locale === 'es' ? 'en' : 'es';
     <Footer locale={locale} />
     {/* Last in the Tab order (decision 24); the panel host sits right behind the launcher. */}
     {FEATURES.blue && <BlueLauncher locale={locale} />}
+    {DevOptions && <DevOptions />}
 
     <script>
       // Page appear engine (animation-inventory.md §3–4), installed on every page so any

@@ -22,12 +22,20 @@ type Props = CaseHeaderProps;
 
 const { work, locale } = Astro.props;
 const { title, kicker, cover, service, tools, year, url } = work.data;
+// Under `astro dev` the options menu (src/dev) may swap the title for a variant under review.
+const titleOption = import.meta.env.DEV ? `title-${work.id.split('/').pop()}` : undefined;
 ---
 
 <header class="case-header">
   <AppearMotion appear={CASE_APPEAR.title} class="case-header__title">
     <Chip>{kicker}</Chip>
-    <AppearMotion as="h1" appear={CASE_APPEAR.heading} tabindex="-1" class="case-header__heading">
+    <AppearMotion
+      as="h1"
+      appear={CASE_APPEAR.heading}
+      tabindex="-1"
+      class="case-header__heading"
+      data-opt-text={titleOption}
+    >
       {title}
     </AppearMotion>
   </AppearMotion>

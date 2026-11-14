@@ -1,0 +1,392 @@
+---
+/**
+ * Dev options menu: a floating button that opens a panel with the variants under review
+ * (`options.ts`). Rendered by BaseLayout only under `astro dev`, so nothing of it reaches the build.
+ * Picking a variant repaints the page at once (`data-opt-*` and `--opt-*` on `<html>`, texts of
+ * `[data-opt-text]`) and is remembered in localStorage. It survives navigations (`transition:persist`).
+ */
+import { OPTION_GROUPS } from './options';
+---
+
+<aside class="dev-options" data-dev-options data-open="false" transition:persist="dev-options">
+  <button type="button" class="dev-options__toggle" data-dev-toggle aria-expanded="false">
+    <span class="dev-options__dot" aria-hidden="true"></span>
+    Opciones
+  </button>
+  <div class="dev-options__panel" data-dev-panel hidden>
+    <header class="dev-options__head">
+      <strong class="dev-options__title">Opciones en revisión</strong>
+      <button type="button" class="dev-options__small" data-dev-toggle>
+        Minimizar
+      </button>
+    </header>
+    <div class="dev-options__body">
+      {OPTION_GROUPS.map((group) => (
+        <details class="dev-options__group" data-dev-group={group.id} data-where={group.where} open>
+          <summary class="dev-options__group-name">
+            {group.label}
+            {group.where && (
+              <a class="dev-options__go" href={group.where}>
+                ir
+              </a>
+            )}
+          </summary>
+          {group.controls.map((control) =>
+            control.kind === 'choice' ? (
+              <fieldset class="dev-options__control">
+                <legend class="dev-options__label">{control.label}</legend>
+                <div class="dev-options__choices">
+                  {control.options.map((option) => (
+                    <button
+                      type="button"
+                      class="dev-options__choice"
+                      data-dev-choice={control.id}
+                      data-option={option.id}
+                      aria-pressed="false"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+            ) : (
+              <label class="dev-options__control dev-options__control_kind_range">
+                <span class="dev-options__label">
+                  {control.label}
+                  <output class="dev-options__value" data-dev-output={control.id} />
+                </span>
+                <input
+                  class="dev-options__range"
+                  type="range"
+                  min={control.min}
+                  max={control.max}
+                  step={control.step}
+                  data-dev-range={control.id}
+                />
+              </label>
+            ),
+          )}
+        </details>
+      ))}
+    </div>
+    <footer class="dev-options__foot">
+      <button type="button" class="dev-options__small" data-dev-copy>
+        Copiar valores
+      </button>
+      <button type="button" class="dev-options__small" data-dev-reset>
+        Restablecer
+      </button>
+      <span class="dev-options__status" data-dev-status role="status"></span>
+    </footer>
+  </div>
+</aside>
+
+<script>
+  import { OPTION_GROUPS, OPTIONS_STORAGE_KEY } from './options';
+  import {
+    initialState,
+    moveRange,
+    optionText,
+    paintState,
+    pickOption,
+    restoreState,
+    type OptionsState,
+  } from '@/lib/dev-options';
+
+  const OPEN_KEY = `${OPTIONS_STORAGE_KEY}-open`;
+  const root = document.documentElement;
+
+  function read(key: string): string | null {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
+  function write(key: string, value: string): void {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // Private mode: the choice just lasts until the reload.
+    }
+  }
+
+  let state: OptionsState = restoreState(read(OPTIONS_STORAGE_KEY), OPTION_GROUPS);
+
+  /** Paints the state on the page and on the menu's own controls. */
+  function paint(): void {
+    const { attributes, properties } = paintState(state, OPTION_GROUPS);
+    for (const [name, value] of Object.entries(attributes)) root.setAttribute(name, value);
+    for (const [name, value] of Object.entries(properties)) root.style.setProperty(name, value);
+
+    const locale = root.lang.startsWith('es') ? 'es' : 'en';
+    for (const target of document.querySelectorAll<HTMLElement>('[data-opt-text]')) {
+      const text = optionText(state, OPTION_GROUPS, target.dataset.optText ?? '', locale);
+      if (text !== undefined) target.textContent = text;
+    }
+
+    const menu = document.querySelector<HTMLElement>('[data-dev-options]');
+    if (!menu) return;
+    for (const button of menu.querySelectorAll<HTMLElement>('[data-dev-choice]')) {
+      const picked = state.choices[button.dataset.devChoice ?? ''] === button.dataset.option;
+      button.setAttribute('aria-pressed', String(picked));
+    }
+    for (const input of menu.querySelectorAll<HTMLInputElement>('[data-dev-range]')) {
+      const value = state.ranges[input.dataset.devRange ?? ''];
+      if (value !== undefined) input.value = String(value);
+    }
+    for (const output of menu.querySelectorAll<HTMLOutputElement>('[data-dev-output]')) {
+      output.value = String(state.ranges[output.dataset.devOutput ?? ''] ?? '');
+    }
+    for (const group of menu.querySelectorAll<HTMLElement>('[data-dev-group]')) {
+      const where = group.dataset.where;
+      group.dataset.here = String(!where || location.pathname.endsWith(where));
+    }
+  }
+
+  function commit(next: OptionsState): void {
+    state = next;
+    write(OPTIONS_STORAGE_KEY, JSON.stringify(state));
+    paint();
+  }
+
+  function setOpen(menu: HTMLElement, open: boolean): void {
+    menu.dataset.open = String(open);
+    const panel = menu.querySelector<HTMLElement>('[data-dev-panel]');
+    if (panel) panel.hidden = !open;
+    for (const toggle of menu.querySelectorAll('[data-dev-toggle]')) {
+      toggle.setAttribute('aria-expanded', String(open));
+    }
+    write(OPEN_KEY, String(open));
+  }
+
+  function bind(): void {
+    const menu = document.querySelector<HTMLElement>('[data-dev-options]');
+    if (!menu || menu.dataset.bound === 'true') return;
+    menu.dataset.bound = 'true';
+    setOpen(menu, read(OPEN_KEY) === 'true');
+
+    menu.addEventListener('click', (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (!target) return;
+      if (target.closest('[data-dev-toggle]')) {
+        setOpen(menu, menu.dataset.open !== 'true');
+        return;
+      }
+      const choice = target.closest<HTMLElement>('[data-dev-choice]');
+      if (choice) {
+        commit(
+          pickOption(
+            state,
+            OPTION_GROUPS,
+            choice.dataset.devChoice ?? '',
+            choice.dataset.option ?? '',
+          ),
+        );
+        return;
+      }
+      const status = menu.querySelector<HTMLElement>('[data-dev-status]');
+      if (target.closest('[data-dev-reset]')) {
+        commit(initialState(OPTION_GROUPS));
+        if (status) status.textContent = 'Restablecido';
+        return;
+      }
+      if (target.closest('[data-dev-copy]')) {
+        const text = JSON.stringify(state, null, 2);
+        navigator.clipboard?.writeText(text).then(
+          () => status && (status.textContent = 'Copiado'),
+          () => status && (status.textContent = 'No se pudo copiar'),
+        );
+      }
+    });
+
+    menu.addEventListener('input', (event) => {
+      const input = event.target instanceof HTMLInputElement ? event.target : null;
+      const id = input?.dataset.devRange;
+      if (input && id) commit(moveRange(state, OPTION_GROUPS, id, Number(input.value)));
+    });
+  }
+
+  bind();
+  paint();
+  // The router swaps the page under the persisted menu: bind once, repaint every page.
+  document.addEventListener('astro:page-load', () => {
+    bind();
+    paint();
+  });
+</script>
+
+<style>
+  @layer pf {
+    .dev-options {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 2147483000;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: flex-start;
+      gap: 8px;
+      font-family: var(--pf-font-sans);
+      font-size: 13px;
+      line-height: 1.3;
+      color: #f4f4f4;
+
+      & .dev-options__toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 36px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 999px;
+        background: #16181c;
+        box-shadow: 0 6px 20px rgb(0 0 0 / 0.28);
+        color: inherit;
+        font: inherit;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      & .dev-options__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #7dd87d;
+      }
+
+      & .dev-options__panel {
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+        max-height: min(72vh, 640px);
+        border-radius: 14px;
+        background: rgb(22 24 28 / 0.96);
+        box-shadow: 0 16px 48px rgb(0 0 0 / 0.36);
+        backdrop-filter: blur(12px);
+
+        &[hidden] {
+          display: none;
+        }
+      }
+
+      & .dev-options__head,
+      & .dev-options__foot {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+      }
+
+      & .dev-options__head {
+        justify-content: space-between;
+        border-bottom: 1px solid rgb(255 255 255 / 0.1);
+      }
+
+      & .dev-options__foot {
+        border-top: 1px solid rgb(255 255 255 / 0.1);
+      }
+
+      & .dev-options__title {
+        font-weight: 600;
+      }
+
+      & .dev-options__body {
+        flex: 1;
+        min-height: 0;
+        padding: 4px 12px 10px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+
+      & .dev-options__group {
+        padding: 8px 0;
+        border-bottom: 1px solid rgb(255 255 255 / 0.08);
+
+        &[data-here='false'] {
+          opacity: 0.55;
+        }
+      }
+
+      & .dev-options__group-name {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      & .dev-options__go {
+        color: #9ec1ff;
+        font-weight: 400;
+      }
+
+      & .dev-options__control {
+        display: block;
+        min-width: 0;
+        margin: 8px 0 0;
+        padding: 0;
+        border: 0;
+      }
+
+      & .dev-options__label {
+        display: flex;
+        justify-content: space-between;
+        padding: 0;
+        color: rgb(255 255 255 / 0.66);
+      }
+
+      & .dev-options__value {
+        color: #fff;
+        font-variant-numeric: tabular-nums;
+      }
+
+      & .dev-options__choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 6px;
+      }
+
+      & .dev-options__choice,
+      & .dev-options__small {
+        padding: 5px 9px;
+        border: 0;
+        border-radius: 8px;
+        background: rgb(255 255 255 / 0.1);
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+
+        &:hover {
+          background: rgb(255 255 255 / 0.18);
+        }
+
+        &[aria-pressed='true'] {
+          background: #f4f4f4;
+          color: #16181c;
+        }
+      }
+
+      & .dev-options__range {
+        display: block;
+        width: 100%;
+        margin: 4px 0 0;
+        accent-color: #f4f4f4;
+      }
+
+      & .dev-options__status {
+        margin-left: auto;
+        color: rgb(255 255 255 / 0.66);
+      }
+
+      & :focus-visible {
+        outline: 2px solid #9ec1ff;
+        outline-offset: 2px;
+      }
+    }
+  }
+</style>
