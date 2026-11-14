@@ -54,6 +54,10 @@ import {
 } from '@/components/portfolio/case';
 import DemoFrame from '@/components/demo-frame/DemoFrame.astro';
 import { HeroLayers } from '@demos/cuarteto-fratres/hero-layers/HeroLayers';
+import alfonsoPhoto from '@/assets/works/cuarteto-fratres/avatars/alfonso-perez.jpg';
+import jesusPhoto from '@/assets/works/cuarteto-fratres/avatars/jesus-medina.jpg';
+import josePhoto from '@/assets/works/cuarteto-fratres/avatars/jose-sanchez.jpg';
+import luciaPhoto from '@/assets/works/cuarteto-fratres/avatars/lucia-paredes.jpg';
 import cartelera from '@/assets/works/cuarteto-fratres/screens/cartelera.jpg';
 import contacto from '@/assets/works/cuarteto-fratres/screens/contacto.jpg';
 import cuarteto from '@/assets/works/cuarteto-fratres/screens/cuarteto.jpg';
@@ -106,6 +110,7 @@ Las fotografías también son mías, unas con un iPhone 17 Pro Max y otras con u
 
 <ChatAside
   meta="mar 11:05"
+  guest={{ name: 'Lucía Paredes', photo: luciaPhoto }}
   delivered
   messages={[
     { from: 'visitor', text: '¿Para qué dibujar una tipografía, si ya hay miles?' },
@@ -128,6 +133,24 @@ Las fotografías también son mías, unas con un iPhone 17 Pro Max y otras con u
 La portada es la sala. Cuatro músicos de pie sobre negro, iluminados, de frente. Detrás corren pentagramas, y sobre los pentagramas hay música.
 
 Es música de verdad: compases del Cuarteto núm. 2 de Borodín, que el cuarteto toca, y del Canon de Pachelbel. Escribí un grabador que coloca cada nota en su línea o su espacio a lo largo de pentagramas curvos, así la notación sigue siendo correcta mientras las líneas se mecen, y que adelgaza la tinta donde hay una cara.
+
+<ChatAside
+  meta="mié 17:30"
+  guest={{ name: 'Alfonso Pérez', photo: alfonsoPhoto }}
+  delivered
+  messages={[
+    { from: 'visitor', text: '¿La música que va detrás de nosotros es de verdad, o solo adorno?' },
+    {
+      from: 'sebastian',
+      text: 'De verdad. El segundo cuarteto de Borodín y el Canon de Pachelbel, nota por nota.',
+    },
+    {
+      from: 'sebastian',
+      text: 'Si la hubiera inventado, tú habrías sido el primero en notarlo.',
+      fx: 'gentle',
+    },
+  ]}
+/>
 
 Soy estudiante de música, todavía principiante. No es una credencial, pero por eso pude leer una partitura lo bastante bien para poner música real en la página, y por eso sabía cómo deben sentirse un programa de mano, una lista de repertorio y un cartel de concierto. Ese conocimiento lo puedo llevar a otros proyectos de música académica y popular.
 
@@ -181,6 +204,7 @@ Nada se quedó sin revisarse. Cada cambio se compiló, se capturó a 1440 y a 39
 
 <ChatAside
   meta="jue 19:40"
+  guest={{ name: 'José Sánchez', photo: josePhoto }}
   delivered
   messages={[
     { from: 'visitor', text: '¿Qué hace la IA y qué haces tú?' },
@@ -282,9 +306,10 @@ Cuarteto Fratres tiene hoy un nombre que se puede buscar, un logo, una tipograf�
 
 <ChatAside
   meta="vie 18:20"
+  guest={{ name: 'Jesús Medina', photo: jesusPhoto }}
   delivered
   messages={[
-    { from: 'visitor', text: '¿El cuarteto puede agregar un concierto sin llamarte?' },
+    { from: 'visitor', text: '¿Podemos agregar un concierto sin llamarte?' },
     { from: 'sebastian', text: 'Sí, desde el panel.' },
     {
       from: 'sebastian',

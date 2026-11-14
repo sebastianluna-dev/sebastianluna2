@@ -46,6 +46,10 @@ import {
 } from '@/components/portfolio/case';
 import DemoFrame from '@/components/demo-frame/DemoFrame.astro';
 import { HeroLayers } from '@demos/cuarteto-fratres/hero-layers/HeroLayers';
+import alfonsoPhoto from '@/assets/works/cuarteto-fratres/avatars/alfonso-perez.jpg';
+import jesusPhoto from '@/assets/works/cuarteto-fratres/avatars/jesus-medina.jpg';
+import josePhoto from '@/assets/works/cuarteto-fratres/avatars/jose-sanchez.jpg';
+import luciaPhoto from '@/assets/works/cuarteto-fratres/avatars/lucia-paredes.jpg';
 import cartelera from '@/assets/works/cuarteto-fratres/screens/cartelera.jpg';
 import contacto from '@/assets/works/cuarteto-fratres/screens/contacto.jpg';
 import cuarteto from '@/assets/works/cuarteto-fratres/screens/cuarteto.jpg';
@@ -98,6 +102,7 @@ I took the photographs too, some on an iPhone 17 Pro Max and some on a Canon EOS
 
 <ChatAside
   meta="Tue 11:05"
+  guest={{ name: 'Lucía Paredes', photo: luciaPhoto }}
   delivered
   messages={[
     { from: 'visitor', text: 'Why draw a typeface when there are thousands?' },
@@ -120,6 +125,24 @@ I took the photographs too, some on an iPhone 17 Pro Max and some on a Canon EOS
 The hero is the hall. Four musicians stand on black, lit, facing you. Behind them run staff lines, and on the lines there is music.
 
 It is real music: bars of Borodin's String Quartet No. 2, which the quartet performs, and of Pachelbel's Canon. I wrote an engraver that places every note on its line or space along curved staves, so the notation stays correct while the lines sway, and thins the ink wherever a face is.
+
+<ChatAside
+  meta="Wed 17:30"
+  guest={{ name: 'Alfonso Pérez', photo: alfonsoPhoto }}
+  delivered
+  messages={[
+    { from: 'visitor', text: 'Is the music behind us real, or just decoration?' },
+    {
+      from: 'sebastian',
+      text: "Real. Borodin's second quartet and Pachelbel's Canon, note by note.",
+    },
+    {
+      from: 'sebastian',
+      text: 'If I had faked it, you would have been the first to notice.',
+      fx: 'gentle',
+    },
+  ]}
+/>
 
 I am a beginner music student. That is not a credential, but it is why I could read a score well enough to put real music on the page, and why I knew what a programme, a repertoire list and a concert poster are supposed to feel like. I can apply that knowledge to other projects in classical and popular music.
 
@@ -173,6 +196,7 @@ Nothing stayed without being checked. Each change was built, captured at 1440 an
 
 <ChatAside
   meta="Thu 19:40"
+  guest={{ name: 'José Sánchez', photo: josePhoto }}
   delivered
   messages={[
     { from: 'visitor', text: 'What does the AI do, and what do you do?' },
@@ -274,9 +298,10 @@ Cuarteto Fratres now has a name you can search, a mark, a typeface, photographs 
 
 <ChatAside
   meta="Fri 18:20"
+  guest={{ name: 'Jesús Medina', photo: jesusPhoto }}
   delivered
   messages={[
-    { from: 'visitor', text: 'Can the quartet add a concert without calling you?' },
+    { from: 'visitor', text: 'Can we add a concert without calling you?' },
     { from: 'sebastian', text: 'Yes, from the admin.' },
     {
       from: 'sebastian',
