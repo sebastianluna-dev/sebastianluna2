@@ -3,7 +3,7 @@
  * Messaging-style aside inside the body of a section (design-spec §4 case/, case.md §3.4): the width of
  * the 560 text column, the visitor on the left (grey, `--pf-chat-in-*`) and Sebastian on the right
  * (blue, `--pf-chat-out-*`), with a tail and an avatar on the last bubble of each run, the author label
- * on top of each visitor run, an optional meta line ("Hoy 10:30") and "Entregado" after a last message
+ * on top of each visitor run (a `guest` puts a named person and their photo there), an optional meta line ("Hoy 10:30") and "Entregado" after a last message
  * of Sebastian. One to three emoji alone are drawn large without a bubble. A tapback sits on the bubble
  * that `tapbackTarget` picks (the closest earlier bubble of the other speaker).
  *
@@ -29,11 +29,11 @@ import type { ChatAsideProps, ChatSpeaker } from './types';
 
 type Props = ChatAsideProps;
 
-const { meta, messages, delivered = false } = Astro.props;
+const { meta, messages, delivered = false, guest } = Astro.props;
 const { locale } = splitLocale(Astro.url.pathname);
 const copy = getMessages(locale).case.chat;
 const names: Record<ChatSpeaker, string> = {
-  visitor: copy.visitor,
+  visitor: guest?.name ?? copy.visitor,
   sebastian: copy.sebastian,
 };
 const rows = chatRows(messages);
@@ -55,6 +55,21 @@ const [avatarAvif, avatarWebp] = await Promise.all(
     }),
   ),
 );
+// A guest's headshot, served like Sebastian's but drawn at the avatar's own size (no zoom).
+const guestPhoto = guest
+  ? await Promise.all(
+      formats.map((format) =>
+        getImage({
+          src: guest.photo,
+          format,
+          width: CHAT_AVATAR.px,
+          height: CHAT_AVATAR.px,
+          widths: AVATAR_IMAGE.densities.map((density) => CHAT_AVATAR.px * density),
+          fit: 'cover',
+        }),
+      ),
+    )
+  : null;
 // What the script needs to rebuild the calendar (chat-sequence.ts), without re-reading the DOM text.
 const script = JSON.stringify(
   messages.map(({ from, text, fx, rain, tapback }) => ({ from, text, fx, rain, tapback })),
@@ -151,6 +166,23 @@ const script = JSON.stringify(
                   src={avatarWebp.src}
                   srcset={avatarWebp.srcSet.attribute}
                   sizes={CHAT_AVATAR_SIZES}
+                  width={CHAT_AVATAR.px}
+                  height={CHAT_AVATAR.px}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </picture>
+            </span>
+          ) : guestPhoto ? (
+            <span class="chat-aside__avatar" aria-hidden="true" data-chat-avatar>
+              <picture>
+                <source type="image/avif" srcset={guestPhoto[0]!.srcSet.attribute} />
+                <img
+                  class="chat-aside__photo chat-aside__photo_kind_guest"
+                  src={guestPhoto[1]!.src}
+                  srcset={guestPhoto[1]!.srcSet.attribute}
                   width={CHAT_AVATAR.px}
                   height={CHAT_AVATAR.px}
                   alt=""
@@ -476,6 +508,11 @@ const script = JSON.stringify(
       transform-origin: var(--pf-chat-photo-focus);
       user-select: none;
       -webkit-user-drag: none;
+    }
+
+    /* A guest's headshot is already cut to the face: no zoom. */
+    .chat-aside__photo_kind_guest {
+      scale: 1;
     }
 
     .chat-aside__avatar_kind_initial {

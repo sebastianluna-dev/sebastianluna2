@@ -121,12 +121,24 @@ export interface ChatMessage {
  * conversation is in the SSR; names come from `case.chat`, Sebastian's avatar is
  * `PROFILE.avatar` (the 384 × 384 photo), served at the displayed size.
  */
+/**
+ * A named person on the visitor's side of a chat, with their photo: someone of the project who agreed
+ * to appear (the musicians of Cuarteto Fratres). Their lines are written for the case, never quotes.
+ */
+export interface ChatGuest {
+  name: string;
+  /** Square headshot, face centred. */
+  photo: ImageMetadata;
+}
+
 export interface ChatAsideProps {
   /** Centred line above the messages ("Mar 20:15"). */
   meta?: string;
   messages: ChatMessage[];
   /** Shows the "Delivered" status after the last message, only when that one is Sebastian's. */
   delivered?: boolean;
+  /** Who asks, instead of the generic visitor: their name over the run and their photo as its avatar. */
+  guest?: ChatGuest;
 }
 
 /** Row of 2–3 notes with a mini illustration, 720 wide inside the body (CA-14, CA-15). */
