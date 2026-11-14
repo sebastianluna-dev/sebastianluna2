@@ -1,9 +1,24 @@
 import { defineConfig, envField } from 'astro/config';
+import type { AstroIntegration } from 'astro';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 import { SITE_URL } from './src/data/site';
+
+/**
+ * Pages that exist only under `astro dev` (src/dev/pages): working tools such as the mockup lab.
+ * Injected here, and not placed in src/pages, so a build never emits them.
+ */
+const devPages: AstroIntegration = {
+  name: 'dev-pages',
+  hooks: {
+    'astro:config:setup': ({ command, injectRoute }) => {
+      if (command !== 'dev') return;
+      injectRoute({ pattern: '/dev/mockups', entrypoint: './src/dev/pages/mockups.astro' });
+    },
+  },
+};
 
 // Everything is prerendered; only the routes that export `prerender = false`
 // (the Blue chat endpoint) become Vercel functions.
@@ -19,6 +34,7 @@ export default defineConfig({
     react(),
     mdx(),
     sitemap({ i18n: { defaultLocale: 'en', locales: { es: 'es-MX', en: 'en' } } }),
+    devPages,
   ],
   // Code blocks of the writings (fase7-plan §2.7): Shiki paints `--astro-code-*` variables, which
   // CodeBlock maps onto the `--pf-code-*` tokens (light and dark, no client JS). MDX inherits it; the

@@ -1,0 +1,123 @@
+---
+/**
+ * A screen of a reviewed site in perspective, composed live with CSS so the dev options menu can
+ * move it: the capture is a plane tilted in 3D that overflows its 4:3 frame (no backdrop shows), a
+ * blurred copy masked away from the focus gives the lens blur, and the edges melt into the screen's
+ * own ground. Reads the `--opt-mockup-*` properties of `src/dev/options.ts`; the props place each
+ * screen (what to look at) and can offset the shared angle. Dev only until the angles are chosen.
+ */
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  /** Short name shown under the frame. */
+  label: string;
+  /** Ground colour of the captured screen, for the frame behind the plane and the edge fade. */
+  ground: string;
+  /** Point of the capture that sits at the centre of the frame, in % of its width and height. */
+  focusX?: number;
+  focusY?: number;
+  /** Multiplies the shared zoom: a tall capture needs to come closer than a wide one. */
+  zoom?: number;
+}
+
+const { src, label, ground, focusX = 50, focusY = 50, zoom = 1 } = Astro.props;
+const style = `--mockup-ground:${ground};--mockup-fx:${focusX}%;--mockup-fy:${focusY}%;--mockup-own-zoom:${zoom};--mockup-ratio:${src.width} / ${src.height}`;
+---
+
+<figure class="mockup" style={style}>
+  <div class="mockup__frame">
+    <div class="mockup__plane">
+      <img
+        class="mockup__image"
+        src={src.src}
+        alt=""
+        width={src.width}
+        height={src.height}
+        decoding="async"
+      />
+      <img
+        class="mockup__image mockup__image_layer_blur"
+        src={src.src}
+        alt=""
+        width={src.width}
+        height={src.height}
+        decoding="async"
+        aria-hidden="true"
+      />
+    </div>
+  </div>
+  <figcaption class="mockup__label">{label}</figcaption>
+</figure>
+
+<style>
+  @layer pf {
+    .mockup {
+      margin: 0;
+
+      & .mockup__frame {
+        position: relative;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        border-radius: var(--pf-radius-cover);
+        background: var(--mockup-ground);
+        perspective: var(--opt-mockup-depth, 1300px);
+        isolation: isolate;
+      }
+
+      /* The focus point of the capture lands on the centre of the frame and is the pivot of the
+         three turns, so changing the angle never slides the subject away. */
+      & .mockup__plane {
+        position: absolute;
+        left: calc(50% + var(--opt-mockup-x, 0%));
+        top: calc(50% + var(--opt-mockup-y, 0%));
+        width: calc(100% * var(--opt-mockup-zoom, 1.45) * var(--mockup-own-zoom));
+        aspect-ratio: var(--mockup-ratio);
+        transform-origin: var(--mockup-fx) var(--mockup-fy);
+        transform: translate(calc(-1 * var(--mockup-fx)), calc(-1 * var(--mockup-fy)))
+          rotateX(var(--opt-mockup-rx, 8deg)) rotateY(var(--opt-mockup-ry, -16deg))
+          rotateZ(var(--opt-mockup-rz, 2deg));
+        box-shadow: 0 40px 120px rgb(0 0 0 / 0.25);
+      }
+
+      & .mockup__image {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Lens blur: sharp inside an ellipse around the focus, blurred beyond it. */
+      & .mockup__image_layer_blur {
+        filter: blur(var(--opt-mockup-blur, 5px));
+        mask-image: radial-gradient(
+          ellipse var(--opt-mockup-focus, 42%) var(--opt-mockup-focus, 42%) at var(--mockup-fx)
+            var(--mockup-fy),
+          transparent 45%,
+          #000 100%
+        );
+      }
+
+      & .mockup__label {
+        margin-top: 8px;
+        color: var(--pf-text-secondary);
+        font-family: var(--pf-font-sans);
+        font-size: 13px;
+      }
+    }
+
+    /* The far corners melt into the screen's ground, as out-of-focus edges do. */
+    :global(html[data-opt-mockup-edge='fade']) .mockup .mockup__frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse 78% 78% at 50% 50%,
+        transparent 62%,
+        color-mix(in srgb, var(--mockup-ground) 82%, transparent) 100%
+      );
+      pointer-events: none;
+    }
+  }
+</style>
