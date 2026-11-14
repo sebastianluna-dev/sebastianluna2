@@ -1,18 +1,28 @@
 ---
 title: 'Cuarteto Fratres'
-kicker: 'Sitio de un cuarteto de cuerdas'
-summary: 'Diseñé y desarrollé el sitio del Cuarteto Fratres para presentar su propuesta musical y facilitar contrataciones para conciertos, bodas y eventos privados.'
-role: 'Diseñador y desarrollador'
-service: ['Producto', 'Diseño', 'Desarrollo', 'Modelado del CMS']
+kicker: 'Marca y sitio de un cuarteto de cuerdas'
+summary: 'Creé el monograma, la tipografía de títulos, la paleta y la fotografía del Cuarteto Fratres, y después diseñé y desarrollé su sitio con un CMS para que los músicos publiquen fechas, ordenen el repertorio y atiendan solicitudes.'
+description: 'Identidad, una tipografía propia y un sitio con su CMS para el Cuarteto Fratres, cuarteto de cuerdas de Veracruz.'
+role: 'Diseñador de marca, diseñador de producto y desarrollador'
+service:
+  [
+    'Identidad de marca',
+    'Diseño tipográfico',
+    'Fotografía',
+    'Diseño de producto',
+    'Desarrollo',
+    'CMS',
+  ]
 tools:
   [
-    'Figma',
+    'Illustrator',
+    'ChatGPT',
+    'Claude Code',
     'Next.js',
     'React',
     'TypeScript',
     'Payload CMS',
     'PostgreSQL',
-    'Vercel Blob',
     'Vitest',
     'Vercel',
   ]
@@ -20,16 +30,16 @@ year: '2026'
 url: 'https://cuartetofratres.com'
 order: 2
 cover:
-  src: '../../../assets/works/cuarteto-fratres/cover.jpg'
-  alt: 'Página de inicio del sitio del Cuarteto Fratres: titular sobre fondo oscuro, retrato del cuarteto y próximas fechas de concierto'
+  src: '../../../assets/works/cuarteto-fratres/screens/hero.jpg'
+  alt: 'Página de inicio del sitio del Cuarteto Fratres: el nombre del cuarteto en mayúsculas altas junto a los cuatro músicos sobre fondo negro, con pentagramas y notas detrás'
 zones:
-  - src: '../../../assets/works/cuarteto-fratres/repertorio-programa.jpg'
-    alt: 'Programa del repertorio con filtros por categoría y una obra en curso'
-  - src: '../../../assets/works/cuarteto-fratres/telefono-reproductor.jpg'
-    alt: 'Tres pantallas de teléfono: el repertorio, el minirreproductor sobre el contacto y el menú'
-  - src: '../../../assets/works/cuarteto-fratres/contacto-minirreproductor.jpg'
-    alt: 'Sección de contacto en tableta con el minirreproductor fijo abajo'
-demos: ['concert-dates', 'staff-player', 'booking-request']
+  - src: '../../../assets/works/cuarteto-fratres/screens/repertorio.jpg'
+    alt: 'Sección de repertorio: un disco con la foto del cuarteto, una lista numerada de obras y filtros por categoría'
+  - src: '../../../assets/works/cuarteto-fratres/screens/programa.jpg'
+    alt: 'Ventana de un evento armada como programa de mano impreso, con una hoja de calendario y las obras de la noche'
+  - src: '../../../assets/works/cuarteto-fratres/screens/contacto.jpg'
+    alt: 'Sección de contacto: un texto breve con los datos del cuarteto junto a un formulario dibujado como hoja rayada'
+demos: ['brand', 'hero-layers', 'player', 'programme', 'letter', 'performance']
 ---
 
 import {
@@ -42,247 +52,259 @@ import {
   SideNote,
   SideNotes,
 } from '@/components/portfolio/case';
-import contactoMini from '@/assets/works/cuarteto-fratres/contacto-minirreproductor.jpg';
-import cuartetoTitular from '@/assets/works/cuarteto-fratres/cuarteto-titular.jpg';
-import error404 from '@/assets/works/cuarteto-fratres/error-404.jpg';
-import formulario from '@/assets/works/cuarteto-fratres/formulario-contacto.jpg';
-import pieTelefono from '@/assets/works/cuarteto-fratres/pie-telefono.jpg';
-import repertorio from '@/assets/works/cuarteto-fratres/repertorio-programa.jpg';
-import pentagrama from '@/assets/works/cuarteto-fratres/reproductor-pentagrama.jpg';
-import telefonoRecorrido from '@/assets/works/cuarteto-fratres/telefono-recorrido.jpg';
-import telefonoReproductor from '@/assets/works/cuarteto-fratres/telefono-reproductor.jpg';
+import cartelera from '@/assets/works/cuarteto-fratres/screens/cartelera.jpg';
+import contacto from '@/assets/works/cuarteto-fratres/screens/contacto.jpg';
+import cuarteto from '@/assets/works/cuarteto-fratres/screens/cuarteto.jpg';
+import hero from '@/assets/works/cuarteto-fratres/screens/hero.jpg';
+import integrantes from '@/assets/works/cuarteto-fratres/screens/integrantes.jpg';
+import programa from '@/assets/works/cuarteto-fratres/screens/programa.jpg';
+import repertorio from '@/assets/works/cuarteto-fratres/screens/repertorio.jpg';
+import semblanza from '@/assets/works/cuarteto-fratres/screens/semblanza.jpg';
 
-<CaseSection id="overview" title="Un cuarteto de cuerdas, de la primera escucha a la contratación">
+<CaseSection id="overview" title="Un cuarteto de cuerdas sin lugar en internet">
 
-Cuarteto Fratres es un cuarteto de cuerdas de Boca del Río, Veracruz, que toca música de cámara en salas de concierto, ceremonias y eventos privados. Diseñé y desarrollé su sitio para presentar su propuesta musical y facilitar las contrataciones.
+Cuarteto Fratres es un cuarteto de cuerdas de Boca del Río, Veracruz. En el escenario ya era conocido. En internet no existía: sin logo, sin página, sin nada que apareciera al buscar su nombre.
 
-Es una sola página que va de conocer al cuarteto a escribirle: una portada con las próximas fechas, la presentación del grupo, los perfiles de los cuatro músicos, el repertorio con su reproductor y un formulario de contacto.
+Había ido a muchos de sus conciertos cuando me acerqué con una propuesta: construir su marca y darle una casa. Me contrataron para todo. Dibujé el monograma, diseñé una tipografía de títulos, definí la paleta, tomé las fotografías, y diseñé y desarrollé el sitio y el CMS que lo sostiene. En Lighthouse móvil el sitio marca 98 en rendimiento y 100 en accesibilidad, buenas prácticas y SEO, y 126 pruebas cubren su lógica.
 
-Me encargué de todo el proyecto: producto, diseño, desarrollo, modelado del CMS y despliegue. Todo lo que ve quien visita se edita en Payload CMS, que vive dentro de la misma aplicación de Next.js, así que el grupo actualiza su contenido y atiende sus solicitudes por su cuenta.
-
-</CaseSection>
-
-<CaseSection id="challenge" title="Dos públicos en la misma página">
-
-El sitio tenía que servirle a quien organiza un concierto, una boda o un evento privado. Esa persona necesita saber cuándo toca el cuarteto, quiénes lo forman, qué repertorio maneja y cómo pedir una propuesta, todo sin salir de la página.
-
-Del otro lado está el grupo, que necesitaba publicar sus fechas, ajustar su repertorio y responder solicitudes sin que yo tuviera que tocar el código.
-
-### Las fechas, primero
-
-Por eso la portada abre con las dos próximas presentaciones publicadas. Cada tarjeta abre una ventana con el detalle de la fecha: descripción, programa, lugar, precios y enlace de boletos. Si una fecha no tiene venta de boletos, el botón lleva directo al formulario de contacto.
-
-<ChatAside
-  meta="jue 19:40"
-  delivered
-  messages={[
-    { from: 'visitor', text: '¿Qué pasa con un concierto que ya pasó?' },
-    { from: 'sebastian', text: 'La portada se regenera a diario y lo saca sola.' },
-    { from: 'sebastian', text: 'Y queda guardado en el CMS como registro 🎻', fx: 'gentle' },
-  ]}
-/>
-
-<DemoSlot
-  name="concert-dates"
-  caption="Las próximas fechas publicadas, cada una con su ventana de detalle."
-/>
+Sus músicos encabezan secciones en las orquestas de la región: Jesús Medina es concertino de la Orquesta Filarmónica de Boca del Río, Alfonso Pérez es su violonchelista principal, José Sánchez es principal de violas de la sinfónica juvenil del estado, y Lucía Paredes, fundadora del cuarteto, toca en los violines de la Filarmónica.
 
 </CaseSection>
 
-<CaseSection id="approach" title="Una página ordenada y un CMS en la misma aplicación">
+<CaseSection id="challenge" title="Dos públicos, un mismo tono">
 
-Organicé la experiencia en una sola página para que el recorrido vaya de conocer al cuarteto a contactarlo. Cada sección tiene su ancla y la cabecera fija acompaña todo el recorrido: es transparente sobre la foto oscura de la portada y se vuelve marfil cuando empiezan las secciones claras. En el teléfono, un menú a pantalla completa numera las cuatro secciones.
+Diseñé el sitio para quien contrata una presentación y para los integrantes del cuarteto que lo mantienen. Los primeros organizan un concierto, una boda o un evento privado y necesitan saber quién toca, qué toca y cómo pedir una propuesta. Los segundos tienen que publicar fechas, cambiar el repertorio y responder solicitudes sin llamarme.
 
-### Un CMS dentro del sitio
+El tono visual le importa a los dos. La música de cámara tiene una cultura impresa propia: programas de mano, carteles, partituras. A mi juicio, la mayoría de los sitios de músicos la ignoran y terminan pareciendo una plantilla de servicios para bodas. Me puse el encargo contrario: que el sitio se sintiera como estar sentado en la sala un minuto antes de que empiece el concierto.
 
-Payload vive dentro de la aplicación de Next.js, en /admin, sobre PostgreSQL. Los textos de cada sección son documentos únicos (Globals, en Payload) y lo que se repite son colecciones: integrantes, presentaciones, repertorio, categorías e imágenes. Los componentes nunca leen Payload directamente: cada sección pide sus datos a un servicio que traduce el documento a un tipo propio y, campo por campo, recurre al contenido de lanzamiento si algo está vacío, así que la página nunca queda en blanco.
+### La sala con las luces apagadas
 
-<SideNotes label="Cómo está organizado el contenido" cols={3}>
-  <SideNote title="Presentaciones" art="calendar">
-    Fecha, programa, lugar y boletos, con una casilla para publicarla.
-  </SideNote>
-  <SideNote title="Repertorio" art="music">
-    Obras con compositor, categoría y duración.
-  </SideNote>
-  <SideNote title="Roles" art="roles">
-    Administración y edición; solo administración gestiona usuarios.
-  </SideNote>
-</SideNotes>
+Esa imagen decidió la paleta. El fondo es un casi negro, la sala a oscuras, para que el único color en pantalla venga de la piel y de los instrumentos. Los tonos cálidos que lo rodean, crema y marfil, son la madera y el papel de una partitura vieja. No se añadió nada más: durante el desarrollo probé un color de acento y un café oscuro, y quité los dos.
 
-<CaseSubsection kicker="Dirección visual" appear>
-
-La identidad parte de dos fondos, marfil y tinta, y un solo acento lima que se vuelve oliva cuando tiene que leerse sobre marfil. Las fotos van en blanco y negro con grano de película, y los bloques sobre tinta llevan su propia capa de grano. Los títulos grandes usan una tipografía display en mayúsculas, Forum acompaña los encabezados y Mulish el texto corrido. Un pentagrama corto con tres notas acompaña los títulos y reaparece en el pie y en la página de error.
-
-<Gallery variant="pair-2col-phone">
+<Gallery variant="lead">
   <Figure
-    src={cuartetoTitular}
-    alt="Sección El cuarteto sobre fondo marfil: pentagrama decorativo, titular en mayúsculas y texto de presentación"
-  />
-  <Figure
-    src={error404}
-    alt="Página de error 404 sobre fondo tinta con el pentagrama, el titular, un botón lima y otro con contorno"
-    appear="approachGallery"
-  />
-</Gallery>
-<Gallery variant="pair-2col-phone">
-  <Figure
-    src={pieTelefono}
-    alt="Pie del sitio en teléfono: monograma lima, nombre del cuarteto en tipografía display y lema sobre tinta con grano"
-  />
-  <Figure
-    src={repertorio}
-    alt="Programa del repertorio con filtros en píldoras y la segunda obra resaltada mientras está en curso"
+    src={hero}
+    alt="Página de inicio del sitio: el nombre del cuarteto en mayúsculas altas y los cuatro músicos iluminados sobre un fondo negro"
   />
 </Gallery>
 
-</CaseSubsection>
-
 </CaseSection>
 
-<CaseSection id="research" title="Contenido ordenado por ocasión">
+<CaseSection id="approach" title="Primero la marca, después el sitio">
 
-Organicé el contenido alrededor de las ocasiones que atiende el cuarteto: conciertos y actividades culturales, bodas y ceremonias, y eventos privados. El repertorio se agrupa en categorías como Cámara, Latinoamericana, Bodas y Pop, para que cada quien encuentre rápido lo que va con su evento.
+El logo es un monograma CF que dibujé en Illustrator. Se sostiene al tamaño de una pestaña del navegador y al de un cartel, y es el único elemento que aparece en todas las páginas.
 
-El CMS acepta hasta cinco categorías, las que caben en el filtro de un teléfono, y no deja borrar una que todavía tenga obras. En los dos casos le explica al editor por qué, en lugar de dejar que la página se rompa en silencio. El formulario pide solo tres datos, y el texto de la sección invita a escribir la fecha, el lugar y la duración prevista, lo que el grupo necesita para armar una propuesta de programa.
+### Una tipografía con un trabajo
 
-<CaseSubsection kicker="Del filtro al formulario">
+Quería una tipografía de títulos con la que pudiera jugar como juegan los cartelistas: mayúsculas altas y condensadas, capaces de sostener solas una línea. Fratres Display solo tiene mayúsculas. La empecé con ChatGPT, generando letras sobre las cuales reaccionar, y después las redibujé y corregí a mano en Illustrator hasta que el juego hizo lo que necesitaba. No parte de ninguna fuente existente.
 
-<Gallery variant="pair">
-  <Figure
-    src={formulario}
-    alt="Formulario de contacto con tres campos, nombre, correo o WhatsApp y detalles, y el botón Enviar solicitud"
-    appear="researchFirst"
-  />
-  <Figure
-    src={telefonoRecorrido}
-    alt="Tres pantallas de teléfono: el repertorio filtrado por Cámara, el formulario de contacto y la página de error"
-  />
-</Gallery>
+En el sitio la uso solo en lugares precisos. Compone el nombre del cuarteto en la portada, el nombre de cada músico en su página y los carteles de la cartelera, donde una sola línea tiene que llenar la pantalla. Los títulos de sección van en Italianno, una caligráfica clásica que puede repetirse a lo largo de la página sin quitarle atención a lo que sigue. Una tipografía hecha para carteles tiene que saber cuándo guardar silencio en un sitio web.
 
-</CaseSubsection>
-
-</CaseSection>
-
-<CaseSection id="design" title="Un reproductor dibujado como partitura">
-
-Todavía no hay grabaciones de estudio: el reproductor simula la reproducción con la duración de cada obra, y cuando lleguen los audios solo cambia un hook. La interfaz ya está completa.
-
-El repertorio es la pieza central. La obra seleccionada vive en una tarjeta oscura con una clave de sol lima como portada; cuando el título no cabe, se desplaza de lado como en el estéreo de un auto. La barra de progreso es un pentagrama dibujado dos veces, tenue abajo y brillante encima, y la capa brillante se recorta hasta la parte avanzada, así que las notas se encienden conforme avanza la obra. Una doble barra marca la posición y con un clic se salta a cualquier punto.
-
-### Nada empieza solo
-
-Quien visita decide cuándo reproducir y solo hay una obra en curso a la vez. Si la tarjeta sale de la pantalla durante la reproducción, aparece un minirreproductor fijo abajo para seguir leyendo sin perder el control. Se va en cuanto la tarjeta vuelve a verse o cinco segundos después de una pausa, y mientras está, el pie suma su altura como margen para que nada quede tapado. En el teléfono no hay tarjeta: la barra es todo el reproductor, con una línea de progreso en el borde inferior.
-
-<SideNotes label="Piezas del reproductor" cols={3}>
-  <SideNote title="Progreso" art="gauge">
-    Un pentagrama cuyas notas se encienden al avanzar.
-  </SideNote>
-  <SideNote title="Minirreproductor" art="phone">
-    Fijo abajo mientras la tarjeta está fuera de vista.
-  </SideNote>
-  <SideNote title="Filtros" art="blocks">
-    Píldoras por categoría, con Todo al principio.
-  </SideNote>
-</SideNotes>
+Las fotografías también son mías, unas con un iPhone 17 Pro Max y otras con una Canon EOS 90D, y a varios retratos les quité el fondo con herramientas de IA para que los músicos quedaran de pie directamente sobre el fondo oscuro.
 
 <ChatAside
   meta="mar 11:05"
   delivered
   messages={[
-    { from: 'visitor', text: '¿Y si alguien navega solo con teclado?' },
+    { from: 'visitor', text: '¿Para qué dibujar una tipografía, si ya hay miles?' },
+    { from: 'sebastian', text: 'Un cartel necesita una voz que sea solo tuya.' },
     {
       from: 'sebastian',
-      text: 'El pentagrama es un deslizador: las flechas avanzan 5 % e Inicio y Fin van a los extremos.',
-    },
-    {
-      from: 'sebastian',
-      text: 'Y la ventana de cada fecha es un diálogo nativo del navegador, con foco y Escape incluidos.',
+      text: 'Y yo necesitaba mayúsculas que pudiera estirar a lo ancho de un pliego.',
+      fx: 'gentle',
     },
   ]}
 />
 
 <DemoSlot
-  name="staff-player"
-  caption="El reproductor del repertorio: filtros, programa y progreso en pentagrama."
+  name="brand"
+  caption="El monograma CF, punto por punto, y Fratres Display con tus propias palabras."
 />
 
-<CaseSubsection kicker="Reproductor">
+<CaseSubsection kicker="Dirección visual" appear>
+
+La portada es la sala. Cuatro músicos de pie sobre negro, iluminados, de frente. Detrás corren pentagramas, y sobre los pentagramas hay música.
+
+Es música de verdad: compases del Cuarteto núm. 2 de Borodín, que el cuarteto toca, y del Canon de Pachelbel. Escribí un grabador que coloca cada nota en su línea o su espacio a lo largo de pentagramas curvos, así la notación sigue siendo correcta mientras las líneas se mecen, y que adelgaza la tinta donde hay una cara.
+
+Soy estudiante de música, todavía principiante. No es una credencial, pero por eso pude leer una partitura lo bastante bien para poner música real en la página, y por eso sabía cómo deben sentirse un programa de mano, una lista de repertorio y un cartel de concierto. Ese conocimiento lo puedo llevar a otros proyectos de música académica y popular.
+
+Llegó ahí quitando cosas. La primera versión usaba una fotografía del cuarteto en una sala; los retratos recortados sobre negro tenían más fuerza. Los primeros pentagramas eran curvas decorativas; cualquier músico lo habría notado al instante, así que se volvieron notación.
+
+<DemoSlot
+  name="hero-layers"
+  caption="La portada por partes: músicos, pentagramas, notas y la tinta que se adelgaza sobre cada cara."
+/>
+
+<Gallery variant="pair-2col-phone">
+  <Figure
+    src={semblanza}
+    alt="Página de un músico: su nombre en Fratres Display, su retrato sobre negro y una nota que señala el violonchelo"
+  />
+  <Figure
+    src={cartelera}
+    alt="La cartelera: dos carteles oscuros con la fecha y el título en Fratres Display y un cartel crema que invita a contratar"
+    appear="approachGallery"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+</CaseSection>
+
+<CaseSection id="research" title="Cómo tomé las decisiones">
+
+Construí este proyecto con agentes de IA, sobre todo Claude Code. El agente escribe código, propone y mide. Yo dirijo, y yo decido.
+
+Para cada decisión visual pedí varias direcciones distintas, nunca una sola: estilos de íconos, fondos de la portada, la ventana del evento. Las vi dibujadas en el navegador, en ancho de escritorio y de teléfono, elegí una o mezclé dos, y descarté el resto.
+
+Parte de lo que descarté lo había pedido yo. Mandé construir la sección de repertorio sobre una textura de madera, en varias versiones, y revertí todo porque competía con las fotografías. Probé poner los títulos de sección en Fratres Display, no me gustó en menos de un minuto, y regresé. Ver rápido que algo está mal es casi todo el oficio.
+
+Nada se quedó sin revisarse. Cada cambio se compiló, se capturó a 1440 y a 390 píxeles de ancho y se guardó en su propio commit, y la lógica vive en funciones puras con sus pruebas al lado.
+
+<SideNotes label="Cómo se tomó cada decisión" cols={3}>
+  <SideNote title="Proponer" art="compass">
+    Varias direcciones distintas para cada decisión visual.
+  </SideNote>
+  <SideNote title="Decidir" art="palette">
+    A ojo, en el navegador y en dos anchos.
+  </SideNote>
+  <SideNote title="Medir" art="gauge">
+    Capturado, probado y guardado un cambio a la vez.
+  </SideNote>
+</SideNotes>
+
+<ChatAside
+  meta="jue 19:40"
+  delivered
+  messages={[
+    { from: 'visitor', text: '¿Qué hace la IA y qué haces tú?' },
+    { from: 'sebastian', text: 'Ella redacta, construye y mide.' },
+    { from: 'sebastian', text: 'Yo elijo.', fx: 'slam' },
+  ]}
+/>
+
+<Gallery variant="pair">
+  <Figure
+    alt="Dirección descartada: la sección de repertorio sobre una textura de madera"
+    appear="researchFirst"
+  />
+  <Figure alt="Dirección descartada: los títulos de sección en Fratres Display" />
+</Gallery>
+
+</CaseSection>
+
+<CaseSection id="design" title="Piezas que se comportan como sus objetos">
+
+Las secciones de repertorio, eventos y contacto toman sus modales de un disco, un programa de mano y una carta.
+
+<CaseSubsection kicker="Un disco y su lista de pistas">
+
+El repertorio es un tocadiscos. La obra que suena gira en un disco con la fotografía del cuarteto como etiqueta. La lista de al lado está numerada, y cada renglón muestra su número, un ícono de reproducir bajo el puntero o unas barras de nivel en movimiento mientras suena, como las aplicaciones de música nos enseñaron a leer. Los filtros ordenan las obras por ocasión: cámara, latinoamericana, bodas, pop. Si sigues bajando mientras suena la música, el disco te acompaña en una esquina de la pantalla. El reproductor está hecho para alojar las grabaciones del propio cuarteto.
+
+<DemoSlot
+  name="player"
+  caption="El repertorio: el disco, la lista numerada, los filtros y el reproductor que te sigue."
+/>
 
 <Gallery variant="lead">
   <Figure
-    src={telefonoReproductor}
-    alt="Tres pantallas de teléfono: el repertorio con una obra en curso, el minirreproductor sobre el contacto y el menú a pantalla completa"
+    src={repertorio}
+    alt="Sección de repertorio con una obra sonando: el disco a la izquierda, la lista numerada con barras de nivel en su segundo renglón y los filtros por categoría arriba"
     appear="designLead"
   />
 </Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Un programa en la mano">
+
+Cada fecha de la cartelera se abre como un programa de mano impreso: una hoja de calendario con el día, las obras con una línea de puntos hasta su compositor, el lugar y el precio. En el teléfono sube desde abajo como una hoja de papel, con su botón fijo al pie. Lo elegí entre tres direcciones; las otras dos eran un boleto y una fotografía a toda la ventana.
+
+<DemoSlot
+  name="programme"
+  caption="La ventana de una fecha, con boletos, sin boletos y con un programa largo."
+/>
+
+<Gallery variant="lead">
+  <Figure
+    src={programa}
+    alt="Ventana de un evento sobre papel crema: una hoja de calendario con el día y la hora, una fotografía del cuarteto y las dos obras del programa con líneas de puntos"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Una carta">
+
+El formulario de contacto es una hoja rayada: tres campos, cada uno escrito sobre un renglón, con las rayas a la misma distancia, como en una hoja de verdad. Pide solo lo que el cuarteto necesita para responder con una propuesta: quién eres, cómo encontrarte y la ocasión.
+
+<DemoSlot name="letter" caption="La carta de contacto: vacía, con errores y enviada." />
+
+<Gallery variant="lead">
+  <Figure
+    src={contacto}
+    alt="Sección de contacto: a la izquierda un texto breve con el correo, el WhatsApp y las redes del cuarteto; a la derecha el formulario como hoja rayada"
+  />
+</Gallery>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Los músicos">
+
+Cada músico tiene su propia página, con un retrato, una nota que señala el instrumento y una semblanza. En la fila del grupo las caras tienen el mismo tamaño, sin importar el encuadre de la fotografía original, y una elipse de luz se enciende detrás de quien está bajo el puntero, como una lámpara de escenario.
+
 <Gallery variant="pair">
   <Figure
-    src={pentagrama}
-    alt="Detalle de la tarjeta del reproductor: título, compositor, progreso en pentagrama con las notas encendidas y controles"
+    src={integrantes}
+    alt="Los cuatro músicos en fila sobre negro, cada uno con su instrumento, su nombre y su papel, y pentagramas tenues de música detrás"
     appear="designRowFirst"
   />
   <Figure
-    src={contactoMini}
-    alt="Sección de contacto en tableta con el minirreproductor fijo abajo y su progreso en pentagrama"
+    src={cuarteto}
+    alt="La sección que presenta al cuarteto: la fotografía del grupo bajo un título en Fratres Display, con el texto y tres ocasiones al lado"
     appear="designRowSecond"
   />
 </Gallery>
 
 </CaseSubsection>
 
-<CaseSubsection kicker="Integrantes">
-
-Los cuatro músicos se presentan en una galería de franjas con su retrato. Siempre hay una abierta; elegir otra la ensancha y cambia la ficha de al lado, con instrumento, nombre y semblanza. Las franjas se abren con un clic y no al pasar el puntero, para que no se abran solo por cruzarlas.
-
-</CaseSubsection>
-
-<CaseSubsection kicker="Solicitudes">
-
-El formulario se envía a una server action, así que funciona incluso antes de que la página cargue su JavaScript. La validación muestra todos los errores a la vez y también limita las longitudes en el servidor. Cada solicitud válida se guarda en el CMS como «Nueva»; el equipo la marca como «Respondida» o «Descartada» y deja notas internas, mientras los datos de quien escribió quedan de solo lectura. La API pública no permite crear solicitudes: la server action es la única puerta de entrada.
-
-<DemoSlot
-  name="booking-request"
-  caption="Una solicitud de contacto, del formulario a la bandeja del grupo."
-/>
-
-</CaseSubsection>
-
 </CaseSection>
 
-<CaseSection id="outcome" title="Un sitio que el grupo mantiene por su cuenta">
+<CaseSection id="outcome" title="Una marca que el cuarteto maneja solo">
 
-El cuarteto tiene un sitio que lo presenta y recibe sus solicitudes de contratación, y el grupo publica fechas, ajusta su repertorio y atiende cada solicitud desde /admin. Al guardar, unos hooks invalidan la caché de esos datos y de la portada, así que el cambio se ve en la siguiente visita.
-
-Dejé el proyecto listo para crecer: el esquema de la base cambia solo con migraciones, la lógica que se puede probar sin React vive en funciones puras con su prueba al lado y la integración continua revisa el estilo y los tipos, corre las pruebas y compila el sitio con cada push. Las secciones aparecen al entrar en pantalla, y quien prefiere menos movimiento las ve completas desde el principio.
+Cuarteto Fratres tiene hoy un nombre que se puede buscar, un logo, una tipografía, fotografías y un sitio en cuartetofratres.com. Todo lo que lee quien lo visita se edita en un CMS que vive dentro de la misma aplicación, así que los músicos publican fechas, reordenan el repertorio y atienden las solicitudes por su cuenta. Cuando no hay fechas próximas, la cartelera se retira sola de la página.
 
 <ChatAside
   meta="vie 18:20"
   delivered
   messages={[
-    { from: 'visitor', text: '¿El grupo puede cambiar algo sin llamarte?' },
-    { from: 'sebastian', text: 'Todo lo que se ve en la página se edita en el CMS.' },
+    { from: 'visitor', text: '¿El cuarteto puede agregar un concierto sin llamarte?' },
+    { from: 'sebastian', text: 'Sí, desde el panel.' },
     {
       from: 'sebastian',
-      text: 'Al guardar, se ve en la siguiente visita.',
+      text: 'Y cuando pasa la fecha, se va sola de la página.',
       fx: 'rain',
       rain: '🎻🎶',
     },
   ]}
 />
 
-<Gallery variant="composition">
-  <Figure
-    src={telefonoRecorrido}
-    alt="Tres pantallas de teléfono: el repertorio filtrado por Cámara, el formulario de contacto y la página de error"
-  />
-  <Figure
-    src={pentagrama}
-    alt="Detalle de la tarjeta del reproductor con el progreso en pentagrama"
-  />
-  <Figure
-    src={pieTelefono}
-    alt="Pie del sitio en teléfono con el monograma lima y el nombre del cuarteto"
-  />
-</Gallery>
+<CaseSubsection kicker="Ingeniería">
+
+Con una conexión de teléfono lenta, el elemento más grande tardaba 2.6 segundos en pintarse; lo dejé en 1.3. La auditoría apuntaba a otro lado; encontré una tipografía que llegaba tarde y música duplicada dentro de la página: la tipografía de títulos era el último archivo en llegar, y la música grabada iba incrustada dos veces, 375 KB en total. Precargar las dos tipografías correctas y servir la música como archivos estáticos bajó la página de 463 KB a 139 KB. También probé incrustar el CSS, medí que empeoraba las cosas y lo quité. Lighthouse móvil marca 98 en rendimiento y 100 en accesibilidad, buenas prácticas y SEO, y 126 pruebas cubren la lógica.
+
+<DemoSlot
+  name="performance"
+  caption="Antes y después: pintado más grande, peso de la página y Lighthouse."
+/>
+
+</CaseSubsection>
+
+<CaseSubsection kicker="Lo que sigue">
+
+Voy a encargarme también de las redes sociales, la comunicación y la fotografía del cuarteto, con el mismo logo y la misma tipografía, esta vez en carteles, que es donde Fratres Display siempre debió vivir.
+
+</CaseSubsection>
 
 </CaseSection>
