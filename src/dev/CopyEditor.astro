@@ -1,0 +1,234 @@
+---
+/**
+ * Dev copy editor: on a case or an article, «Editar texto» turns the page into its own editor. A
+ * click on a text makes it editable in place; leaving it (or Enter) saves the correction into the MDX
+ * file through `/dev/api/copy`, and the page reloads with it. Rendered by BaseLayout only under
+ * `astro dev`. It edits texts that already exist; adding or moving blocks stays in the MDX.
+ */
+---
+
+<aside class="copy-editor" data-copy-editor data-on="false" hidden transition:persist="copy-editor">
+  <button type="button" class="copy-editor__toggle" data-copy-toggle aria-pressed="false">
+    Editar texto
+  </button>
+  <p class="copy-editor__note" data-copy-note role="status"></p>
+</aside>
+
+<script>
+  const BLOCKS = 'p, h1, h2, h3, h4, li, figcaption, blockquote';
+  const REASONS: Record<string, string> = {
+    missing: 'No encontré ese texto en el archivo. Puede tener formato; edítalo en el MDX.',
+    ambiguous: 'Ese texto aparece más de una vez en el archivo; edítalo en el MDX.',
+    unsafe: 'El texto no puede quedar vacío ni llevar < > { } o la comilla que lo delimita.',
+    unavailable: 'El editor solo funciona en desarrollo.',
+  };
+  const KEY = 'copy-editor:on';
+
+  const editable = () => /^\/(?:(?:es|en)\/)?(?:works|writings)\/[^/]+\/?$/.test(location.pathname);
+
+  function startCopyEditor() {
+    const root = document.querySelector<HTMLElement>('[data-copy-editor]');
+    const toggle = root?.querySelector<HTMLButtonElement>('[data-copy-toggle]');
+    const note = root?.querySelector<HTMLElement>('[data-copy-note]');
+    if (!root || !toggle || !note) return;
+    root.hidden = !editable();
+    if (root.dataset.ready !== undefined) return;
+    root.dataset.ready = '';
+
+    let current: HTMLElement | null = null;
+    let before = '';
+    let hidden: Element[] = [];
+    let clear = 0;
+
+    const say = (text: string, bad = false) => {
+      note.textContent = text;
+      note.dataset.bad = String(bad);
+      window.clearTimeout(clear);
+      if (text) clear = window.setTimeout(() => (note.textContent = ''), bad ? 7000 : 2500);
+    };
+
+    const setOn = (on: boolean) => {
+      root.dataset.on = String(on);
+      toggle.setAttribute('aria-pressed', String(on));
+      toggle.textContent = on ? 'Editando · salir' : 'Editar texto';
+      document.documentElement.toggleAttribute('data-copy-editing', on);
+      try {
+        sessionStorage.setItem(KEY, String(on));
+      } catch {
+        // The editor still works for this page.
+      }
+      if (!on) current?.blur();
+    };
+
+    /** The text block under a click: a leaf with text of its own, or the nearest prose block. */
+    const blockOf = (target: EventTarget | null): HTMLElement | null => {
+      if (!(target instanceof HTMLElement)) return null;
+      if (
+        !target.closest('main') ||
+        target.closest('.demo-root, [data-copy-editor], [data-dev-options]')
+      ) {
+        return null;
+      }
+      const leaf = target.childElementCount === 0 && target.innerText.trim() !== '' ? target : null;
+      const block = leaf ?? target.closest<HTMLElement>(BLOCKS);
+      return block && block.innerText.trim() !== '' ? block : null;
+    };
+
+    const finish = async (element: HTMLElement, cancel: boolean) => {
+      if (current !== element) return;
+      current = null;
+      element.removeAttribute('contenteditable');
+      element.removeAttribute('data-copy-current');
+      const after = element.innerText;
+      const same = after.replace(/\s+/g, ' ').trim() === before.replace(/\s+/g, ' ').trim();
+      if (cancel || same) {
+        element.innerText = before;
+        element.prepend(...hidden);
+        return;
+      }
+      const response = await fetch('/dev/api/copy', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ path: location.pathname, before, after }),
+      }).catch(() => null);
+      const result = (await response?.json().catch(() => null)) as {
+        ok?: boolean;
+        reason?: string;
+      } | null;
+      if (result?.ok) {
+        say('Guardado');
+        return;
+      }
+      element.innerText = before;
+      element.prepend(...hidden);
+      say(REASONS[result?.reason ?? ''] ?? 'No se pudo guardar.', true);
+    };
+
+    toggle.addEventListener('click', () => setOn(root.dataset.on !== 'true'));
+
+    // While editing, a click in the page picks a text; links, buttons and the lightbox stand down.
+    document.addEventListener(
+      'click',
+      (event) => {
+        if (root.dataset.on !== 'true') return;
+        if (
+          event.target instanceof Element &&
+          event.target.closest('[data-copy-editor], [data-dev-options]')
+        )
+          return;
+        const block = blockOf(event.target);
+        if (!(event.target instanceof Element) || !event.target.closest('main')) return;
+        if (block && block === current) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (!block) return;
+        current = block;
+        // Labels only a screen reader hears (the speaker of a chat bubble) are not part of the text.
+        hidden = [...block.querySelectorAll('.sr-only')];
+        for (const node of hidden) node.remove();
+        before = block.innerText;
+        block.setAttribute('contenteditable', 'plaintext-only');
+        block.setAttribute('data-copy-current', '');
+        block.focus();
+      },
+      true,
+    );
+    document.addEventListener('focusout', (event) => {
+      if (event.target instanceof HTMLElement && event.target === current)
+        void finish(event.target, false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (!current || event.target !== current) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        const element = current;
+        void finish(element, true).then(() => element.blur());
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        current.blur();
+      }
+    });
+
+    let on = false;
+    try {
+      on = sessionStorage.getItem(KEY) === 'true';
+    } catch {
+      // Starts off.
+    }
+    if (on && editable()) setOn(true);
+  }
+
+  document.addEventListener('astro:page-load', startCopyEditor);
+  startCopyEditor();
+</script>
+
+<style is:global>
+  @layer pf {
+    .copy-editor {
+      position: fixed;
+      left: 132px;
+      bottom: 16px;
+      z-index: 9998;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--pf-font-sans);
+      font-size: 13px;
+
+      &[hidden] {
+        display: none;
+      }
+
+      & .copy-editor__toggle {
+        padding: 9px 14px;
+        border: 0;
+        border-radius: 999px;
+        background: #111;
+        color: #fff;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      &[data-on='true'] .copy-editor__toggle {
+        background: #2a3cff;
+      }
+
+      & .copy-editor__note {
+        margin: 0;
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: #111;
+        color: #fff;
+        max-width: 420px;
+
+        &:empty {
+          display: none;
+        }
+
+        &[data-bad='true'] {
+          background: #b3261e;
+        }
+      }
+    }
+
+    /* Editing: every text the editor can take shows it on hover; the one being edited is outlined. */
+    html[data-copy-editing]
+      main
+      :is(p, h1, h2, h3, h4, li, figcaption, blockquote, span, strong, em, a):hover {
+      outline: 1px dashed rgb(42 60 255 / 0.45);
+      outline-offset: 3px;
+      cursor: text;
+    }
+
+    html[data-copy-editing] main .demo-root :is(p, h1, h2, h3, h4, li, span, strong, em, a):hover {
+      outline: none;
+      cursor: auto;
+    }
+
+    html[data-copy-editing] [data-copy-current] {
+      outline: 2px solid #2a3cff;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+  }
+</style>

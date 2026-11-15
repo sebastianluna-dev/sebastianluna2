@@ -17,6 +17,8 @@ const devPages: AstroIntegration = {
     'astro:config:setup': ({ command, injectRoute }) => {
       if (command !== 'dev') return;
       injectRoute({ pattern: '/dev/mockups', entrypoint: './src/dev/pages/mockups.astro' });
+      // The copy editor saves a corrected text into its MDX file through this endpoint.
+      injectRoute({ pattern: '/dev/api/copy', entrypoint: './src/dev/pages/copy-api.ts' });
       // One preview per demo of a case, at the two widths a case shows it: every page of
       // src/dev/pages/demos becomes /dev/demos/<name>.
       for (const page of readdirSync(new URL('./src/dev/pages/demos', import.meta.url))) {
