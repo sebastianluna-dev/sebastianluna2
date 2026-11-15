@@ -28,5 +28,38 @@
     & svg {
       display: block;
     }
+    /*
+     * A demo whose rail stands on the page itself and not on a ground of its own
+     * (`data-ground="page"`): the rail follows the theme of the portfolio. This is the seam, so it
+     * is the one place of the demos that looks at the page's theme.
+     */
+    & [data-ground='page'] {
+      --d-rail-bg: rgb(0 0 0 / 0.06);
+      --d-rail-text: rgb(0 0 0 / 0.6);
+      --d-rail-text-strong: #000;
+      --d-rail-active-bg: #0a0a0a;
+      --d-rail-active-text: #fff;
+      --d-focus: #000;
+    }
+  }
+
+  :root[data-theme='dark'] .demo-root [data-ground='page'] {
+    --d-rail-bg: rgb(255 255 255 / 0.1);
+    --d-rail-text: rgb(255 255 255 / 0.66);
+    --d-rail-text-strong: #fff;
+    --d-rail-active-bg: #fff;
+    --d-rail-active-text: #0a0a0a;
+    --d-focus: #fff;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .demo-root [data-ground='page'] {
+      --d-rail-bg: rgb(255 255 255 / 0.1);
+      --d-rail-text: rgb(255 255 255 / 0.66);
+      --d-rail-text-strong: #fff;
+      --d-rail-active-bg: #fff;
+      --d-rail-active-text: #0a0a0a;
+      --d-focus: #fff;
+    }
   }
 }

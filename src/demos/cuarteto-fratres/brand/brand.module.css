@@ -5,16 +5,12 @@
     --brand-chrome: var(--d-ink-soft);
     --brand-chrome-line: var(--d-divider-on-ink);
     --brand-select: #c8553a;
-    --brand-inset: 20px;
-    --brand-card-radius: 12px;
+    --brand-card-radius: 14px;
 
+    /* No ground of its own: the window stands on the page and the rail sits under it, outside. */
     display: flex;
     flex-direction: column;
     gap: 18px;
-    padding-bottom: 20px;
-    border-radius: var(--d-radius);
-    background: var(--d-ink-deep);
-    overflow: hidden;
 
     /* One box for the four states: every scene is laid over it, so the demo never changes height. */
     & .demo__stage {
@@ -24,7 +20,7 @@
 
     & .demo__scene {
       position: absolute;
-      inset: var(--brand-inset) var(--brand-inset) 0;
+      inset: 0;
       border-radius: var(--brand-card-radius);
       overflow: hidden;
       opacity: 0;
@@ -452,8 +448,6 @@
 
     /* Narrow column: a taller box; the layers go under the canvas as one row. */
     @container demo (max-width: 480px) {
-      --brand-inset: 12px;
-
       & .demo__stage {
         aspect-ratio: 350 / 420;
       }

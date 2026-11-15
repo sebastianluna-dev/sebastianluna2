@@ -70,7 +70,7 @@ export function Brand({ locale }: BrandProps) {
   const shown = testerText(text);
 
   return (
-    <div className={styles.demo} data-ground="ink">
+    <div className={styles.demo} data-ground="page">
       <div className={styles.demo__stage} data-step={step}>
         <section
           className={cx(styles.demo__scene, styles.demo__editor)}
