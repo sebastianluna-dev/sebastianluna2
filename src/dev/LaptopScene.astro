@@ -85,7 +85,7 @@ const TUNERS = [
       ))}
     </div>
     <button type="button" class="laptop-scene__copy" data-laptop-copy>
-      Copiar valores
+      Copiar valores de este portátil
     </button>
     <code class="laptop-scene__values" data-laptop-values></code>
   </details>
@@ -112,7 +112,35 @@ const TUNERS = [
       }
       values.textContent = read();
     };
-    for (const input of inputs) input.addEventListener('input', paint);
+    // A composition in progress survives a reload: the lab reloads whenever a file changes.
+    const key = `laptop-scene:${label}`;
+    const save = () => {
+      try {
+        localStorage.setItem(key, read());
+      } catch {
+        // Private windows may refuse storage; the sliders still work.
+      }
+    };
+    try {
+      const saved = JSON.parse(localStorage.getItem(key) ?? 'null') as Record<
+        string,
+        unknown
+      > | null;
+      for (const input of inputs) {
+        const value = saved?.[input.dataset.var ?? ''];
+        if (typeof value === 'number') input.value = String(value);
+      }
+      if (saved) {
+        panel.open = true;
+        paint();
+      }
+    } catch {
+      // Nothing saved.
+    }
+    for (const input of inputs) {
+      input.addEventListener('input', paint);
+      input.addEventListener('input', save);
+    }
     panel.querySelector('[data-laptop-copy]')?.addEventListener('click', () => {
       void navigator.clipboard.writeText(read());
     });
