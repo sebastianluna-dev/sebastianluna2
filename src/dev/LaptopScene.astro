@@ -93,59 +93,89 @@ const TUNERS = [
 
 <script>
   /** Each range paints its custom property on the figure; the line below lists the values. */
-  for (const panel of document.querySelectorAll<HTMLElement>('[data-laptop-tune]')) {
-    const figure = panel.closest<HTMLElement>('figure');
-    const values = panel.querySelector<HTMLElement>('[data-laptop-values]');
-    const inputs = [...panel.querySelectorAll<HTMLInputElement>('input[type="range"]')];
-    if (!figure || !values) continue;
-    const label = figure.querySelector('figcaption')?.textContent?.trim() ?? '';
-    const read = () =>
-      JSON.stringify({
-        mockup: label,
-        ...Object.fromEntries(inputs.map((i) => [i.dataset.var, Number(i.value)])),
-      });
-    const paint = () => {
-      for (const input of inputs) {
-        figure.style.setProperty(`--${input.dataset.var}`, `${input.value}${input.dataset.unit}`);
-        const output = input.nextElementSibling;
-        if (output) output.textContent = input.value;
-      }
-      values.textContent = read();
-    };
-    // A composition in progress survives a reload: the lab reloads whenever a file changes.
-    const key = `laptop-scene:${label}`;
-    const save = () => {
+  function startLaptopTuners() {
+    for (const panel of document.querySelectorAll<HTMLElement>(
+      '[data-laptop-tune]:not([data-ready])',
+    )) {
+      panel.dataset.ready = '';
+      const figure = panel.closest<HTMLElement>('figure');
+      const values = panel.querySelector<HTMLElement>('[data-laptop-values]');
+      const inputs = [...panel.querySelectorAll<HTMLInputElement>('input[type="range"]')];
+      if (!figure || !values) continue;
+      const label = figure.querySelector('figcaption')?.textContent?.trim() ?? '';
+      const read = () =>
+        JSON.stringify({
+          mockup: label,
+          ...Object.fromEntries(inputs.map((i) => [i.dataset.var, Number(i.value)])),
+        });
+      const paint = () => {
+        for (const input of inputs) {
+          figure.style.setProperty(`--${input.dataset.var}`, `${input.value}${input.dataset.unit}`);
+          const output = input.nextElementSibling;
+          if (output) output.textContent = input.value;
+        }
+        values.textContent = read();
+      };
+      // A composition in progress survives a reload: the lab reloads whenever a file changes.
+      const key = `laptop-scene:${label}`;
+      const save = () => {
+        try {
+          localStorage.setItem(key, read());
+        } catch {
+          // Private windows may refuse storage; the sliders still work.
+        }
+      };
       try {
-        localStorage.setItem(key, read());
+        const saved = JSON.parse(localStorage.getItem(key) ?? 'null') as Record<
+          string,
+          unknown
+        > | null;
+        for (const input of inputs) {
+          const value = saved?.[input.dataset.var ?? ''];
+          if (typeof value === 'number') input.value = String(value);
+        }
+        if (saved) {
+          panel.open = true;
+          paint();
+        }
       } catch {
-        // Private windows may refuse storage; the sliders still work.
+        // Nothing saved.
       }
-    };
-    try {
-      const saved = JSON.parse(localStorage.getItem(key) ?? 'null') as Record<
-        string,
-        unknown
-      > | null;
       for (const input of inputs) {
-        const value = saved?.[input.dataset.var ?? ''];
-        if (typeof value === 'number') input.value = String(value);
+        input.addEventListener('input', paint);
+        input.addEventListener('input', save);
       }
-      if (saved) {
-        panel.open = true;
-        paint();
-      }
-    } catch {
-      // Nothing saved.
+      const button = panel.querySelector<HTMLButtonElement>('[data-laptop-copy]');
+      button?.addEventListener('click', () => {
+        const text = read();
+        const idle = button.textContent;
+        // The clipboard API can be refused; a hidden field and the old command cover that case.
+        const fallback = () => {
+          const field = document.createElement('textarea');
+          field.value = text;
+          document.body.append(field);
+          field.select();
+          const done = document.execCommand('copy');
+          field.remove();
+          return done;
+        };
+        const report = (done: boolean) => {
+          button.textContent = done
+            ? 'Copiado ✓'
+            : 'No se pudo copiar: selecciona el texto de abajo';
+          setTimeout(() => (button.textContent = idle), 2500);
+        };
+        navigator.clipboard.writeText(text).then(
+          () => report(true),
+          () => report(fallback()),
+        );
+      });
+      values.textContent = read();
     }
-    for (const input of inputs) {
-      input.addEventListener('input', paint);
-      input.addEventListener('input', save);
-    }
-    panel.querySelector('[data-laptop-copy]')?.addEventListener('click', () => {
-      void navigator.clipboard.writeText(read());
-    });
-    values.textContent = read();
   }
+  // The lab is reached through the client router too, where a module script runs only once.
+  document.addEventListener('astro:page-load', startLaptopTuners);
+  startLaptopTuners();
 </script>
 
 <style>
