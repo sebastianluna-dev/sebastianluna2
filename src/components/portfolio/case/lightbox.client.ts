@@ -97,7 +97,7 @@ function open(trigger: HTMLElement, byPointer: boolean): void {
   if (!dialog || !stage || !thumb || session || dialog.open) return;
 
   const src = pickLightboxSource(
-    trigger.dataset.lightboxSrcset ?? thumb.getAttribute('srcset'),
+    thumb.getAttribute('srcset'),
     window.innerWidth * (window.devicePixelRatio || 1),
     trigger.getAttribute('href') ?? thumb.currentSrc,
   );
@@ -105,7 +105,7 @@ function open(trigger: HTMLElement, byPointer: boolean): void {
 
   const image = document.createElement('img');
   image.className = 'lightbox__image';
-  image.alt = trigger.dataset.lightboxAlt ?? thumb.alt;
+  image.alt = thumb.alt;
   image.decoding = 'async';
   image.draggable = false;
   image.src = src;
