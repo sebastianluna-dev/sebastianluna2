@@ -184,20 +184,20 @@ It got there by subtraction. The first version used a photograph of the quartet 
 
 <CaseSection id="research" title="How I made decisions">
 
-I used AI agents, mainly Claude Code, to build this project. The agent writes code, proposes and measures. I direct, and I decide.
+The design of this site is mine: the hall in the dark, the staves behind the musicians, the record that turns, the printed programme, the letter. I used AI agents, mainly Claude Code, as the build team. They write the code and measure the result. What the site looks like and how it behaves, I decide.
 
-For every visual decision I asked for several distinct directions, never one: icon styles, hero backgrounds, the event window. I looked at them rendered in the browser at desktop and phone widths, picked one or mixed two, and discarded the rest.
+I judge design rendered, never described. When a decision was open I had several directions built side by side (icon styles, hero backgrounds, the event window) and compared them in the browser at desktop and phone widths. Often none of them was right. Then I designed the piece myself, element by element: position, size, spacing, type. It was rebuilt until the screen matched what I had in mind.
 
-Some of what I discarded I had asked for myself. I had the repertoire section built on a wood texture, in several versions, and reverted all of it because it competed with the photographs. I tried setting the section titles in Fratres Display, disliked it within a minute, and went back. Seeing quickly that something is wrong is most of the job.
+I discarded ideas of my own too. I had the repertoire section built on a wood texture, in several versions, and reverted all of it because it competed with the photographs. I tried setting the section titles in Fratres Display, disliked it within a minute, and went back. Seeing quickly that something is wrong is most of the job.
 
 Nothing stayed without being checked. Each change was built, captured at 1440 and 390 pixels wide and committed on its own, and the logic lives in pure functions with their tests beside them.
 
 <SideNotes label="How each decision was made" cols={3}>
-  <SideNote title="Propose" art="compass">
-    Several distinct directions for every visual decision.
+  <SideNote title="Design" art="palette">
+    The idea and the composition of each piece come first, and they are mine.
   </SideNote>
-  <SideNote title="Decide" art="palette">
-    By eye, rendered in the browser at two widths.
+  <SideNote title="Compare" art="compass">
+    Open decisions built side by side and judged in the browser at two widths.
   </SideNote>
   <SideNote title="Measure" art="gauge">
     Captured, tested and committed one change at a time.
@@ -210,8 +210,8 @@ Nothing stayed without being checked. Each change was built, captured at 1440 an
   delivered
   messages={[
     { from: 'visitor', text: 'What does the AI do, and what do you do?' },
-    { from: 'sebastian', text: 'It drafts, builds and measures.' },
-    { from: 'sebastian', text: 'I choose.', fx: 'slam' },
+    { from: 'sebastian', text: 'It builds what I design, and measures it.' },
+    { from: 'sebastian', text: 'The design is mine.', fx: 'slam' },
   ]}
 />
 
@@ -253,7 +253,7 @@ The repertoire is a record player. The work that is playing turns on a disc with
 
 <CaseSubsection kicker="A programme in your hand">
 
-Each date on the bill opens as a printed concert programme: a calendar leaf with the day, the works with a dotted leader to their composer, the venue and the price. On a phone it rises from the bottom like a sheet of paper, with its action fixed at the foot. I chose it from three directions; the other two were a ticket and a full-bleed photograph.
+Each date on the bill opens as a printed concert programme: a calendar leaf with the day, the works with a dotted leader to their composer, the venue and the price. On a phone it rises from the bottom like a sheet of paper, with its action fixed at the foot. It won over two other directions I tried: a ticket and a full-bleed photograph.
 
 <DemoFrame
   project="cuarteto-fratres"

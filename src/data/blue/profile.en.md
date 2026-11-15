@@ -80,7 +80,7 @@ Each case has six anchored sections: `overview`, `challenge`, `approach`, `resea
   - Two typefaces with different jobs: Fratres Display only for the hero, each musician's name on their page and the posters; Italianno for the section titles.
   - Payload CMS inside the same Next.js application: the musicians publish dates, reorder the repertoire and triage requests; with no upcoming date the bill leaves the page.
   - Measured performance: largest paint on a throttled phone from 2.6 s to 1.3 s and the home HTML from 463 KB to 139 KB, by preloading the right fonts and serving the engraved music as static files; 126 tests cover the logic.
-  - Built with AI agents (mainly Claude Code): Sebastian directs and decides, asks for several directions per visual decision and checks every change in the browser at two widths.
+  - The design is Sebastian's; AI agents (mainly Claude Code) were the build team that wrote the code and measured it. He compares open decisions built side by side in the browser at two widths, and when none is right he designs the piece himself, element by element.
 - **Tools**: Illustrator, ChatGPT, Claude Code, Next.js, React, TypeScript, Payload CMS, PostgreSQL, Vitest, Vercel.
 - **Links**: [overview](/works/cuarteto-fratres#overview) · [challenge](/works/cuarteto-fratres#challenge) · [approach](/works/cuarteto-fratres#approach) · [research](/works/cuarteto-fratres#research) · [design solutions](/works/cuarteto-fratres#design) · [outcome](/works/cuarteto-fratres#outcome)
 

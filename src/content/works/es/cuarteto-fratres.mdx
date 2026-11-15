@@ -192,20 +192,20 @@ Llegó ahí quitando cosas. La primera versión usaba una fotografía del cuarte
 
 <CaseSection id="research" title="Cómo tomé las decisiones">
 
-Construí este proyecto con agentes de IA, sobre todo Claude Code. El agente escribe código, propone y mide. Yo dirijo, y yo decido.
+El diseño de este sitio es mío: la sala a oscuras, los pentagramas detrás de los músicos, el disco que gira, el programa de mano, la carta. Usé agentes de IA, sobre todo Claude Code, como equipo de construcción: escriben el código y miden el resultado. Cómo se ve el sitio y cómo se comporta lo decido yo.
 
-Para cada decisión visual pedí varias direcciones distintas, nunca una sola: estilos de íconos, fondos de la portada, la ventana del evento. Las vi dibujadas en el navegador, en ancho de escritorio y de teléfono, elegí una o mezclé dos, y descarté el resto.
+El diseño lo juzgo dibujado, nunca descrito. Cuando una decisión estaba abierta mandé construir varias direcciones lado a lado (estilos de íconos, fondos de la portada, la ventana del evento) y las comparé en el navegador, en ancho de escritorio y de teléfono. Muchas veces ninguna era la correcta. Entonces diseñé la pieza yo mismo, elemento por elemento: posición, tamaño, espaciado, tipografía. Se reconstruyó hasta que la pantalla coincidió con lo que yo tenía en la cabeza.
 
-Parte de lo que descarté lo había pedido yo. Mandé construir la sección de repertorio sobre una textura de madera, en varias versiones, y revertí todo porque competía con las fotografías. Probé poner los títulos de sección en Fratres Display, no me gustó en menos de un minuto, y regresé. Ver rápido que algo está mal es casi todo el oficio.
+También descarté ideas mías. Mandé construir la sección de repertorio sobre una textura de madera, en varias versiones, y revertí todo porque competía con las fotografías. Probé poner los títulos de sección en Fratres Display, no me gustó en menos de un minuto, y regresé. Ver rápido que algo está mal es casi todo el oficio.
 
 Nada se quedó sin revisarse. Cada cambio se compiló, se capturó a 1440 y a 390 píxeles de ancho y se guardó en su propio commit, y la lógica vive en funciones puras con sus pruebas al lado.
 
 <SideNotes label="Cómo se tomó cada decisión" cols={3}>
-  <SideNote title="Proponer" art="compass">
-    Varias direcciones distintas para cada decisión visual.
+  <SideNote title="Diseñar" art="palette">
+    La idea y la composición de cada pieza van primero, y son mías.
   </SideNote>
-  <SideNote title="Decidir" art="palette">
-    A ojo, en el navegador y en dos anchos.
+  <SideNote title="Comparar" art="compass">
+    Las decisiones abiertas, construidas lado a lado y juzgadas en el navegador en dos anchos.
   </SideNote>
   <SideNote title="Medir" art="gauge">
     Capturado, probado y guardado un cambio a la vez.
@@ -218,8 +218,8 @@ Nada se quedó sin revisarse. Cada cambio se compiló, se capturó a 1440 y a 39
   delivered
   messages={[
     { from: 'visitor', text: '¿Qué hace la IA y qué haces tú?' },
-    { from: 'sebastian', text: 'Ella redacta, construye y mide.' },
-    { from: 'sebastian', text: 'Yo elijo.', fx: 'slam' },
+    { from: 'sebastian', text: 'Construye lo que yo diseño, y lo mide.' },
+    { from: 'sebastian', text: 'El diseño es mío.', fx: 'slam' },
   ]}
 />
 
@@ -261,7 +261,7 @@ El repertorio es un tocadiscos. La obra que suena gira en un disco con la fotogr
 
 <CaseSubsection kicker="Un programa en la mano">
 
-Cada fecha de la cartelera se abre como un programa de mano impreso: una hoja de calendario con el día, las obras con una línea de puntos hasta su compositor, el lugar y el precio. En el teléfono sube desde abajo como una hoja de papel, con su botón fijo al pie. Lo elegí entre tres direcciones; las otras dos eran un boleto y una fotografía a toda la ventana.
+Cada fecha de la cartelera se abre como un programa de mano impreso: una hoja de calendario con el día, las obras con una línea de puntos hasta su compositor, el lugar y el precio. En el teléfono sube desde abajo como una hoja de papel, con su botón fijo al pie. Le ganó a otras dos direcciones que probé: un boleto y una fotografía a toda la ventana.
 
 <DemoFrame
   project="cuarteto-fratres"

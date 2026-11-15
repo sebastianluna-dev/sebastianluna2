@@ -80,7 +80,7 @@ Cada caso tiene seis secciones con ancla: `overview` (resumen), `challenge` (ret
   - Dos tipografías con trabajos distintos: Fratres Display solo en la portada, el nombre de cada músico en su página y los carteles; Italianno para los títulos de sección.
   - Payload CMS dentro de la misma aplicación de Next.js: los músicos publican fechas, reordenan el repertorio y atienden solicitudes; sin fechas próximas, la cartelera se retira de la página.
   - Rendimiento medido: el pintado más grande en un teléfono con conexión lenta pasó de 2.6 s a 1.3 s y el HTML de la portada de 463 KB a 139 KB, al precargar las tipografías correctas y servir la música grabada como archivos estáticos; 126 pruebas cubren la lógica.
-  - Hecho con agentes de IA (sobre todo Claude Code): Sebastian dirige y decide, pide varias direcciones por cada decisión visual y revisa cada cambio en el navegador en dos anchos.
+  - El diseño es de Sebastian; los agentes de IA (sobre todo Claude Code) fueron el equipo de construcción que escribió el código y lo midió. Compara las decisiones abiertas construidas lado a lado en el navegador en dos anchos, y cuando ninguna es la correcta diseña la pieza él mismo, elemento por elemento.
 - **Herramientas**: Illustrator, ChatGPT, Claude Code, Next.js, React, TypeScript, Payload CMS, PostgreSQL, Vitest, Vercel.
 - **Enlaces**: [resumen](/es/works/cuarteto-fratres#overview) · [reto](/es/works/cuarteto-fratres#challenge) · [enfoque](/es/works/cuarteto-fratres#approach) · [investigación](/es/works/cuarteto-fratres#research) · [soluciones de diseño](/es/works/cuarteto-fratres#design) · [resultado](/es/works/cuarteto-fratres#outcome)
 
