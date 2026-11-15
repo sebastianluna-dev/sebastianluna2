@@ -21,10 +21,26 @@ interface Props {
   /** Shift of the notebook from the centre of the frame, in % of its width. */
   x?: number;
   y?: number;
+  /** Depth of the perspective, in % of the frame's width; lower is steeper. */
+  depth?: number;
+  /** Opening of the keyboard deck against the lid, in degrees. */
+  hinge?: number;
 }
 
-const { src, label, ground, rx, ry, rz, width = 60, x = 0, y = 0 } = Astro.props;
-const style = `--scene-ground:${ground};--rx:${rx}deg;--ry:${ry}deg;--rz:${rz}deg;--w:${width}cqw;--x:${x}cqw;--y:${y}cqw`;
+const {
+  src,
+  label,
+  ground,
+  rx,
+  ry,
+  rz,
+  width = 60,
+  x = 0,
+  y = 0,
+  depth = 150,
+  hinge = 62,
+} = Astro.props;
+const style = `--scene-ground:${ground};--rx:${rx}deg;--ry:${ry}deg;--rz:${rz}deg;--w:${width}cqw;--x:${x}cqw;--y:${y}cqw;--depth:${depth}cqw;--hinge:${hinge}deg`;
 
 /** The live controls under the scene: custom property, unit, range and starting value. */
 const TUNERS = [
@@ -34,8 +50,8 @@ const TUNERS = [
   { name: 'w', label: 'Acercar', unit: 'cqw', min: 40, max: 320, value: width },
   { name: 'x', label: 'Mover X', unit: 'cqw', min: -120, max: 120, value: x },
   { name: 'y', label: 'Mover Y', unit: 'cqw', min: -120, max: 120, value: y },
-  { name: 'depth', label: 'Perspectiva', unit: 'cqw', min: 50, max: 400, value: 150 },
-  { name: 'hinge', label: 'Teclado', unit: 'deg', min: 20, max: 90, value: 62 },
+  { name: 'depth', label: 'Perspectiva', unit: 'cqw', min: 50, max: 400, value: depth },
+  { name: 'hinge', label: 'Teclado', unit: 'deg', min: 20, max: 90, value: hinge },
 ];
 ---
 
