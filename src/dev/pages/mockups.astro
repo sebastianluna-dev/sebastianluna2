@@ -21,6 +21,9 @@ import programa from '@/assets/works/cuarteto-fratres/screens/programa.jpg';
 import repertorio from '@/assets/works/cuarteto-fratres/screens/repertorio.jpg';
 import phoneCartelera from '@/assets/works/cuarteto-fratres/screens/phone-cartelera.jpg';
 import phoneHero from '@/assets/works/cuarteto-fratres/screens/phone-hero.jpg';
+import phoneContacto from '@/assets/works/cuarteto-fratres/screens/phone-contacto.jpg';
+import phonePrograma from '@/assets/works/cuarteto-fratres/screens/phone-programa.jpg';
+import phoneRepertorio from '@/assets/works/cuarteto-fratres/screens/phone-repertorio.jpg';
 import phoneIntegrantes from '@/assets/works/cuarteto-fratres/screens/phone-integrantes.jpg';
 import semblanzaLarge from '@/assets/works/cuarteto-fratres/screens/semblanza-4x.jpg';
 import semblanza from '@/assets/works/cuarteto-fratres/screens/semblanza.jpg';
@@ -146,6 +149,12 @@ const phoneScreens = [
   { src: phoneCartelera, light: true },
 ] as const;
 
+const phonePieces = [
+  { src: phoneRepertorio, light: true },
+  { src: phonePrograma, light: true },
+  { src: phoneContacto, light: true },
+] as const;
+
 const phoneScenes = [
   { id: 'front', label: 'A · De frente' },
   { id: 'table', label: 'B · Sobre la mesa' },
@@ -170,6 +179,10 @@ const phoneScenes = [
       {phoneScenes.map((scene) => (
         <PhoneScene ground={INK} screens={phoneScreens} scene={scene.id} label={scene.label} />
       ))}
+    </div>
+    <h2 class="mockup-lab__kicker">Teléfonos: repertorio, programa y carta</h2>
+    <div class="mockup-lab__column">
+      <PhoneScene ground={INK} screens={phonePieces} scene="front" label="Piezas en teléfono" />
     </div>
     <h2 class="mockup-lab__kicker">
       Portátil: la semblanza con su mismo giro, y la cartelera en espejo
