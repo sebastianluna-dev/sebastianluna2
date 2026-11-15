@@ -68,7 +68,7 @@ Cuarteto Fratres is a string quartet from Boca del Río, Veracruz. On stage it w
 
 I had been to many of their concerts before I approached them with a proposal: build the brand and give it a home. They hired me for all of it. I drew the monogram, designed a display typeface, set the palette, took the photographs, and designed and built the site and the CMS behind it. The site scores 98 for performance and 100 for accessibility, best practices and SEO on Lighthouse mobile, and 126 tests cover its logic.
 
-Its players lead sections in the region's orchestras: Jesús Medina is concertmaster of the Orquesta Filarmónica de Boca del Río, Alfonso Pérez is its principal cellist, José Sánchez is principal violist of the state youth symphony, and Lucía Paredes, who founded the quartet, plays in the Filarmónica's violins.
+The four musicians also play in the region's orchestras: Jesús Medina is concertmaster of the Orquesta Filarmónica de Boca del Río, Alfonso Pérez is its principal cellist, José Sánchez is principal violist of the state youth symphony, and Lucía Paredes, who founded the quartet, plays in the Filarmónica's violins.
 
 <SideNotes label="The result in three figures" cols={3}>
   <SideNote title="98 in performance" art="gauge">
@@ -88,7 +88,7 @@ Its players lead sections in the region's orchestras: Jesús Medina is concertma
 
 I designed the site for people booking performances and for the quartet members who update it. The first are planning a concert, a wedding or a private event and need to know who plays, what they play and how to ask for a proposal. The second have to publish dates, change the repertoire and answer requests without calling me.
 
-The visual tone matters to both audiences. Chamber music has a printed culture of its own: programmes, posters, scores. To my eye, most musicians' sites ignore it and end up looking like a template for wedding services. I set myself the opposite brief: the site should feel like sitting in the hall a minute before the concert starts.
+The visual tone matters to both audiences. Chamber music has a printed culture of its own: programmes, posters, scores. I did not want the site to look like a template for wedding services. I wanted it to feel like sitting in the hall a minute before the concert starts.
 
 ### The hall with the lights down
 
@@ -111,7 +111,7 @@ The mark is a CF monogram that I drew in Illustrator. It holds at the size of a 
 
 I wanted a display face I could push around the way poster designers do: tall, condensed capitals that hold a line on their own. Fratres Display is capitals only. I started it with ChatGPT, generating letterforms to react to, and then redrew and corrected them by hand in Illustrator until the set did what I needed. It does not derive from an existing font.
 
-I limit Fratres Display to specific uses on the site. It sets the quartet's name in the hero, each musician's name on their own page and the posters of the bill, where one line has to carry the screen. Section titles use Italianno, a classical script that can repeat down the page without taking attention from what follows. A typeface made for posters has to know when to stay quiet on a website.
+I limit Fratres Display to specific uses on the site. It sets the quartet's name in the hero, each musician's name on their own page and the posters of the bill, where one line has to carry the screen. Section titles use Italianno, a classical script that can repeat down the page without taking attention from what follows.
 
 I took the photographs too, some on an iPhone 17 Pro Max and some on a Canon EOS 90D, and removed the background of several portraits with AI tools so the musicians could stand directly on the dark ground.
 
@@ -162,7 +162,7 @@ It is real music: bars of Borodin's String Quartet No. 2, which the quartet perf
   ]}
 />
 
-I am a beginner music student. That is not a credential, but it is why I could read a score well enough to put real music on the page, and why I knew what a programme, a repertoire list and a concert poster are supposed to feel like. I can apply that knowledge to other projects in classical and popular music.
+I am a beginner music student. That is not a credential, but it is why I could read a score well enough to put real music on the page, and why I knew what a programme, a repertoire list and a concert poster are supposed to feel like.
 
 It got there by subtraction. The first version used a photograph of the quartet in a hall; portraits cut out on black were stronger. The first staves were decorative curves; any musician would have seen that at once, so they became notation.
 
@@ -337,7 +337,7 @@ Cuarteto Fratres now has a name you can search, a mark, a typeface, photographs 
 
 <CaseSubsection kicker="Engineering">
 
-On a throttled phone connection the largest element painted in 2.6 seconds; I brought it to 1.3. The audit pointed elsewhere; I found a late-loading display font and duplicated inline music: the display font was the last file to arrive, and the engraved music was inlined twice in the page, 375 KB of it. Preloading the right two fonts and serving the music as static files took the page from 463 KB to 139 KB. I also tried inlining the CSS, measured that it made things worse, and removed it. Lighthouse on mobile reads 98 for performance and 100 for accessibility, best practices and SEO, and 126 tests cover the logic.
+On a throttled phone connection the largest element painted in 2.6 seconds; I brought it to 1.3. The audit pointed elsewhere; I found a late-loading display font and duplicated inline music: the display font was the last file to arrive, and the engraved music was inlined twice in the page, 375 KB of it. Preloading the right two fonts and serving the music as static files took the page from 463 KB to 139 KB. I also tried inlining the CSS, measured that it made things worse, and removed it.
 
 <DemoFrame
   project="cuarteto-fratres"
@@ -351,7 +351,7 @@ On a throttled phone connection the largest element painted in 2.6 seconds; I br
 
 <CaseSubsection kicker="Ongoing work">
 
-I am taking on the quartet's social media, communication and photography, with the same mark and the same typeface, this time on posters, where Fratres Display was always meant to live.
+I am also taking on the quartet's social media, communication and photography. The mark and Fratres Display will move onto posters, the format I designed the typeface for.
 
 </CaseSubsection>
 
