@@ -1,8 +1,7 @@
 ---
 /**
  * Dev-only phone mockup: three phone captures inside drawn handsets (metal rim, black bezel, camera
- * island, side buttons, glass sheen) on a 4:3 frame. The composition is the `phone-scene` choice of
- * the dev options menu (`data-opt-phone-scene` on <html>). Every length is in `cqw` of the frame, so
+ * island, side buttons, glass sheen) on a 4:3 frame. The composition is the `scene` prop. Every length is in `cqw` of the frame, so
  * the picture is the same at any size and can be baked to an image.
  */
 import type { ImageMetadata } from 'astro';
@@ -18,13 +17,16 @@ interface Props {
   screens: readonly [Screen, Screen, Screen];
   /** Ground colour of the frame. */
   ground: string;
+  /** Composition: upright in a row, lying on a surface, or one close with two behind. */
+  scene: 'front' | 'table' | 'lead';
+  label: string;
 }
 
-const { screens, ground } = Astro.props;
+const { screens, ground, scene, label } = Astro.props;
 const places = ['left', 'centre', 'right'] as const;
 ---
 
-<figure class="phone-scene" style={`--scene-ground:${ground}`}>
+<figure class="phone-scene" data-scene={scene} style={`--scene-ground:${ground}`}>
   <div class="phone-scene__frame">
     <div class="phone-scene__stage">
       {screens.map((screen, index) => (
@@ -48,7 +50,7 @@ const places = ['left', 'centre', 'right'] as const;
       ))}
     </div>
   </div>
-  <figcaption class="phone-scene__label">Teléfonos</figcaption>
+  <figcaption class="phone-scene__label">{label}</figcaption>
 </figure>
 
 <style>
@@ -244,39 +246,39 @@ const places = ['left', 'centre', 'right'] as const;
     }
 
     /* B · «Sobre la mesa»: the three lying on a surface, seen from above at an angle. */
-    :global(html[data-opt-phone-scene='table']) .phone-scene__stage {
+    .phone-scene[data-scene='table'] .phone-scene__stage {
       --scene-depth: 220cqw;
       transform: rotateX(48deg) rotateZ(-28deg) scale(1.5);
     }
 
-    :global(html[data-opt-phone-scene='table']) .phone {
+    .phone-scene[data-scene='table'] .phone {
       --w: 22cqw;
       --ry: 0deg;
       --z: 0cqw;
       --shade: 0;
     }
 
-    :global(html[data-opt-phone-scene='table']) .phone_place_left {
+    .phone-scene[data-scene='table'] .phone_place_left {
       --x: -25cqw;
       --y: 9cqw;
     }
 
-    :global(html[data-opt-phone-scene='table']) .phone_place_centre {
+    .phone-scene[data-scene='table'] .phone_place_centre {
       --x: 0cqw;
       --y: 0cqw;
     }
 
-    :global(html[data-opt-phone-scene='table']) .phone_place_right {
+    .phone-scene[data-scene='table'] .phone_place_right {
       --x: 25cqw;
       --y: -9cqw;
     }
 
     /* C · «Protagonista»: the home screen close and turned, the other two out of focus behind. */
-    :global(html[data-opt-phone-scene='lead']) .phone-scene__stage {
+    .phone-scene[data-scene='lead'] .phone-scene__stage {
       --scene-depth: 130cqw;
     }
 
-    :global(html[data-opt-phone-scene='lead']) .phone_place_centre {
+    .phone-scene[data-scene='lead'] .phone_place_centre {
       --w: 33cqw;
       --x: -6cqw;
       --y: 4cqw;
@@ -286,7 +288,7 @@ const places = ['left', 'centre', 'right'] as const;
       --rz: -5deg;
     }
 
-    :global(html[data-opt-phone-scene='lead']) .phone_place_left {
+    .phone-scene[data-scene='lead'] .phone_place_left {
       --w: 25cqw;
       --x: -36cqw;
       --y: -2cqw;
@@ -298,7 +300,7 @@ const places = ['left', 'centre', 'right'] as const;
       filter: blur(0.5cqw);
     }
 
-    :global(html[data-opt-phone-scene='lead']) .phone_place_right {
+    .phone-scene[data-scene='lead'] .phone_place_right {
       --w: 27cqw;
       --x: 30cqw;
       --y: -4cqw;

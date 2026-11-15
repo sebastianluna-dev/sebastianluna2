@@ -460,24 +460,6 @@ export const OPTION_GROUPS: readonly OptionGroup[] = [
       },
     ],
   },
-  {
-    id: 'phones',
-    label: 'Mockups · teléfonos',
-    where: '/dev/mockups',
-    controls: [
-      {
-        kind: 'choice',
-        id: 'phone-scene',
-        label: 'Composición',
-        initial: 'front',
-        options: [
-          { id: 'front', label: 'A · De frente' },
-          { id: 'table', label: 'B · Sobre la mesa' },
-          { id: 'lead', label: 'C · Protagonista' },
-        ],
-      },
-    ],
-  },
 ];
 
 /** Where the menu keeps its state between reloads. */
