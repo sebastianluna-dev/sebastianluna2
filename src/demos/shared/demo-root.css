@@ -10,6 +10,15 @@
     box-sizing: border-box;
     container-type: inline-size;
     container-name: demo;
+    /*
+     * Where a demo may pin something to the corner of the window (the mini player of a demo that
+     * follows the reader): clear of the Blue launcher, which owns the bottom-right corner, and of
+     * its panel when it is open.
+     */
+    --d-dock-right: var(--pf-blue-offset, 0px);
+    --d-dock-bottom: calc(
+      var(--pf-blue-launcher-inset, 0px) + var(--pf-blue-launcher-size, 0px) - 8px
+    );
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 

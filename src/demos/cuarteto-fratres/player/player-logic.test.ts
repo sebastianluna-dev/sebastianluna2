@@ -5,9 +5,9 @@ import {
   formatTrackPosition,
   formatTrackTime,
   grooveDrawing,
+  miniPlayerShown,
   pageCount,
   pageItems,
-  railStepOf,
   reducePlayer,
   type PlayerState,
 } from './player-logic';
@@ -53,7 +53,7 @@ describe('filterTracks and pages', () => {
 });
 
 describe('reducePlayer', () => {
-  const playing: PlayerState = { selected: 1, status: 'playing', elapsed: 40, view: 'card' };
+  const playing: PlayerState = { selected: 1, status: 'playing', elapsed: 40 };
 
   it('plays another row from the top', () => {
     expect(reducePlayer(playing, { type: 'select', index: 2 }, DURATIONS)).toEqual({
@@ -71,14 +71,6 @@ describe('reducePlayer', () => {
     expect(reducePlayer(INITIAL_PLAYER, { type: 'select', index: 0 }, DURATIONS).status).toBe(
       'playing',
     );
-  });
-
-  it('brings the card back when a mini player pauses', () => {
-    const mini = { ...playing, view: 'mini' as const };
-    expect(reducePlayer(mini, { type: 'toggle' }, DURATIONS)).toMatchObject({
-      status: 'paused',
-      view: 'card',
-    });
   });
 
   it('wraps the steps around the programme', () => {
@@ -101,31 +93,18 @@ describe('reducePlayer', () => {
       elapsed: 0,
     });
   });
-
-  it('leaves an idle player alone when the demo scrolls away', () => {
-    expect(reducePlayer(INITIAL_PLAYER, { type: 'pause' }, DURATIONS)).toBe(INITIAL_PLAYER);
-  });
-
-  it('walks the rail', () => {
-    expect(reducePlayer(playing, { type: 'rail', step: 'idle' }, DURATIONS)).toEqual(
-      INITIAL_PLAYER,
-    );
-    expect(reducePlayer(playing, { type: 'rail', step: 'mini' }, DURATIONS)).toMatchObject({
-      status: 'playing',
-      view: 'mini',
-    });
-    expect(reducePlayer(INITIAL_PLAYER, { type: 'rail', step: 'paused' }, DURATIONS).status).toBe(
-      'paused',
-    );
-  });
 });
 
-describe('railStepOf', () => {
-  it('follows the scene', () => {
-    expect(railStepOf(INITIAL_PLAYER)).toBe('idle');
-    expect(railStepOf({ ...INITIAL_PLAYER, status: 'playing' })).toBe('playing');
-    expect(railStepOf({ ...INITIAL_PLAYER, status: 'playing', view: 'mini' })).toBe('mini');
-    expect(railStepOf({ ...INITIAL_PLAYER, status: 'paused' })).toBe('paused');
+describe('miniPlayerShown', () => {
+  it('rides in the corner while a work sounds and the card is off screen', () => {
+    expect(miniPlayerShown(true, false, false)).toBe(true);
+    expect(miniPlayerShown(true, true, false)).toBe(false);
+    expect(miniPlayerShown(false, false, false)).toBe(false);
+  });
+
+  it('waits a moment after a pause, and leaves at once when the card comes back', () => {
+    expect(miniPlayerShown(false, false, true)).toBe(true);
+    expect(miniPlayerShown(false, true, true)).toBe(false);
   });
 });
 

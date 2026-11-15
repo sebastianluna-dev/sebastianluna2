@@ -1,10 +1,12 @@
 /*
  * The «Repertorio» section of the quartet's site (cuartetofratres,
  * components/site/sections/home/repertoire/*.css): the record on the warm paper, the chips and the
- * programme beside it, and the mini player pinned in the corner of the scene.
+ * programme beside it, and the mini player pinned in the corner of the page.
  */
 @layer demos {
-  .demo {
+  /* `.dock` is the mini player's own root, portalled to the page: it takes the same names and rules. */
+  .demo,
+  .dock {
     /* The site's names for its colours, from the demo's tokens. */
     --ink: var(--d-ink);
     --ivory: var(--d-ivory);
@@ -77,18 +79,6 @@
       min-height: 32px;
       margin-top: auto;
       padding-top: 10px;
-    }
-
-    /* «Mini player»: the card has scrolled away and the programme stands in for the rest of the
-       page, with the small record pinned at its corner. */
-    & .demo__scene_view_mini .track__composer {
-      flex-basis: 170px;
-    }
-
-    & .demo__scene_view_mini .now {
-      position: absolute;
-      visibility: hidden;
-      opacity: 0;
     }
 
     /* ——— The record and its card ——— */
@@ -701,7 +691,7 @@
       stroke-linejoin: round;
     }
 
-    /* ——— Mini player: pinned at the scene's bottom-right corner, as the site's at the page's ——— */
+    /* ——— Mini player: pinned at the bottom-right corner of its dock, which is the page's ——— */
 
     & .mini {
       position: absolute;
@@ -1105,8 +1095,7 @@
         text-overflow: ellipsis;
       }
 
-      & .track__composer,
-      & .demo__scene_view_mini .track__composer {
+      & .track__composer {
         flex: none;
       }
 
@@ -1116,11 +1105,6 @@
 
       & .pager {
         justify-content: center;
-      }
-
-      /* The corner belongs to the record: the pager keeps to the left. */
-      & .demo__scene_view_mini .pager {
-        justify-content: flex-start;
       }
 
       & .mini {
@@ -1262,6 +1246,24 @@
     100% {
       opacity: 1;
     }
+  }
+
+  /*
+   * The corner of the page. The portalled root is a strip along the bottom of the window; the dock
+   * is a point at its right end, clear of what the page itself keeps in that corner (the seam's
+   * `--d-dock-*`), and the mini player hangs from it.
+   */
+  .dock {
+    position: absolute;
+    right: var(--d-dock-right, 0px);
+    bottom: var(--d-dock-bottom, 0px);
+    display: block;
+    width: 0;
+    height: 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
+    pointer-events: auto;
   }
 
   @keyframes player-mini-rise {

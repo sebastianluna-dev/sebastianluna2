@@ -7,20 +7,18 @@ import {
   type KeyboardEvent,
   type MouseEvent,
 } from 'react';
-import { Rail } from '@demos/shared/Rail';
+import { createPortal } from 'react-dom';
 import '../tokens.css';
 import record from '../assets/record-cuarteto.webp';
-import { PLAYER_DEMO_COPY, type DemoLocale } from './copy';
 import {
   INITIAL_PLAYER,
-  RAIL_STEPS,
   filterTracks,
   formatTrackPosition,
   formatTrackTime,
   grooveDrawing,
+  miniPlayerShown,
   pageCount,
   pageItems,
-  railStepOf,
   reducePlayer,
   type PlayerAction,
   type PlayerState,
@@ -32,12 +30,27 @@ import styles from './player.module.css';
 const DURATIONS = TRACKS.map((track) => track.durationSeconds);
 
 /** Rows per page: the site's six beside the record; fewer under it on the phone column. */
-const PAGE_SIZE = { wide: 6, narrow: 3, narrowMini: 6 } as const;
+const PAGE_SIZE = { wide: 6, narrow: 3 } as const;
 /** The demo takes the phone layout at or under this width (as its container queries do). */
 const NARROW_MAX = 480;
 /** How long a recording may take to sound before the timer stands in for it. */
 const STALL_MS = 8000;
 const TICK_MS = 250;
+/** The card counts as on screen while at least half of it is visible, as on the site. */
+const CARD_VISIBLE_SHARE = 0.5;
+/** How long the mini player stays after a pause before it leaves. */
+const MINI_GRACE_MS = 5000;
+/**
+ * The mini player's root, portalled to the page: a strip along the bottom of the window, so the
+ * record is pinned to the viewport and the demo's container queries read the window's width.
+ */
+const DOCK_ROOT: CSSProperties = {
+  position: 'fixed',
+  inset: 'auto 0 0 0',
+  height: 0,
+  zIndex: 50,
+  pointerEvents: 'none',
+};
 
 // The site's fixed Spanish copy of the player (constants/repertoire.const.ts).
 const UI = {
@@ -59,19 +72,14 @@ const UI = {
 
 const cx = (...names: (string | false | undefined)[]) => names.filter(Boolean).join(' ');
 
-interface PlayerProps {
-  locale: DemoLocale;
-}
-
 /**
- * The «Repertorio» section of the quartet's site: the record and its programme. It plays the
- * site's real recordings, streamed from production through one `<audio>` that loads nothing until
- * the reader's first click; when a file cannot load or play, a timer runs the clocks over the
- * work's length instead, without a word of error. The rail walks idle, playing, paused and the
- * mini player, and follows the reader when they use the player itself.
+ * The «Repertorio» section of the quartet's site, to be used: the record and its programme. It
+ * plays the site's real recordings, streamed from production through one `<audio>` that loads
+ * nothing until the reader's first click; when a file cannot load or play, a timer runs the clocks
+ * over the work's length instead, without a word of error. Scroll on while a work sounds and the
+ * record follows in the corner of the page, as on the site.
  */
-export function Player({ locale }: PlayerProps) {
-  const copy = PLAYER_DEMO_COPY[locale];
+export function Player() {
   const rootRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [state, setState] = useState<PlayerState>(INITIAL_PLAYER);
@@ -88,6 +96,9 @@ export function Player({ locale }: PlayerProps) {
   }, []);
 
   const [narrow, setNarrow] = useState(false);
+  const [cardInView, setCardInView] = useState(true);
+  // A pause keeps the mini player for a moment: the reader may press play again.
+  const [grace, setGrace] = useState(false);
   const [categoryId, setCategoryId] = useState<CategoryId | null>(null);
   const [page, setPage] = useState(0);
   const [listChanges, setListChanges] = useState(0);
@@ -104,6 +115,8 @@ export function Player({ locale }: PlayerProps) {
       stateRef.current = next;
       setState(next);
       if (action.type === 'tick') return;
+      if (next.status === 'playing') setGrace(false);
+      else if (previous.status === 'playing') setGrace(true);
 
       const audio = audioRef.current;
       if (!audio) return;
@@ -200,13 +213,26 @@ export function Player({ locale }: PlayerProps) {
     return () => clearInterval(timer);
   }, [state.status, simulated, act]);
 
-  // The music stops when the demo leaves the screen; the width picks the layout.
+  // The grace after a pause runs out.
+  useEffect(() => {
+    if (!grace) return;
+    const timer = setTimeout(() => setGrace(false), MINI_GRACE_MS);
+    return () => clearTimeout(timer);
+  }, [grace]);
+
+  // Whether the card is on screen decides the mini player; the width picks the layout.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const visibility = new IntersectionObserver(([entry]) => {
-      if (entry && !entry.isIntersecting) act({ type: 'pause' });
-    });
+    const visibility = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return;
+        setCardInView(entry.isIntersecting);
+        // Once the card is back the mini player is gone for good, until a work sounds again.
+        if (entry.isIntersecting) setGrace(false);
+      },
+      { threshold: CARD_VISIBLE_SHARE },
+    );
     visibility.observe(root);
     const size = new ResizeObserver(([entry]) => {
       if (entry) setNarrow(entry.contentRect.width <= NARROW_MAX);
@@ -216,16 +242,16 @@ export function Player({ locale }: PlayerProps) {
       visibility.disconnect();
       size.disconnect();
     };
-  }, [act]);
+  }, []);
 
-  const mini = state.view === 'mini';
   const playing = state.status === 'playing';
+  const mini = miniPlayerShown(playing, cardInView, grace);
   const chosen = state.status !== 'idle';
   const track = TRACKS[state.selected] ?? TRACKS[0]!;
   const duration = track.durationSeconds;
   const fraction = duration > 0 ? state.elapsed / duration : 0;
 
-  const size = narrow ? (mini ? PAGE_SIZE.narrowMini : PAGE_SIZE.narrow) : PAGE_SIZE.wide;
+  const size = narrow ? PAGE_SIZE.narrow : PAGE_SIZE.wide;
   const rows = filterTracks(TRACKS, categoryId);
   const pages = pageCount(rows.length, size);
   const shownPage = Math.min(page, pages - 1);
@@ -250,220 +276,210 @@ export function Player({ locale }: PlayerProps) {
     onSeek: (value: number) => act({ type: 'seek', fraction: value }),
   };
 
-  const step = railStepOf(state);
-
   return (
-    <div data-demo-shell data-ground="page">
-      <div ref={rootRef} className={styles.demo} data-ground="light">
-        <section
-          className={cx(styles.demo__scene, mini && styles.demo__scene_view_mini)}
-          aria-label={UI.programme}
-        >
-          <div
-            className={cx(styles.now, playing && styles.now_playing)}
-            inert={mini}
-            aria-hidden={mini || undefined}
-          >
-            <div className={styles.now__disc}>
-              <div className={styles.now__spin} aria-hidden="true">
-                <img className={styles.now__photo} src={record.src} alt="" />
-                <span className={styles.now__grooves} />
-              </div>
-              <span className={styles.now__label} aria-hidden="true">
-                <span className={styles.now__hole} />
-              </span>
-              <button
-                type="button"
-                className={styles['now__disc-toggle']}
-                aria-label={playing ? UI.pause : UI.play}
-                aria-pressed={playing}
-                onClick={transport.onToggle}
-              >
-                <span
-                  className={cx(
-                    styles.now__glyph,
-                    playing ? styles.now__glyph_pause : styles.now__glyph_play,
-                  )}
-                  aria-hidden="true"
-                />
-              </button>
+    <div ref={rootRef} className={styles.demo} data-ground="light">
+      <section className={styles.demo__scene} aria-label={UI.programme}>
+        <div className={cx(styles.now, playing && styles.now_playing)}>
+          <div className={styles.now__disc}>
+            <div className={styles.now__spin} aria-hidden="true">
+              <img className={styles.now__photo} src={record.src} alt="" />
+              <span className={styles.now__grooves} />
             </div>
-
-            <p className={styles.now__category}>{categoryLabel(track.categoryId)}</p>
-            <p className={styles.now__title}>{track.title}</p>
-            <MarqueeTitle text={track.title} />
-            <p className={styles.now__composer}>{track.composer}</p>
-
-            <div className={styles.now__progress}>
-              <LineProgress
-                fraction={fraction}
-                onSeek={transport.onSeek}
-                valueText={formatTrackPosition(state.elapsed, duration)}
-              />
-              <div className={styles.now__clocks}>
-                <span>{formatTrackTime(state.elapsed)}</span>
-                <span>−{formatTrackTime(duration - state.elapsed)}</span>
-              </div>
-            </div>
-
-            <div className={styles.now__transport}>
-              <button
-                type="button"
-                className={styles.now__step}
-                aria-label={UI.previous}
-                onClick={() => transport.onStep(-1)}
-              >
-                {UI.previousLabel}
-              </button>
-              <span className={styles.now__dot} aria-hidden="true">
-                ·
-              </span>
-              <button
-                type="button"
-                className={cx(styles.now__step, styles.now__step_main)}
-                aria-label={UI.toggle}
-                aria-pressed={playing}
-                onClick={transport.onToggle}
-              >
-                <span className={cx(styles.now__word, playing && styles.now__word_hidden)}>
-                  {UI.play}
-                </span>
-                <span className={cx(styles.now__word, !playing && styles.now__word_hidden)}>
-                  {UI.pause}
-                </span>
-              </button>
-              <span className={styles.now__dot} aria-hidden="true">
-                ·
-              </span>
-              <button
-                type="button"
-                className={styles.now__step}
-                aria-label={UI.next}
-                onClick={() => transport.onStep(1)}
-              >
-                {UI.nextLabel}
-              </button>
-            </div>
-          </div>
-
-          <div className={styles.demo__list}>
-            <div className={styles.filters} role="group" aria-label={UI.filters}>
-              {FILTERS.map((filter) => {
-                const active = filter.value === categoryId;
-                return (
-                  <button
-                    key={filter.value ?? 'todo'}
-                    type="button"
-                    className={cx(styles.filters__pill, active && styles.filters__pill_active)}
-                    aria-pressed={active}
-                    onClick={() => changeFilter(filter.value)}
-                  >
-                    {filter.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            <ol
-              key={listChanges}
-              className={cx(styles.list, listChanges > 0 && styles.list_entering)}
+            <span className={styles.now__label} aria-hidden="true">
+              <span className={styles.now__hole} />
+            </span>
+            <button
+              type="button"
+              className={styles['now__disc-toggle']}
+              aria-label={playing ? UI.pause : UI.play}
+              aria-pressed={playing}
+              onClick={transport.onToggle}
             >
-              {visible.map(({ track: row, index }, order) => {
-                const selected = chosen && index === state.selected;
-                const sounding = selected && playing;
-                return (
-                  <li
-                    key={row.id}
-                    className={cx(
-                      styles.track,
-                      selected && styles.track_selected,
-                      sounding && styles.track_playing,
-                    )}
-                    style={{ '--order': order } as CSSProperties}
-                  >
-                    <button
-                      type="button"
-                      className={styles.track__button}
-                      aria-pressed={selected}
-                      onClick={() => act({ type: 'select', index })}
-                    >
-                      <span className={styles.track__state} aria-hidden="true">
-                        <span className={styles.track__number}>{shownPage * size + order + 1}</span>
-                        <span className={styles.track__equalizer}>
-                          <span className={styles.track__bar} />
-                          <span className={styles.track__bar} />
-                          <span className={styles.track__bar} />
-                        </span>
-                        <span className={styles.track__play} />
-                        <span className={styles.track__pause} />
-                      </span>
-                      <StaffTile />
-                      <span className={styles.track__text}>
-                        <span className={styles.track__title}>{row.title}</span>
-                        <span className={styles.track__composer}>{row.composer}</span>
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
+              <span
+                className={cx(
+                  styles.now__glyph,
+                  playing ? styles.now__glyph_pause : styles.now__glyph_play,
+                )}
+                aria-hidden="true"
+              />
+            </button>
+          </div>
 
-            <div className={styles.demo__pager}>
-              {pages > 1 && (
-                <nav className={styles.pager} aria-label={UI.pages}>
-                  <button
-                    type="button"
-                    className={styles.pager__step}
-                    aria-label={UI.previousPage}
-                    disabled={shownPage === 0}
-                    onClick={() => changePage(shownPage - 1)}
-                  >
-                    <svg className={styles.pager__icon} viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M15 6l-6 6 6 6" />
-                    </svg>
-                  </button>
-                  {Array.from({ length: pages }, (_, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      className={cx(
-                        styles.pager__page,
-                        index === shownPage && styles.pager__page_current,
-                      )}
-                      aria-current={index === shownPage ? 'page' : undefined}
-                      onClick={() => changePage(index)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    className={styles.pager__step}
-                    aria-label={UI.nextPage}
-                    disabled={shownPage === pages - 1}
-                    onClick={() => changePage(shownPage + 1)}
-                  >
-                    <svg className={styles.pager__icon} viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M9 6l6 6-6 6" />
-                    </svg>
-                  </button>
-                </nav>
-              )}
+          <p className={styles.now__category}>{categoryLabel(track.categoryId)}</p>
+          <p className={styles.now__title}>{track.title}</p>
+          <MarqueeTitle text={track.title} />
+          <p className={styles.now__composer}>{track.composer}</p>
+
+          <div className={styles.now__progress}>
+            <LineProgress
+              fraction={fraction}
+              onSeek={transport.onSeek}
+              valueText={formatTrackPosition(state.elapsed, duration)}
+            />
+            <div className={styles.now__clocks}>
+              <span>{formatTrackTime(state.elapsed)}</span>
+              <span>−{formatTrackTime(duration - state.elapsed)}</span>
             </div>
           </div>
 
-          {mini && <MiniPlayer title={track.title} composer={track.composer} {...transport} />}
-        </section>
+          <div className={styles.now__transport}>
+            <button
+              type="button"
+              className={styles.now__step}
+              aria-label={UI.previous}
+              onClick={() => transport.onStep(-1)}
+            >
+              {UI.previousLabel}
+            </button>
+            <span className={styles.now__dot} aria-hidden="true">
+              ·
+            </span>
+            <button
+              type="button"
+              className={cx(styles.now__step, styles.now__step_main)}
+              aria-label={UI.toggle}
+              aria-pressed={playing}
+              onClick={transport.onToggle}
+            >
+              <span className={cx(styles.now__word, playing && styles.now__word_hidden)}>
+                {UI.play}
+              </span>
+              <span className={cx(styles.now__word, !playing && styles.now__word_hidden)}>
+                {UI.pause}
+              </span>
+            </button>
+            <span className={styles.now__dot} aria-hidden="true">
+              ·
+            </span>
+            <button
+              type="button"
+              className={styles.now__step}
+              aria-label={UI.next}
+              onClick={() => transport.onStep(1)}
+            >
+              {UI.nextLabel}
+            </button>
+          </div>
+        </div>
 
-        <audio ref={audioRef} preload="none" />
-      </div>
-      <Rail
-        label={copy.rail}
-        options={RAIL_STEPS.map((id) => ({ id, label: copy.steps[id].label }))}
-        value={step}
-        onChange={(next) => act({ type: 'rail', step: next })}
-        status={copy.steps[step].caption}
-      />
+        <div className={styles.demo__list}>
+          <div className={styles.filters} role="group" aria-label={UI.filters}>
+            {FILTERS.map((filter) => {
+              const active = filter.value === categoryId;
+              return (
+                <button
+                  key={filter.value ?? 'todo'}
+                  type="button"
+                  className={cx(styles.filters__pill, active && styles.filters__pill_active)}
+                  aria-pressed={active}
+                  onClick={() => changeFilter(filter.value)}
+                >
+                  {filter.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <ol
+            key={listChanges}
+            className={cx(styles.list, listChanges > 0 && styles.list_entering)}
+          >
+            {visible.map(({ track: row, index }, order) => {
+              const selected = chosen && index === state.selected;
+              const sounding = selected && playing;
+              return (
+                <li
+                  key={row.id}
+                  className={cx(
+                    styles.track,
+                    selected && styles.track_selected,
+                    sounding && styles.track_playing,
+                  )}
+                  style={{ '--order': order } as CSSProperties}
+                >
+                  <button
+                    type="button"
+                    className={styles.track__button}
+                    aria-pressed={selected}
+                    onClick={() => act({ type: 'select', index })}
+                  >
+                    <span className={styles.track__state} aria-hidden="true">
+                      <span className={styles.track__number}>{shownPage * size + order + 1}</span>
+                      <span className={styles.track__equalizer}>
+                        <span className={styles.track__bar} />
+                        <span className={styles.track__bar} />
+                        <span className={styles.track__bar} />
+                      </span>
+                      <span className={styles.track__play} />
+                      <span className={styles.track__pause} />
+                    </span>
+                    <StaffTile />
+                    <span className={styles.track__text}>
+                      <span className={styles.track__title}>{row.title}</span>
+                      <span className={styles.track__composer}>{row.composer}</span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+
+          <div className={styles.demo__pager}>
+            {pages > 1 && (
+              <nav className={styles.pager} aria-label={UI.pages}>
+                <button
+                  type="button"
+                  className={styles.pager__step}
+                  aria-label={UI.previousPage}
+                  disabled={shownPage === 0}
+                  onClick={() => changePage(shownPage - 1)}
+                >
+                  <svg className={styles.pager__icon} viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 6l-6 6 6 6" />
+                  </svg>
+                </button>
+                {Array.from({ length: pages }, (_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={cx(
+                      styles.pager__page,
+                      index === shownPage && styles.pager__page_current,
+                    )}
+                    aria-current={index === shownPage ? 'page' : undefined}
+                    onClick={() => changePage(index)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className={styles.pager__step}
+                  aria-label={UI.nextPage}
+                  disabled={shownPage === pages - 1}
+                  onClick={() => changePage(shownPage + 1)}
+                >
+                  <svg className={styles.pager__icon} viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 6l6 6-6 6" />
+                  </svg>
+                </button>
+              </nav>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <audio ref={audioRef} preload="none" />
+
+      {mini &&
+        createPortal(
+          <div className="demo-root" data-demo="cuarteto-fratres" style={DOCK_ROOT}>
+            <div className={styles.dock} data-ground="light">
+              <MiniPlayer title={track.title} composer={track.composer} {...transport} />
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
@@ -564,8 +580,8 @@ interface MiniPlayerProps {
 }
 
 /**
- * The record of the card, small, pinned in the corner while a work plays and the card has scrolled
- * away. The record is the play/pause button and its grooves are the progress; the paper card with
+ * The record of the card, small, pinned in the corner of the page while a work plays and the card
+ * has scrolled away. The record is the play/pause button and its grooves are the progress; the paper card with
  * the work slides out to its left under the pointer or the keyboard focus.
  */
 function MiniPlayer({

@@ -1,6 +1,6 @@
 /**
  * Pure logic of the player demo: the clocks, the filter and pages of the programme, the
- * transport's next state and the rail step it shows, and the mini player's grooves.
+ * transport's next state, when the mini player shows, and its grooves.
  */
 
 /** Seconds → "m:ss". Fractions are dropped, never rounded up: 59.9 s is still "0:59". */
@@ -39,11 +39,6 @@ export function pageItems<T>(items: readonly T[], page: number, size: number): T
 }
 
 export type PlayerStatus = 'idle' | 'playing' | 'paused';
-/** Where the transport shows: the record's card, or the small disc pinned in the corner. */
-export type PlayerView = 'card' | 'mini';
-export type RailStep = 'idle' | 'playing' | 'paused' | 'mini';
-
-export const RAIL_STEPS: readonly RailStep[] = ['idle', 'playing', 'paused', 'mini'];
 
 export interface PlayerState {
   /** Index of the work on the record: the first one until the reader picks another. */
@@ -51,14 +46,12 @@ export interface PlayerState {
   status: PlayerStatus;
   /** Elapsed seconds of the selected work. */
   elapsed: number;
-  view: PlayerView;
 }
 
 export const INITIAL_PLAYER: PlayerState = {
   selected: 0,
   status: 'idle',
   elapsed: 0,
-  view: 'card',
 };
 
 export type PlayerAction =
@@ -69,15 +62,9 @@ export type PlayerAction =
   | { type: 'seek'; fraction: number }
   /** The clock of the recording, or of the timer standing in for it. */
   | { type: 'tick'; elapsed: number }
-  | { type: 'ended' }
-  /** The demo left the screen: the music stops there. */
-  | { type: 'pause' }
-  | { type: 'rail'; step: RailStep };
+  | { type: 'ended' };
 
-/**
- * The transport. `durations` are the works' lengths, by index. A pause always brings the record's
- * card back, so the rail can say «Paused»; only a sounding work rides in the corner.
- */
+/** The transport. `durations` are the works' lengths, by index. */
 export function reducePlayer(
   state: PlayerState,
   action: PlayerAction,
@@ -91,9 +78,7 @@ export function reducePlayer(
       }
       return { ...state, selected: action.index, elapsed: 0, status: 'playing' };
     case 'toggle':
-      return state.status === 'playing'
-        ? { ...state, status: 'paused', view: 'card' }
-        : { ...state, status: 'playing' };
+      return { ...state, status: state.status === 'playing' ? 'paused' : 'playing' };
     case 'step':
       if (count === 0) return state;
       return {
@@ -113,27 +98,18 @@ export function reducePlayer(
         elapsed: Math.min(durations[state.selected] ?? 0, Math.max(0, action.elapsed)),
       };
     case 'ended':
-      return { ...state, status: 'paused', elapsed: 0, view: 'card' };
-    case 'pause':
-      return state.status === 'playing' ? { ...state, status: 'paused', view: 'card' } : state;
-    case 'rail':
-      switch (action.step) {
-        case 'idle':
-          return INITIAL_PLAYER;
-        case 'playing':
-          return { ...state, status: 'playing', view: 'card' };
-        case 'paused':
-          return { ...state, status: 'paused', view: 'card' };
-        case 'mini':
-          return { ...state, status: 'playing', view: 'mini' };
-      }
+      return { ...state, status: 'paused', elapsed: 0 };
   }
 }
 
-/** The rail step that describes a state: the corner disc only while a work sounds. */
-export function railStepOf(state: PlayerState): RailStep {
-  if (state.status === 'playing' && state.view === 'mini') return 'mini';
-  return state.status;
+/**
+ * Whether the mini player rides in the corner of the page, as on the site
+ * (hooks/use-mini-player-presence.hook.ts): while a work sounds and the card is off screen, and for
+ * a short grace after a pause, since the reader may press play again. The card coming back sends it
+ * away at once.
+ */
+export function miniPlayerShown(playing: boolean, cardInView: boolean, grace: boolean): boolean {
+  return !cardInView && (playing || grace);
 }
 
 /** Radii in the mini record's 100×100 drawing: its edge and the edge of the ink label. */
