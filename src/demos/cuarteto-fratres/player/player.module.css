@@ -473,9 +473,7 @@
       text-align: left;
       transition: background 0.3s ease;
 
-      /* `data-cue-hover`: the frame's drawn pointer rests on this row and stands in for a hover. */
-      &:hover,
-      &[data-cue-hover] {
+      &:hover {
         background: rgb(12 14 16 / 0.05);
       }
     }
@@ -612,12 +610,12 @@
     }
 
     @media (hover: hover) {
-      & .track__button:is(:hover, [data-cue-hover]) .track__state > * {
+      & .track__button:hover .track__state > * {
         opacity: 0;
       }
 
-      & .track:not(.track_playing) .track__button:is(:hover, [data-cue-hover]) .track__play,
-      & .track_playing .track__button:is(:hover, [data-cue-hover]) .track__pause {
+      & .track:not(.track_playing) .track__button:hover .track__play,
+      & .track_playing .track__button:hover .track__pause {
         opacity: 1;
       }
     }
