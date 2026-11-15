@@ -66,21 +66,9 @@ import semblanza from '@/assets/works/cuarteto-fratres/screens/mockup-semblanza.
 
 Cuarteto Fratres is a string quartet from Boca del Río, Veracruz. On stage they were already known. Online they did not exist: no mark, no page, nothing to find when someone searched their name.
 
-I had already been to many of their concerts before I first approached them with a proposal: build their brand and their website. They hired me for all of it. I drew the logo, designed a display typeface, set the palette, took the photographs, and built the site and the CMS behind it. The site scores 98 for performance and 100 for accessibility, best practices and SEO on Lighthouse mobile, and 126 tests cover its logic.
+I had already been to many of their concerts before I first approached them with a proposal: build their brand and their website. They hired me for all of it. I drew the logo, designed a display typeface, set the palette, took the photographs, and built the site and the CMS behind it.
 
 The four musicians also play in the region's orchestras: Jesús Medina is concertmaster of the Boca del Río Philharmonic Orchestra, Alfonso Pérez is its principal cellist, José Sánchez is principal violist of the state youth symphony, and Lucía Paredes, who founded the quartet, plays in the Philharmonic's violins.
-
-<SideNotes label="The result in three figures" cols={3}>
-  <SideNote title="98 in performance" art="gauge">
-    Mobile Lighthouse, with 100 in accessibility, best practices and SEO.
-  </SideNote>
-  <SideNote title="From 2.6 to 1.3 s" art="phone">
-    The time the main content takes to appear on a phone.
-  </SideNote>
-  <SideNote title="126 tests" art="shield">
-    They cover the site's logic.
-  </SideNote>
-</SideNotes>
 
 </CaseSection>
 
@@ -339,7 +327,7 @@ Cuarteto Fratres now has a name you can search, a mark, a typeface, photographs 
 
 <CaseSubsection kicker="Engineering">
 
-On a throttled phone connection the largest element painted in 2.6 seconds; I brought it to 1.3. The audit pointed elsewhere; I found a late-loading display font and duplicated inline music: the display font was the last file to arrive, and the engraved music was inlined twice in the page, 375 KB of it. Preloading the right two fonts and serving the music as static files took the page from 463 KB to 139 KB. I also tried inlining the CSS, measured that it made things worse, and removed it.
+On a throttled phone connection the largest element painted in 2.6 seconds; I brought it to 1.3. The audit pointed elsewhere; I found a late-loading display font and duplicated inline music: the display font was the last file to arrive, and the engraved music was inlined twice in the page, 375 KB of it. Preloading the right two fonts and serving the music as static files took the page from 463 KB to 139 KB. I also tried inlining the CSS, measured that it made things worse, and removed it. Lighthouse on mobile reads 98 for performance and 100 for accessibility, best practices and SEO, and 126 tests cover the logic.
 
 <DemoFrame
   project="cuarteto-fratres"
