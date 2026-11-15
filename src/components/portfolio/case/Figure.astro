@@ -10,9 +10,11 @@
  * - `variant="hero"`: the case cover; eager + high priority, `data-hero-image` on the frame is the
  *   destination of the `pf-work-cover` shared element (RT-02), appear `CASE_APPEAR.cover`.
  * - `appear="<role>"`: CA-01 appear of `CASE_FIGURE_APPEAR[role]`; other figures are static.
+ * - `enlarged`: another picture for the lightbox (the same view with more to read); the thumbnail
+ *   stays `src`. `enlargedAlt` describes it.
  * - Standalone figures are case blocks (`data-case-block`); inside a Gallery the gallery is the block.
  */
-import { Image } from 'astro:assets';
+import { getImage, Image } from 'astro:assets';
 import AppearMotion from '@/components/motion/AppearMotion.astro';
 import { CASE_APPEAR, CASE_FIGURE_APPEAR } from '@/components/motion/presets';
 import { format, getMessages } from '@/i18n/t';
@@ -22,15 +24,37 @@ import type { FigureProps } from './types';
 
 type Props = FigureProps;
 
-const { src, alt, caption, variant = 'default', placeholderLabel, appear } = Astro.props;
+const {
+  src,
+  alt,
+  caption,
+  variant = 'default',
+  placeholderLabel,
+  appear,
+  enlarged,
+  enlargedAlt,
+} = Astro.props;
 const { locale } = splitLocale(Astro.url.pathname);
 const copy = getMessages(locale).case;
 const hero = variant === 'hero';
 const slot = hero ? CASE_APPEAR.cover : appear ? CASE_FIGURE_APPEAR[appear] : undefined;
 const classes = ['figure', `figure_variant_${variant}`];
+// A figure may open a different picture than its thumbnail: the lightbox reads these candidates.
+const enlargedSet = enlarged
+  ? (
+      await Promise.all(
+        FIGURE_WIDTHS.filter((width) => width <= enlarged.width).map(async (width) => {
+          const image = await getImage({ src: enlarged, width, quality: FIGURE_QUALITY });
+          return `${image.src} ${width}w`;
+        }),
+      )
+    ).join(', ')
+  : undefined;
 const trigger = src
   ? {
-      href: src.src,
+      href: (enlarged ?? src).src,
+      'data-lightbox-srcset': enlargedSet,
+      'data-lightbox-alt': enlarged ? (enlargedAlt ?? alt) : undefined,
       'aria-label': format(copy.enlargeImage, { alt }),
       'data-lightbox-trigger': '',
       'data-hero-image': hero ? '' : undefined,

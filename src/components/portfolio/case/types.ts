@@ -75,6 +75,10 @@ export interface FigureProps {
   placeholderLabel?: string;
   /** CA-01 appear of this figure by role (`CASE_FIGURE_APPEAR`); most figures have none. */
   appear?: CaseFigureAppear;
+  /** A different picture for the lightbox; the thumbnail stays `src`. */
+  enlarged?: ImageMetadata;
+  /** Alternative text of `enlarged`; defaults to `alt`. */
+  enlargedAlt?: string;
 }
 
 /**
