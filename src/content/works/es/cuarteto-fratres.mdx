@@ -192,23 +192,23 @@ Llegó ahí quitando cosas. La primera versión usaba una fotografía del cuarte
 
 <CaseSection id="research" title="Cómo tomé las decisiones">
 
-El diseño de este sitio es mío: la sala a oscuras, los pentagramas detrás de los músicos, el disco que gira, el programa de mano, la carta. Usé agentes de IA, sobre todo Claude Code, como equipo de construcción: escriben el código y miden el resultado. Cómo se ve el sitio y cómo se comporta lo decido yo.
+Diseñé cómo se ve y cómo funciona el sitio: la sala a oscuras, los pentagramas detrás de los músicos, el disco que gira, el programa de mano y la carta. Para construirlo trabajé con agentes de IA, principalmente Claude Code, que escribieron el código y midieron los resultados.
 
-El diseño lo juzgo dibujado, nunca descrito. Cuando una decisión estaba abierta mandé construir varias direcciones lado a lado (estilos de íconos, fondos de la portada, la ventana del evento) y las comparé en el navegador, en ancho de escritorio y de teléfono. Muchas veces ninguna era la correcta. Entonces diseñé la pieza yo mismo, elemento por elemento: posición, tamaño, espaciado, tipografía. Se reconstruyó hasta que la pantalla coincidió con lo que yo tenía en la cabeza.
+Cuando tenía varias ideas para una misma pieza, les pedía a los agentes que montaran distintas versiones: estilos de íconos, fondos para la portada o propuestas para la ventana del evento. Las comparaba en el navegador, tanto en escritorio como en teléfono. Si ninguna me convencía, diseñaba yo la pieza, elemento por elemento, desde las dimensiones y los espacios hasta la tipografía. Después seguíamos ajustando la implementación hasta que quedara como la había diseñado.
 
-También descarté ideas mías. Mandé construir la sección de repertorio sobre una textura de madera, en varias versiones, y revertí todo porque competía con las fotografías. Probé poner los títulos de sección en Fratres Display, no me gustó en menos de un minuto, y regresé. Ver rápido que algo está mal es casi todo el oficio.
+También descarté ideas mías. Probé varias versiones de la sección de repertorio con una textura de madera, pero las quité porque competían con las fotografías. También probé Fratres Display en los títulos de sección y regresé a la versión anterior en menos de un minuto.
 
-Nada se quedó sin revisarse. Cada cambio se compiló, se capturó a 1440 y a 390 píxeles de ancho y se guardó en su propio commit, y la lógica vive en funciones puras con sus pruebas al lado.
+Cada cambio pasó por compilación, capturas a 1440 y 390 px y un commit propio. La lógica quedó organizada en funciones puras, con sus pruebas correspondientes.
 
 <SideNotes label="Cómo se tomó cada decisión" cols={3}>
   <SideNote title="Diseñar" art="palette">
-    La idea y la composición de cada pieza van primero, y son mías.
+    Definí cada pieza hasta sus posiciones, espacios y tipografía.
   </SideNote>
   <SideNote title="Comparar" art="compass">
-    Las decisiones abiertas, construidas lado a lado y juzgadas en el navegador en dos anchos.
+    Revisé varias propuestas en el navegador, en escritorio y teléfono.
   </SideNote>
-  <SideNote title="Medir" art="gauge">
-    Capturado, probado y guardado un cambio a la vez.
+  <SideNote title="Revisar" art="gauge">
+    Cada cambio se compiló, se capturó y se guardó por separado.
   </SideNote>
 </SideNotes>
 
@@ -217,9 +217,9 @@ Nada se quedó sin revisarse. Cada cambio se compiló, se capturó a 1440 y a 39
   guest={{ name: 'José Sánchez', photo: josePhoto }}
   delivered
   messages={[
-    { from: 'visitor', text: '¿Qué hace la IA y qué haces tú?' },
-    { from: 'sebastian', text: 'Construye lo que yo diseño, y lo mide.' },
-    { from: 'sebastian', text: 'El diseño es mío.', fx: 'slam' },
+    { from: 'visitor', text: '¿Y Claude Code qué hace?' },
+    { from: 'sebastian', text: 'Escribe el código y mide el resultado.' },
+    { from: 'sebastian', text: 'Yo diseño lo que ves.', fx: 'slam' },
   ]}
 />
 

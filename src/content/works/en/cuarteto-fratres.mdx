@@ -184,23 +184,23 @@ It got there by subtraction. The first version used a photograph of the quartet 
 
 <CaseSection id="research" title="How I made decisions">
 
-The design of this site is mine: the hall in the dark, the staves behind the musicians, the record that turns, the printed programme, the letter. I used AI agents, mainly Claude Code, as the build team. They write the code and measure the result. What the site looks like and how it behaves, I decide.
+I designed how the site looks and behaves, from the darkened hall and the staves behind the musicians to the spinning record, the printed programme and the letter. I built it with AI agents, mainly Claude Code, which wrote the code and measured the results.
 
-I judge design rendered, never described. When a decision was open I had several directions built side by side (icon styles, hero backgrounds, the event window) and compared them in the browser at desktop and phone widths. Often none of them was right. Then I designed the piece myself, element by element: position, size, spacing, type. It was rebuilt until the screen matched what I had in mind.
+When I had several directions to consider, I asked the agents to build them side by side: different icon styles, hero backgrounds or versions of the event window. I compared them in the browser at desktop and phone widths. If none felt right, I designed the piece myself, down to its position, size, spacing and type, then worked through the changes until the screen matched.
 
-I discarded ideas of my own too. I had the repertoire section built on a wood texture, in several versions, and reverted all of it because it competed with the photographs. I tried setting the section titles in Fratres Display, disliked it within a minute, and went back. Seeing quickly that something is wrong is most of the job.
+I discarded my own ideas too. I tried several versions of the repertoire section with a wood-texture background, then reverted them because the texture competed with the photographs. I also tried Fratres Display for the section headings and switched back in less than a minute.
 
-Nothing stayed without being checked. Each change was built, captured at 1440 and 390 pixels wide and committed on its own, and the logic lives in pure functions with their tests beside them.
+Every change went through a build, screenshots at 1440 and 390 px and a separate commit. The logic is organized into pure functions, with tests alongside them.
 
 <SideNotes label="How each decision was made" cols={3}>
   <SideNote title="Design" art="palette">
-    The idea and the composition of each piece come first, and they are mine.
+    I designed each piece down to its position, spacing and type.
   </SideNote>
   <SideNote title="Compare" art="compass">
-    Open decisions built side by side and judged in the browser at two widths.
+    I checked several directions in the browser at desktop and phone widths.
   </SideNote>
-  <SideNote title="Measure" art="gauge">
-    Captured, tested and committed one change at a time.
+  <SideNote title="Verify" art="gauge">
+    Each change was built, captured and committed separately.
   </SideNote>
 </SideNotes>
 
@@ -209,9 +209,9 @@ Nothing stayed without being checked. Each change was built, captured at 1440 an
   guest={{ name: 'José Sánchez', photo: josePhoto }}
   delivered
   messages={[
-    { from: 'visitor', text: 'What does the AI do, and what do you do?' },
-    { from: 'sebastian', text: 'It builds what I design, and measures it.' },
-    { from: 'sebastian', text: 'The design is mine.', fx: 'slam' },
+    { from: 'visitor', text: 'What does Claude Code do?' },
+    { from: 'sebastian', text: 'It writes the code and measures the result.' },
+    { from: 'sebastian', text: 'I design what goes on screen.', fx: 'slam' },
   ]}
 />
 
