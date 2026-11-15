@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: column;
     gap: 28px;
-    padding: 44px 48px 22px;
+    padding: 44px 48px 40px;
     border-radius: var(--d-radius);
     background: var(--d-cream);
     color: var(--d-ink);
@@ -256,7 +256,7 @@
        width of the sheet, the details still on evenly spaced lines. */
     @container demo (max-width: 480px) {
       gap: 24px;
-      padding: 32px 16px 18px;
+      padding: 32px 16px 28px;
 
       & .demo__sheet {
         padding: 6px 22px 28px;

@@ -73,42 +73,44 @@ export function HeroLayers({ locale }: HeroLayersProps) {
   const reached = HERO_STEPS.indexOf(step);
 
   return (
-    <div className={styles.demo} data-ground="ink">
-      <div className={styles.demo__frame}>
-        <div className={styles.demo__stage} data-reached={reached} aria-hidden="true">
-          <div className={styles.demo__glow} />
-          <img className={styles.demo__staff} src={staffUrl} alt="" />
-          <img
-            className={`${styles.demo__music} ${styles.demo__music_ink_plain}`}
-            src={musicPlainUrl}
-            alt=""
-          />
-          <img
-            className={`${styles.demo__music} ${styles.demo__music_ink_thinned}`}
-            src={musicUrl}
-            alt=""
-          />
-          {FIGURES.map((figure, index) => (
-            <div
-              key={figure.src}
-              className={styles.demo__figure}
-              style={
-                {
-                  '--x': `${figure.x}%`,
-                  '--top': `${figure.top}%`,
-                  '--height': `${figure.height}%`,
-                  '--layer': figure.layer,
-                  '--order': index,
-                  '--fade-left': `${figure.fade.left}%`,
-                  '--fade-right': `${figure.fade.right}%`,
-                  '--fade-bottom': `${figure.fade.bottom}%`,
-                } as CSSProperties
-              }
-            >
-              <img className={styles.demo__portrait} src={figure.src} alt="" />
-            </div>
-          ))}
-          <div className={styles.demo__floor} />
+    <div data-demo-shell data-ground="page">
+      <div className={styles.demo} data-ground="ink">
+        <div className={styles.demo__frame}>
+          <div className={styles.demo__stage} data-reached={reached} aria-hidden="true">
+            <div className={styles.demo__glow} />
+            <img className={styles.demo__staff} src={staffUrl} alt="" />
+            <img
+              className={`${styles.demo__music} ${styles.demo__music_ink_plain}`}
+              src={musicPlainUrl}
+              alt=""
+            />
+            <img
+              className={`${styles.demo__music} ${styles.demo__music_ink_thinned}`}
+              src={musicUrl}
+              alt=""
+            />
+            {FIGURES.map((figure, index) => (
+              <div
+                key={figure.src}
+                className={styles.demo__figure}
+                style={
+                  {
+                    '--x': `${figure.x}%`,
+                    '--top': `${figure.top}%`,
+                    '--height': `${figure.height}%`,
+                    '--layer': figure.layer,
+                    '--order': index,
+                    '--fade-left': `${figure.fade.left}%`,
+                    '--fade-right': `${figure.fade.right}%`,
+                    '--fade-bottom': `${figure.fade.bottom}%`,
+                  } as CSSProperties
+                }
+              >
+                <img className={styles.demo__portrait} src={figure.src} alt="" />
+              </div>
+            ))}
+            <div className={styles.demo__floor} />
+          </div>
         </div>
       </div>
       <Rail

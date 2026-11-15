@@ -253,209 +253,210 @@ export function Player({ locale }: PlayerProps) {
   const step = railStepOf(state);
 
   return (
-    <div ref={rootRef} className={styles.demo} data-ground="light">
-      <section
-        className={cx(styles.demo__scene, mini && styles.demo__scene_view_mini)}
-        aria-label={UI.programme}
-      >
-        <div
-          className={cx(styles.now, playing && styles.now_playing)}
-          inert={mini}
-          aria-hidden={mini || undefined}
+    <div data-demo-shell data-ground="page">
+      <div ref={rootRef} className={styles.demo} data-ground="light">
+        <section
+          className={cx(styles.demo__scene, mini && styles.demo__scene_view_mini)}
+          aria-label={UI.programme}
         >
-          <div className={styles.now__disc}>
-            <div className={styles.now__spin} aria-hidden="true">
-              <img className={styles.now__photo} src={record.src} alt="" />
-              <span className={styles.now__grooves} />
-            </div>
-            <span className={styles.now__label} aria-hidden="true">
-              <span className={styles.now__hole} />
-            </span>
-            <button
-              type="button"
-              className={styles['now__disc-toggle']}
-              aria-label={playing ? UI.pause : UI.play}
-              aria-pressed={playing}
-              onClick={transport.onToggle}
-            >
-              <span
-                className={cx(
-                  styles.now__glyph,
-                  playing ? styles.now__glyph_pause : styles.now__glyph_play,
-                )}
-                aria-hidden="true"
-              />
-            </button>
-          </div>
-
-          <p className={styles.now__category}>{categoryLabel(track.categoryId)}</p>
-          <p className={styles.now__title}>{track.title}</p>
-          <MarqueeTitle text={track.title} />
-          <p className={styles.now__composer}>{track.composer}</p>
-
-          <div className={styles.now__progress}>
-            <LineProgress
-              fraction={fraction}
-              onSeek={transport.onSeek}
-              valueText={formatTrackPosition(state.elapsed, duration)}
-            />
-            <div className={styles.now__clocks}>
-              <span>{formatTrackTime(state.elapsed)}</span>
-              <span>−{formatTrackTime(duration - state.elapsed)}</span>
-            </div>
-          </div>
-
-          <div className={styles.now__transport}>
-            <button
-              type="button"
-              className={styles.now__step}
-              aria-label={UI.previous}
-              onClick={() => transport.onStep(-1)}
-            >
-              {UI.previousLabel}
-            </button>
-            <span className={styles.now__dot} aria-hidden="true">
-              ·
-            </span>
-            <button
-              type="button"
-              className={cx(styles.now__step, styles.now__step_main)}
-              aria-label={UI.toggle}
-              aria-pressed={playing}
-              onClick={transport.onToggle}
-            >
-              <span className={cx(styles.now__word, playing && styles.now__word_hidden)}>
-                {UI.play}
-              </span>
-              <span className={cx(styles.now__word, !playing && styles.now__word_hidden)}>
-                {UI.pause}
-              </span>
-            </button>
-            <span className={styles.now__dot} aria-hidden="true">
-              ·
-            </span>
-            <button
-              type="button"
-              className={styles.now__step}
-              aria-label={UI.next}
-              onClick={() => transport.onStep(1)}
-            >
-              {UI.nextLabel}
-            </button>
-          </div>
-        </div>
-
-        <div className={styles.demo__list}>
-          <div className={styles.filters} role="group" aria-label={UI.filters}>
-            {FILTERS.map((filter) => {
-              const active = filter.value === categoryId;
-              return (
-                <button
-                  key={filter.value ?? 'todo'}
-                  type="button"
-                  className={cx(styles.filters__pill, active && styles.filters__pill_active)}
-                  aria-pressed={active}
-                  onClick={() => changeFilter(filter.value)}
-                >
-                  {filter.label}
-                </button>
-              );
-            })}
-          </div>
-
-          <ol
-            key={listChanges}
-            className={cx(styles.list, listChanges > 0 && styles.list_entering)}
+          <div
+            className={cx(styles.now, playing && styles.now_playing)}
+            inert={mini}
+            aria-hidden={mini || undefined}
           >
-            {visible.map(({ track: row, index }, order) => {
-              const selected = chosen && index === state.selected;
-              const sounding = selected && playing;
-              return (
-                <li
-                  key={row.id}
+            <div className={styles.now__disc}>
+              <div className={styles.now__spin} aria-hidden="true">
+                <img className={styles.now__photo} src={record.src} alt="" />
+                <span className={styles.now__grooves} />
+              </div>
+              <span className={styles.now__label} aria-hidden="true">
+                <span className={styles.now__hole} />
+              </span>
+              <button
+                type="button"
+                className={styles['now__disc-toggle']}
+                aria-label={playing ? UI.pause : UI.play}
+                aria-pressed={playing}
+                onClick={transport.onToggle}
+              >
+                <span
                   className={cx(
-                    styles.track,
-                    selected && styles.track_selected,
-                    sounding && styles.track_playing,
+                    styles.now__glyph,
+                    playing ? styles.now__glyph_pause : styles.now__glyph_play,
                   )}
-                  style={{ '--order': order } as CSSProperties}
-                >
-                  <button
-                    type="button"
-                    className={styles.track__button}
-                    aria-pressed={selected}
-                    onClick={() => act({ type: 'select', index })}
-                  >
-                    <span className={styles.track__state} aria-hidden="true">
-                      <span className={styles.track__number}>{shownPage * size + order + 1}</span>
-                      <span className={styles.track__equalizer}>
-                        <span className={styles.track__bar} />
-                        <span className={styles.track__bar} />
-                        <span className={styles.track__bar} />
-                      </span>
-                      <span className={styles.track__play} />
-                      <span className={styles.track__pause} />
-                    </span>
-                    <StaffTile />
-                    <span className={styles.track__text}>
-                      <span className={styles.track__title}>{row.title}</span>
-                      <span className={styles.track__composer}>{row.composer}</span>
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
 
-          <div className={styles.demo__pager}>
-            {pages > 1 && (
-              <nav className={styles.pager} aria-label={UI.pages}>
-                <button
-                  type="button"
-                  className={styles.pager__step}
-                  aria-label={UI.previousPage}
-                  disabled={shownPage === 0}
-                  onClick={() => changePage(shownPage - 1)}
-                >
-                  <svg className={styles.pager__icon} viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M15 6l-6 6 6 6" />
-                  </svg>
-                </button>
-                {Array.from({ length: pages }, (_, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className={cx(
-                      styles.pager__page,
-                      index === shownPage && styles.pager__page_current,
-                    )}
-                    aria-current={index === shownPage ? 'page' : undefined}
-                    onClick={() => changePage(index)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  className={styles.pager__step}
-                  aria-label={UI.nextPage}
-                  disabled={shownPage === pages - 1}
-                  onClick={() => changePage(shownPage + 1)}
-                >
-                  <svg className={styles.pager__icon} viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 6l6 6-6 6" />
-                  </svg>
-                </button>
-              </nav>
-            )}
+            <p className={styles.now__category}>{categoryLabel(track.categoryId)}</p>
+            <p className={styles.now__title}>{track.title}</p>
+            <MarqueeTitle text={track.title} />
+            <p className={styles.now__composer}>{track.composer}</p>
+
+            <div className={styles.now__progress}>
+              <LineProgress
+                fraction={fraction}
+                onSeek={transport.onSeek}
+                valueText={formatTrackPosition(state.elapsed, duration)}
+              />
+              <div className={styles.now__clocks}>
+                <span>{formatTrackTime(state.elapsed)}</span>
+                <span>−{formatTrackTime(duration - state.elapsed)}</span>
+              </div>
+            </div>
+
+            <div className={styles.now__transport}>
+              <button
+                type="button"
+                className={styles.now__step}
+                aria-label={UI.previous}
+                onClick={() => transport.onStep(-1)}
+              >
+                {UI.previousLabel}
+              </button>
+              <span className={styles.now__dot} aria-hidden="true">
+                ·
+              </span>
+              <button
+                type="button"
+                className={cx(styles.now__step, styles.now__step_main)}
+                aria-label={UI.toggle}
+                aria-pressed={playing}
+                onClick={transport.onToggle}
+              >
+                <span className={cx(styles.now__word, playing && styles.now__word_hidden)}>
+                  {UI.play}
+                </span>
+                <span className={cx(styles.now__word, !playing && styles.now__word_hidden)}>
+                  {UI.pause}
+                </span>
+              </button>
+              <span className={styles.now__dot} aria-hidden="true">
+                ·
+              </span>
+              <button
+                type="button"
+                className={styles.now__step}
+                aria-label={UI.next}
+                onClick={() => transport.onStep(1)}
+              >
+                {UI.nextLabel}
+              </button>
+            </div>
           </div>
-        </div>
 
-        {mini && <MiniPlayer title={track.title} composer={track.composer} {...transport} />}
-      </section>
+          <div className={styles.demo__list}>
+            <div className={styles.filters} role="group" aria-label={UI.filters}>
+              {FILTERS.map((filter) => {
+                const active = filter.value === categoryId;
+                return (
+                  <button
+                    key={filter.value ?? 'todo'}
+                    type="button"
+                    className={cx(styles.filters__pill, active && styles.filters__pill_active)}
+                    aria-pressed={active}
+                    onClick={() => changeFilter(filter.value)}
+                  >
+                    {filter.label}
+                  </button>
+                );
+              })}
+            </div>
 
-      <audio ref={audioRef} preload="none" />
+            <ol
+              key={listChanges}
+              className={cx(styles.list, listChanges > 0 && styles.list_entering)}
+            >
+              {visible.map(({ track: row, index }, order) => {
+                const selected = chosen && index === state.selected;
+                const sounding = selected && playing;
+                return (
+                  <li
+                    key={row.id}
+                    className={cx(
+                      styles.track,
+                      selected && styles.track_selected,
+                      sounding && styles.track_playing,
+                    )}
+                    style={{ '--order': order } as CSSProperties}
+                  >
+                    <button
+                      type="button"
+                      className={styles.track__button}
+                      aria-pressed={selected}
+                      onClick={() => act({ type: 'select', index })}
+                    >
+                      <span className={styles.track__state} aria-hidden="true">
+                        <span className={styles.track__number}>{shownPage * size + order + 1}</span>
+                        <span className={styles.track__equalizer}>
+                          <span className={styles.track__bar} />
+                          <span className={styles.track__bar} />
+                          <span className={styles.track__bar} />
+                        </span>
+                        <span className={styles.track__play} />
+                        <span className={styles.track__pause} />
+                      </span>
+                      <StaffTile />
+                      <span className={styles.track__text}>
+                        <span className={styles.track__title}>{row.title}</span>
+                        <span className={styles.track__composer}>{row.composer}</span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
 
+            <div className={styles.demo__pager}>
+              {pages > 1 && (
+                <nav className={styles.pager} aria-label={UI.pages}>
+                  <button
+                    type="button"
+                    className={styles.pager__step}
+                    aria-label={UI.previousPage}
+                    disabled={shownPage === 0}
+                    onClick={() => changePage(shownPage - 1)}
+                  >
+                    <svg className={styles.pager__icon} viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M15 6l-6 6 6 6" />
+                    </svg>
+                  </button>
+                  {Array.from({ length: pages }, (_, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className={cx(
+                        styles.pager__page,
+                        index === shownPage && styles.pager__page_current,
+                      )}
+                      aria-current={index === shownPage ? 'page' : undefined}
+                      onClick={() => changePage(index)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    className={styles.pager__step}
+                    aria-label={UI.nextPage}
+                    disabled={shownPage === pages - 1}
+                    onClick={() => changePage(shownPage + 1)}
+                  >
+                    <svg className={styles.pager__icon} viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M9 6l6 6-6 6" />
+                    </svg>
+                  </button>
+                </nav>
+              )}
+            </div>
+          </div>
+
+          {mini && <MiniPlayer title={track.title} composer={track.composer} {...transport} />}
+        </section>
+
+        <audio ref={audioRef} preload="none" />
+      </div>
       <Rail
         label={copy.rail}
         options={RAIL_STEPS.map((id) => ({ id, label: copy.steps[id].label }))}

@@ -63,25 +63,27 @@ export function Performance({ locale }: PerformanceProps) {
   const figure = (value: number, decimals: number) => formatFigure(countUp(value, shown), decimals);
 
   return (
-    <div
-      className={styles.demo}
-      data-ground="ink"
-      data-animate={entry > 0 && !reduced ? 'true' : 'false'}
-    >
-      <div className={styles.demo__scene}>
-        <p className={styles.demo__kicker}>{copy.states[state].title}</p>
-        <div key={`${state}-${entry}`} className={styles.demo__chart}>
-          <p className={styles.demo__alt}>{copy.alt[state]}</p>
-          <div className={styles.demo__visual} aria-hidden="true">
-            {state === 'paint' && <PaintChart copy={copy} figure={figure} />}
-            {state === 'weight' && <WeightChart copy={copy} figure={figure} />}
-            {state === 'lighthouse' && <LighthouseChart copy={copy} figure={figure} />}
-            {state === 'discarded' && <DiscardedChart copy={copy} figure={figure} />}
+    <div data-demo-shell data-ground="page">
+      <div
+        className={styles.demo}
+        data-ground="ink"
+        data-animate={entry > 0 && !reduced ? 'true' : 'false'}
+      >
+        <div className={styles.demo__scene}>
+          <p className={styles.demo__kicker}>{copy.states[state].title}</p>
+          <div key={`${state}-${entry}`} className={styles.demo__chart}>
+            <p className={styles.demo__alt}>{copy.alt[state]}</p>
+            <div className={styles.demo__visual} aria-hidden="true">
+              {state === 'paint' && <PaintChart copy={copy} figure={figure} />}
+              {state === 'weight' && <WeightChart copy={copy} figure={figure} />}
+              {state === 'lighthouse' && <LighthouseChart copy={copy} figure={figure} />}
+              {state === 'discarded' && <DiscardedChart copy={copy} figure={figure} />}
+            </div>
           </div>
+          <p className={styles.demo__method}>
+            {state === 'lighthouse' ? copy.lighthouseNote : copy.method}
+          </p>
         </div>
-        <p className={styles.demo__method}>
-          {state === 'lighthouse' ? copy.lighthouseNote : copy.method}
-        </p>
       </div>
       <Rail
         label={copy.rail}

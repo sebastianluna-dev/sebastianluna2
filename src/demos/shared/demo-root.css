@@ -29,6 +29,16 @@
       display: block;
     }
     /*
+     * The outer element of a demo: its scene, on a ground of its own, and under it the rail, which
+     * stands on the page so it never reads as part of the reproduced screen.
+     */
+    & [data-demo-shell] {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /*
      * A demo whose rail stands on the page itself and not on a ground of its own
      * (`data-ground="page"`): the rail follows the theme of the portfolio. This is the seam, so it
      * is the one place of the demos that looks at the page's theme.

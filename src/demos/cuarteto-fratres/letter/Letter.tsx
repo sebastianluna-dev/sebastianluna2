@@ -205,34 +205,36 @@ export function Letter({ locale }: LetterProps) {
   const shownErrors = state === 'errors' ? errors : {};
 
   return (
-    <div className={styles.demo} data-ground="light">
-      <div className={styles.demo__desk}>
-        {/* A second sheet under the letter, slightly turned. */}
-        <div className={styles.demo__under} aria-hidden="true" />
-        <div className={styles.demo__sheet}>
-          <LetterForm
-            ghost
-            values={EMPTY_CONTACT}
-            errors={EMPTY_ERRORS}
-            notice={CONTACT_ERROR_NOTICE}
-            idPrefix={idPrefix}
-          />
-          <LetterForm
-            hidden={sent}
-            values={values}
-            errors={shownErrors}
-            notice={state === 'errors' ? CONTACT_ERROR_NOTICE : null}
-            idPrefix={idPrefix}
-            onChange={onChange}
-            onSubmit={onSubmit}
-          />
-          <div ref={sentRef} className={styles.demo__sent} role="status" tabIndex={-1}>
-            {sent && (
-              <>
-                <h3 className={styles['demo__sent-title']}>{SITE.sentTitle}</h3>
-                <p className={styles['demo__sent-text']}>{SITE.sentText}</p>
-              </>
-            )}
+    <div data-demo-shell data-ground="page">
+      <div className={styles.demo} data-ground="light">
+        <div className={styles.demo__desk}>
+          {/* A second sheet under the letter, slightly turned. */}
+          <div className={styles.demo__under} aria-hidden="true" />
+          <div className={styles.demo__sheet}>
+            <LetterForm
+              ghost
+              values={EMPTY_CONTACT}
+              errors={EMPTY_ERRORS}
+              notice={CONTACT_ERROR_NOTICE}
+              idPrefix={idPrefix}
+            />
+            <LetterForm
+              hidden={sent}
+              values={values}
+              errors={shownErrors}
+              notice={state === 'errors' ? CONTACT_ERROR_NOTICE : null}
+              idPrefix={idPrefix}
+              onChange={onChange}
+              onSubmit={onSubmit}
+            />
+            <div ref={sentRef} className={styles.demo__sent} role="status" tabIndex={-1}>
+              {sent && (
+                <>
+                  <h3 className={styles['demo__sent-title']}>{SITE.sentTitle}</h3>
+                  <p className={styles['demo__sent-text']}>{SITE.sentText}</p>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

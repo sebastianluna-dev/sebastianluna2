@@ -22,7 +22,6 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
-    padding-bottom: 20px;
     border-radius: var(--d-radius);
     background: var(--d-white);
     color: var(--ink);
