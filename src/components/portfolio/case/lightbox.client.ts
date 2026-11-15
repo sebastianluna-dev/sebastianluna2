@@ -98,7 +98,7 @@ function open(trigger: HTMLElement, byPointer: boolean): void {
 
   const src = pickLightboxSource(
     thumb.getAttribute('srcset'),
-    window.innerWidth,
+    window.innerWidth * (window.devicePixelRatio || 1),
     trigger.getAttribute('href') ?? thumb.currentSrc,
   );
   if (!src) return;

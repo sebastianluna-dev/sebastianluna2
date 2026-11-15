@@ -17,7 +17,7 @@ import AppearMotion from '@/components/motion/AppearMotion.astro';
 import { CASE_APPEAR, CASE_FIGURE_APPEAR } from '@/components/motion/presets';
 import { format, getMessages } from '@/i18n/t';
 import { splitLocale } from '@/lib/i18n-paths';
-import { FIGURE_SIZES, FIGURE_WIDTHS } from '@/lib/lightbox';
+import { FIGURE_QUALITY, FIGURE_SIZES, FIGURE_WIDTHS } from '@/lib/lightbox';
 import type { FigureProps } from './types';
 
 type Props = FigureProps;
@@ -44,6 +44,7 @@ const image = src
       alt,
       widths: [...FIGURE_WIDTHS],
       sizes: FIGURE_SIZES,
+      quality: FIGURE_QUALITY,
       loading: hero ? ('eager' as const) : ('lazy' as const),
       fetchpriority: hero ? ('high' as const) : undefined,
       decoding: 'async' as const,

@@ -750,8 +750,12 @@ export const LIGHTBOX = {
     /** Opacity stays 1 until 85 % of the way back, then fades to 0. */
     imageHoldUntil: 0.85,
   },
-  /** Source width of the enlarged image: clamp(minWidth, vwFactor · innerWidth, maxWidth) px. */
-  source: { minWidth: 960, vwFactor: 1.25, maxWidth: 1600 },
+  /**
+   * Source width of the enlarged image: clamp(minWidth, vwFactor · device pixels across the window,
+   * maxWidth) px. The cap is the width of the case captures (1440 at 2x), so a high-density screen
+   * gets one image pixel per device pixel.
+   */
+  source: { minWidth: 960, vwFactor: 1.25, maxWidth: 2880 },
 } as const;
 
 /** CA-09 spring of bubbles, typing bubble and avatar (ζ .6155, ωn 10.915 per unit of duration, peak 1.0855). */

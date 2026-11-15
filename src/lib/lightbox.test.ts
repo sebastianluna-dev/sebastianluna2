@@ -53,10 +53,11 @@ describe('enlarged source (CA-07)', () => {
     expect(parseSrcset(null)).toEqual([]);
   });
 
-  it('wants clamp(960, 1.25 · innerWidth, 1600)', () => {
+  it('wants 1.25 times the device pixels across the window, between its two limits', () => {
     expect(lightboxSourceWidth(390)).toBe(LIGHTBOX.source.minWidth);
     expect(lightboxSourceWidth(1024)).toBe(1280);
-    expect(lightboxSourceWidth(1440)).toBe(LIGHTBOX.source.maxWidth);
+    expect(lightboxSourceWidth(1440)).toBe(1800);
+    expect(lightboxSourceWidth(2880)).toBe(LIGHTBOX.source.maxWidth);
   });
 
   it('picks the first candidate wide enough, else the largest, else the fallback', () => {

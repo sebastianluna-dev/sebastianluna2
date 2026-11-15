@@ -193,7 +193,8 @@ const places = ['left', 'centre', 'right'] as const;
       & .phone__sheen {
         position: absolute;
         inset: 0;
-        border-radius: inherit;
+        /* The same curve as the picture under it, so no second edge shows in the corners. */
+        border-radius: calc(var(--corner) - var(--rim) - var(--bezel));
         background:
           linear-gradient(
             118deg,

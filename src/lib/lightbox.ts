@@ -19,7 +19,10 @@ export const PHONE_GAP = 12;
 export const WIDE_MIN = 810;
 
 /** Thumbnail widths of a figure, up to the largest enlarged source the lightbox asks for (CA-07). */
-export const FIGURE_WIDTHS = [360, 720, 1080, 1440, LIGHTBOX.source.maxWidth] as const;
+export const FIGURE_WIDTHS = [360, 720, 1080, 1440, 2160, LIGHTBOX.source.maxWidth] as const;
+
+/** Encoder quality of every figure: the dark grounds of the captures band at the default. */
+export const FIGURE_QUALITY = 90;
 
 const px = (value: number) => `${Math.ceil(value)}px`;
 /** Column width on phones: the viewport minus both gutters (the column caps at 720 from 760 up). */
@@ -90,7 +93,10 @@ export function parseSrcset(srcset: string | null | undefined): SrcsetCandidate[
     .sort((a, b) => a.width - b.width);
 }
 
-/** CA-07: wanted width of the enlarged image, clamp(960, 1.25 · innerWidth, 1600). */
+/**
+ * CA-07: wanted width of the enlarged image, clamp(minWidth, vwFactor · `deviceWidth`, maxWidth),
+ * where `deviceWidth` is the window width in device pixels (innerWidth · devicePixelRatio).
+ */
 export function lightboxSourceWidth(
   innerWidth: number,
   source: { minWidth: number; vwFactor: number; maxWidth: number } = LIGHTBOX.source,
