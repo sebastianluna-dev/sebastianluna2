@@ -1,54 +1,303 @@
 @layer demos {
-  /* The event window of the site (event-dialog.comp.css) at about 0.72 of its size, so the 920 px
-     sheet fits the 720 column; the phone layout keeps the site's own numbers. */
+  /* The «Cartelera» section of the site and the window of a date. The posters (poster.comp.css)
+     are at about 0.52 of their desktop size, so three stand in a row in the 720 column, and the
+     window (event-dialog.comp.css) at about 0.72; the phone layouts keep close to the site's own
+     numbers. */
   .demo {
     --stage-height: 600px;
     --sheet-max: calc(var(--stage-height) - 48px);
     --sheet-ink-line: rgb(12 14 16 / 0.22);
     --gutter: 20px;
+    --bill-gutter: 22px;
+    --poster-gap: 13px;
 
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
     border-radius: var(--d-radius);
-    background: var(--d-ink-deep);
+    background: var(--d-white);
+    color: var(--d-ink);
     overflow: hidden;
 
-    /* The bill under the backdrop: fixed height, so no state moves the rail. */
+    /* One cell for the bill and the window over it: a fixed height, open or closed. */
     & .demo__stage {
       position: relative;
       display: grid;
-      place-items: center;
+      grid-template: minmax(0, 1fr) / minmax(0, 1fr);
       height: var(--stage-height);
       overflow: hidden;
-      background: var(--d-ink-soft);
+    }
+
+    & :focus-visible {
+      outline: 2px solid var(--d-focus);
+      outline-offset: 3px;
+    }
+
+    & :where(h3, h4, h5, p, ol, ul) {
+      margin: 0;
+      padding: 0;
     }
 
     & .demo__bill {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      grid-template-rows: auto minmax(0, 1fr);
-      gap: 18px;
-      padding: 18px 28px 56px;
+      grid-area: 1 / 1;
+      align-self: center;
+      min-width: 0;
+      padding: 0 var(--bill-gutter);
     }
 
     & .demo__bill-title {
-      grid-column: 1 / -1;
-      justify-self: center;
-      color: rgb(242 244 243 / 0.16);
-      font: 400 88px / 1 var(--d-font-title);
+      margin-bottom: 28px;
+      font: 400 60px / 1 var(--d-font-title);
+      text-align: center;
     }
 
-    & .demo__bill-card {
-      margin-top: 40px;
-      border-radius: 14px;
-      background: rgb(10 11 14 / 0.5);
+    & .demo__posters {
+      display: flex;
+      justify-content: center;
+      gap: var(--poster-gap);
+      list-style: none;
     }
 
-    & .demo__bill-card_tone_cream {
-      background: rgb(252 234 213 / 0.16);
+    & .demo__posters-item {
+      flex: 0 1 calc((100% - 2 * var(--poster-gap)) / 3);
+      min-width: 0;
+    }
+
+    /* A 4:5.4 poster. --a and --b: the light and the deep shade of its ground. */
+    & .demo__poster {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      aspect-ratio: 4 / 5.4;
+      border-radius: 10px;
+      background: radial-gradient(110% 80% at 50% 26%, var(--a), var(--b) 72%);
+      box-shadow: 0 16px 32px -18px rgb(18 20 24 / 0.6);
+      color: var(--d-ivory);
+
+      /* Dark veil under the text of a date; the cream poster needs none. */
+      &::after {
+        content: '';
+        position: absolute;
+        inset: auto 0 0;
+        z-index: 3;
+        height: 62%;
+        background: linear-gradient(180deg, transparent, var(--b) 62%);
+        pointer-events: none;
+      }
+    }
+
+    & .demo__poster_palette_graphite {
+      --a: #33373d;
+      --b: #0e1012;
+      --d-focus: var(--d-ivory);
+    }
+
+    & .demo__poster_palette_cream {
+      --a: #fbf1e2;
+      --b: #f1dcc0;
+      --d-focus: var(--d-ink);
+
+      color: var(--d-ink);
+
+      &::after {
+        display: none;
+      }
+    }
+
+    /* The photo takes the ground's colour and dissolves into it downwards. */
+    & .demo__poster-photo {
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 0;
+      height: 74%;
+      overflow: hidden;
+      mask-image: linear-gradient(180deg, #000 40%, transparent);
+
+      /* The sides a little darker, so the date and the city read over any photo. */
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          color-mix(in srgb, var(--b) 62%, transparent) 0%,
+          transparent 42%,
+          transparent 70%,
+          color-mix(in srgb, var(--b) 55%, transparent) 100%
+        );
+        pointer-events: none;
+      }
+    }
+
+    & .demo__poster-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: var(--d-filter-musicians);
+      opacity: 0.85;
+      transition: transform 1.4s var(--d-ease-stage);
+    }
+
+    & .demo__poster:hover .demo__poster-image,
+    & .demo__poster:focus-within .demo__poster-image {
+      transform: scale(1.05);
+    }
+
+    /* The quartet's staff, a little below the middle of the poster, behind the title. */
+    & .demo__poster-staff {
+      position: absolute;
+      inset: 14% 0 -14%;
+      z-index: 1;
+      overflow: hidden;
+      opacity: 0.22;
+      pointer-events: none;
+      mask-image: radial-gradient(60% 46% at 52% 34%, #000 22%, transparent 100%);
+
+      & svg {
+        width: 100%;
+        height: 100%;
+        animation: programme-staff-drift 16s ease-in-out infinite alternate;
+      }
+
+      & path {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1;
+      }
+    }
+
+    & .demo__poster_palette_cream .demo__poster-staff {
+      opacity: 0.5;
+    }
+
+    & .demo__poster-top {
+      position: absolute;
+      inset: 6% 7% auto;
+      z-index: 6;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    & .demo__poster-day {
+      display: block;
+      font: 400 41px / 0.8 var(--d-font-display);
+    }
+
+    & .demo__poster-month {
+      display: block;
+      margin-top: 6px;
+      font: italic 500 10.5px / 1 var(--d-font-label);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Read from the bottom up, like the spine of a book. */
+    & .demo__poster-side {
+      font: italic 500 12px / 1 var(--d-font-label);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+    }
+
+    & .demo__poster-bottom {
+      position: absolute;
+      inset: auto 7% 6%;
+      z-index: 6;
+    }
+
+    & .demo__poster-kicker {
+      display: block;
+      margin: 0 0 0.5em 0.06em;
+      font: italic 500 11px / 1 var(--d-font-label);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    & .demo__poster-syllables {
+      display: block;
+      font: 400 42px / 0.84 var(--d-font-display);
+      text-transform: uppercase;
+    }
+
+    & .demo__poster-syllable {
+      display: block;
+    }
+
+    & .demo__poster-where {
+      margin-top: 8px;
+      font: italic 500 10.5px / 1.25 var(--d-font-label);
+      text-transform: uppercase;
+    }
+
+    & .demo__poster-note {
+      margin-top: 1px;
+      font: italic 500 10.5px / 1.3 var(--d-font-label);
+      opacity: 0.92;
+    }
+
+    /* The outline pill of a date; the invitation's is the ink one. */
+    & .demo__poster-action {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      margin-top: 10px;
+      padding: 0 13px;
+      border: 0;
+      border-radius: 999px;
+      background: none;
+      box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55);
+      color: inherit;
+      font: 600 10.5px / 1 var(--d-font-label);
+      letter-spacing: 0.16em;
+      text-decoration: none;
+      text-transform: uppercase;
+      white-space: nowrap;
+      cursor: pointer;
+      transition:
+        background 0.3s ease,
+        color 0.3s ease;
+
+      &:hover {
+        background: var(--d-ivory);
+        box-shadow: none;
+        color: var(--d-ink);
+      }
+    }
+
+    & .demo__poster_palette_cream .demo__poster-action {
+      background: var(--d-ink);
+      box-shadow: none;
+      color: var(--d-ivory);
+
+      &:hover {
+        background: var(--d-ink-soft);
+        color: var(--d-ivory);
+      }
+    }
+
+    & .demo__poster-icon {
+      flex: none;
+      width: 11px;
+      height: 11px;
+    }
+
+    /* The window's backdrop, over the bill and inside the scene. */
+    & .demo__backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 7;
+      background: rgb(18 20 24 / 0.72);
+      backdrop-filter: blur(4px);
+      animation: programme-fade 0.3s ease;
+    }
+
+    & .demo__backdrop_closing {
+      pointer-events: none;
+      animation: programme-fade-out 0.25s ease forwards;
     }
 
     /* The sheet: the cream programme, its own focus colour on the cream. */
@@ -56,7 +305,9 @@
       --d-focus: var(--d-ink);
 
       position: relative;
-      z-index: 1;
+      z-index: 8;
+      grid-area: 1 / 1;
+      place-self: center;
       display: grid;
       grid-template-columns: 190px minmax(0, 1fr);
       width: calc(100% - 56px);
@@ -69,19 +320,11 @@
       scrollbar-width: thin;
       scrollbar-color: rgb(12 14 16 / 0.4) var(--d-cream);
 
-      &[data-reopened] {
-        animation: programme-in 0.45s var(--d-ease-stage);
-      }
+      animation: programme-in 0.45s var(--d-ease-stage);
+    }
 
-      & :focus-visible {
-        outline: 2px solid var(--d-focus);
-        outline-offset: 3px;
-      }
-
-      & :where(h3, h4, p, ol, ul) {
-        margin: 0;
-        padding: 0;
-      }
+    & .demo__sheet_closing {
+      animation: programme-out 0.25s ease forwards;
     }
 
     & .demo__handle {
@@ -287,6 +530,7 @@
     }
 
     & .demo__link {
+      position: relative;
       display: inline-block;
       margin-top: 8px;
       color: inherit;
@@ -307,6 +551,7 @@
 
     /* The site's ink pill button. */
     & .demo__button {
+      position: relative;
       display: inline-flex;
       align-items: center;
       gap: 10px;
@@ -347,6 +592,7 @@
       & .demo__sheet {
         position: absolute;
         inset: 44px 0 0;
+        place-self: stretch;
         display: block;
         width: auto;
         max-height: none;
@@ -355,9 +601,11 @@
         overflow-y: auto;
         overscroll-behavior: contain;
 
-        &[data-reopened] {
-          animation-name: programme-rise;
-        }
+        animation-name: programme-rise;
+      }
+
+      & .demo__sheet_closing {
+        animation-name: programme-sink;
       }
 
       & .demo__handle {
@@ -515,40 +763,125 @@
         height: 18px;
       }
 
+      /* The bill on the phone: one row that scrolls sideways and snaps to each poster. The padding
+         leaves room for the posters' shadow and the negative margin gives that room back. */
       & .demo__bill {
-        grid-template-columns: minmax(0, 1fr);
-        padding: 0 20px;
+        padding: 0;
       }
 
       & .demo__bill-title {
-        font-size: 64px;
+        margin-bottom: 26px;
+        font-size: 58px;
       }
 
-      & .demo__bill-card:not(:first-of-type) {
-        display: none;
+      & .demo__posters {
+        justify-content: flex-start;
+        gap: 14px;
+        margin: -24px 0 -50px;
+        padding: 24px var(--bill-gutter) 50px;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
+
+      & .demo__posters-item {
+        flex: 0 0 78cqi;
+        scroll-snap-align: center;
+      }
+
+      & .demo__poster {
+        border-radius: 16px;
+        box-shadow: 0 30px 60px -36px rgb(18 20 24 / 0.6);
+      }
+
+      & .demo__poster-day {
+        font-size: 54px;
+      }
+
+      & .demo__poster-month {
+        margin-top: 9px;
+        font-size: 15px;
+      }
+
+      & .demo__poster-side {
+        font-size: 17px;
+      }
+
+      & .demo__poster-kicker {
+        font-size: 15px;
+      }
+
+      & .demo__poster-syllables {
+        font-size: 52px;
+      }
+
+      & .demo__poster-where {
+        margin-top: 12px;
+        font-size: 15.5px;
+      }
+
+      & .demo__poster-note {
+        margin-top: 2px;
+        font-size: 15.5px;
+      }
+
+      & .demo__poster-action {
+        gap: 10px;
+        min-height: 40px;
+        margin-top: 14px;
+        padding: 0 17px;
+        font-size: 13px;
+      }
+
+      & .demo__poster-icon {
+        width: 14px;
+        height: 14px;
       }
     }
 
+    /* 44 px targets for a finger, as invisible areas around the controls: nothing grows. */
     @media (pointer: coarse) {
-      & .demo__close {
-        width: 44px;
-        height: 44px;
-      }
-
-      & .demo__button {
-        min-height: 44px;
+      & .demo__poster-action::before,
+      & .demo__close::before,
+      & .demo__link::before,
+      & .demo__button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: max(100%, 44px);
+        height: max(100%, 44px);
+        translate: -50% -50%;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      & .demo__sheet[data-reopened] {
+      & .demo__sheet,
+      & .demo__backdrop {
         animation: programme-fade 0.2s ease;
       }
 
+      & .demo__sheet_closing,
+      & .demo__backdrop_closing {
+        animation: programme-fade-out 0.2s ease forwards;
+      }
+
+      & .demo__poster-staff svg {
+        animation: none;
+      }
+
+      & .demo__poster-image,
       & .demo__icon {
         transition: none;
       }
 
+      & .demo__poster:hover .demo__poster-image,
+      & .demo__poster:focus-within .demo__poster-image,
       & .demo__button:hover .demo__icon,
       & .demo__button:focus-visible .demo__icon {
         transform: none;
@@ -563,8 +896,21 @@
     }
   }
 
+  @keyframes programme-out {
+    to {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+    }
+  }
+
   @keyframes programme-rise {
     from {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes programme-sink {
+    to {
       transform: translateY(100%);
     }
   }
@@ -572,6 +918,22 @@
   @keyframes programme-fade {
     from {
       opacity: 0;
+    }
+  }
+
+  @keyframes programme-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes programme-staff-drift {
+    from {
+      transform: translate3d(-0.9%, 0.3%, 0) rotate(-0.3deg);
+    }
+
+    to {
+      transform: translate3d(0.9%, -0.5%, 0) rotate(0.3deg);
     }
   }
 }
