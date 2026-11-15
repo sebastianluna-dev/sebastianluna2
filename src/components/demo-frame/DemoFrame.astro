@@ -11,7 +11,9 @@
  *
  * `interactive` marks a demo the reader is meant to use: a drawn pointer rests on its first thing to
  * press (`cue`), with a ring that beats, and leaves for good at the reader's first press or key
- * inside the demo. It is decoration (`aria-hidden`): the caption says what to do.
+ * inside the demo. It is decoration (`aria-hidden`): the caption says what to do. The control under
+ * the pointer gets `data-cue-hover`, which a demo may style as its hover, until the reader's own
+ * pointer moves over the demo.
  */
 import '@demos/shared/demo-root.css';
 
@@ -66,19 +68,56 @@ const cueStyle = `--cue-x:${cueX};--cue-y:${cueY};--cue-narrow-x:${narrowX};--cu
 </figure>
 
 <script>
-  // The pointer has done its job once the reader presses or types inside the demo.
+  const CONTROL = 'button, a, input, [role="button"]';
+  /** The pointer's tip inside its drawing, in px from its top-left corner. */
+  const TIP = { x: 6, y: 4 };
+  /** The demo needs a moment on screen (its island hydrates when visible) before it is marked. */
+  const SETTLE_MS = 600;
+
+  /** Marks the control under the drawn pointer, so the demo can show it hovered. */
+  function markUnderCue(frame: HTMLElement): void {
+    const cue = frame.querySelector<HTMLElement>('.demo-frame__cue');
+    const root = frame.querySelector<HTMLElement>('.demo-root');
+    if (!cue || !root || 'demoUsed' in frame.dataset || 'demoHovered' in frame.dataset) return;
+    const rect = cue.getBoundingClientRect();
+    const under = document
+      .elementsFromPoint(rect.left + TIP.x, rect.top + TIP.y)
+      .find((element) => root.contains(element));
+    root.querySelector('[data-cue-hover]')?.removeAttribute('data-cue-hover');
+    under?.closest(CONTROL)?.setAttribute('data-cue-hover', '');
+  }
+
+  // The pointer has done its job once the reader presses or types inside the demo; its stand-in
+  // hover ends sooner, when the reader's own pointer arrives.
   function watchDemoCues(): void {
     for (const frame of document.querySelectorAll<HTMLElement>('[data-demo-interactive]')) {
-      const root = frame.querySelector('.demo-root');
+      const root = frame.querySelector<HTMLElement>('.demo-root');
       if (!root || 'demoWatched' in frame.dataset) continue;
       frame.dataset.demoWatched = '';
+
+      const clearHover = () => {
+        frame.dataset.demoHovered = '';
+        root.querySelector('[data-cue-hover]')?.removeAttribute('data-cue-hover');
+      };
       const used = () => {
         frame.dataset.demoUsed = '';
+        clearHover();
         root.removeEventListener('pointerdown', used);
         root.removeEventListener('keydown', used);
       };
       root.addEventListener('pointerdown', used);
       root.addEventListener('keydown', used);
+      root.addEventListener('pointermove', clearHover, { once: true });
+
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const visibility = new IntersectionObserver(
+        ([entry]) => {
+          clearTimeout(timer);
+          if (entry?.isIntersecting) timer = setTimeout(() => markUnderCue(frame), SETTLE_MS);
+        },
+        { threshold: 0.4 },
+      );
+      visibility.observe(frame);
     }
   }
 
