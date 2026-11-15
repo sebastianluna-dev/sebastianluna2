@@ -31,7 +31,7 @@ zones:
     alt: 'Event window laid out as a printed concert programme, with a calendar leaf and the works of the evening'
   - src: '../../../assets/works/cuarteto-fratres/screens/contacto.jpg'
     alt: 'Contact section: a short text with the quartet’s details beside a form drawn as a sheet of ruled paper'
-demos: ['brand', 'hero-layers', 'player', 'programme', 'letter', 'performance']
+demos: ['brand', 'hero-layers', 'player', 'programme', 'performance']
 ---
 
 import {
@@ -48,14 +48,13 @@ import { HeroLayers } from '@demos/cuarteto-fratres/hero-layers/HeroLayers';
 import { Brand } from '@demos/cuarteto-fratres/brand/Brand';
 import { Player } from '@demos/cuarteto-fratres/player/Player';
 import { Programme } from '@demos/cuarteto-fratres/programme/Programme';
-import { Letter } from '@demos/cuarteto-fratres/letter/Letter';
 import { Performance } from '@demos/cuarteto-fratres/performance/Performance';
 import alfonsoPhoto from '@/assets/works/cuarteto-fratres/avatars/alfonso-perez.jpg';
 import jesusPhoto from '@/assets/works/cuarteto-fratres/avatars/jesus-medina.jpg';
 import josePhoto from '@/assets/works/cuarteto-fratres/avatars/jose-sanchez.jpg';
 import luciaPhoto from '@/assets/works/cuarteto-fratres/avatars/lucia-paredes.jpg';
 import cartelera from '@/assets/works/cuarteto-fratres/screens/mockup-cartelera.jpg';
-import contacto from '@/assets/works/cuarteto-fratres/screens/contacto.jpg';
+import contacto from '@/assets/works/cuarteto-fratres/screens/mockup-contacto-laptop.jpg';
 import cuarteto from '@/assets/works/cuarteto-fratres/screens/mockup-cuarteto-laptop.jpg';
 import heroPhone from '@/assets/works/cuarteto-fratres/screens/mockup-telefonos-b.jpg';
 import integrantes from '@/assets/works/cuarteto-fratres/screens/integrantes.jpg';
@@ -265,18 +264,10 @@ Each date on the bill opens as a printed concert programme: a calendar leaf with
 
 The contact form is a sheet of ruled paper: three fields, each written on a line, with the rules evenly spaced as on a real page. It asks only what the quartet needs to answer with a proposal: who you are, how to reach you, and the occasion.
 
-<DemoFrame
-  project="cuarteto-fratres"
-  name="letter"
-  caption="The contact letter: empty, with errors and sent."
->
-  <Letter client:visible locale="en" />
-</DemoFrame>
-
 <Gallery variant="lead">
   <Figure
     src={contacto}
-    alt="Contact section: on the left a short text and the quartet's email, WhatsApp and social links; on the right the form as a sheet of ruled paper"
+    alt="The contact section on a laptop screen seen at an angle: on the left a short text and the quartet's email, WhatsApp and social links; on the right the form as a sheet of ruled paper"
   />
 </Gallery>
 

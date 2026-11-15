@@ -39,7 +39,7 @@ zones:
     alt: 'Ventana de un evento armada como programa de mano impreso, con una hoja de calendario y las obras de la noche'
   - src: '../../../assets/works/cuarteto-fratres/screens/contacto.jpg'
     alt: 'Sección de contacto: un texto breve con los datos del cuarteto junto a un formulario dibujado como hoja rayada'
-demos: ['brand', 'hero-layers', 'player', 'programme', 'letter', 'performance']
+demos: ['brand', 'hero-layers', 'player', 'programme', 'performance']
 ---
 
 import {
@@ -56,14 +56,13 @@ import { HeroLayers } from '@demos/cuarteto-fratres/hero-layers/HeroLayers';
 import { Brand } from '@demos/cuarteto-fratres/brand/Brand';
 import { Player } from '@demos/cuarteto-fratres/player/Player';
 import { Programme } from '@demos/cuarteto-fratres/programme/Programme';
-import { Letter } from '@demos/cuarteto-fratres/letter/Letter';
 import { Performance } from '@demos/cuarteto-fratres/performance/Performance';
 import alfonsoPhoto from '@/assets/works/cuarteto-fratres/avatars/alfonso-perez.jpg';
 import jesusPhoto from '@/assets/works/cuarteto-fratres/avatars/jesus-medina.jpg';
 import josePhoto from '@/assets/works/cuarteto-fratres/avatars/jose-sanchez.jpg';
 import luciaPhoto from '@/assets/works/cuarteto-fratres/avatars/lucia-paredes.jpg';
 import cartelera from '@/assets/works/cuarteto-fratres/screens/mockup-cartelera.jpg';
-import contacto from '@/assets/works/cuarteto-fratres/screens/contacto.jpg';
+import contacto from '@/assets/works/cuarteto-fratres/screens/mockup-contacto-laptop.jpg';
 import cuarteto from '@/assets/works/cuarteto-fratres/screens/mockup-cuarteto-laptop.jpg';
 import heroPhone from '@/assets/works/cuarteto-fratres/screens/mockup-telefonos-b.jpg';
 import integrantes from '@/assets/works/cuarteto-fratres/screens/integrantes.jpg';
@@ -273,18 +272,10 @@ Cada fecha de la cartelera se abre como un programa de mano impreso: una hoja de
 
 El formulario de contacto es una hoja rayada: tres campos, cada uno escrito sobre un renglón, con las rayas a la misma distancia, como en una hoja de verdad. Pide solo lo que el cuarteto necesita para responder con una propuesta: quién eres, cómo encontrarte y la ocasión.
 
-<DemoFrame
-  project="cuarteto-fratres"
-  name="letter"
-  caption="La carta de contacto: vacía, con errores y enviada."
->
-  <Letter client:visible locale="es" />
-</DemoFrame>
-
 <Gallery variant="lead">
   <Figure
     src={contacto}
-    alt="Sección de contacto: a la izquierda un texto breve con el correo, el WhatsApp y las redes del cuarteto; a la derecha el formulario como hoja rayada"
+    alt="La sección de contacto en la pantalla de un portátil visto en ángulo: a la izquierda un texto breve con el correo, el WhatsApp y las redes del cuarteto; a la derecha el formulario como hoja rayada"
   />
 </Gallery>
 
