@@ -18,7 +18,7 @@ interface Props {
   /** Ground colour of the frame. */
   ground: string;
   /** Composition: upright in a row, lying on a surface, or one close with two behind. */
-  scene: 'front' | 'table' | 'lead';
+  scene: 'front' | 'table' | 'lead' | 'turn' | 'steps' | 'lead-front' | 'lead-soft' | 'fan';
   label: string;
 }
 
@@ -310,6 +310,201 @@ const places = ['left', 'centre', 'right'] as const;
       --rz: -5deg;
       --shade: 0.3;
       filter: blur(0.35cqw);
+    }
+
+    /* D · «Fila girada»: the row of A, every handset turned the same way, all in focus. */
+    .phone-scene[data-scene='turn'] .phone-scene__stage {
+      --scene-depth: 150cqw;
+    }
+
+    .phone-scene[data-scene='turn'] .phone_place_left {
+      --w: 27cqw;
+      --x: -26cqw;
+      --y: 6cqw;
+      --z: 6cqw;
+      --rx: 4deg;
+      --ry: 20deg;
+      --rz: -3deg;
+      --shade: 0;
+    }
+
+    .phone-scene[data-scene='turn'] .phone_place_centre {
+      --w: 29cqw;
+      --x: 4cqw;
+      --y: 3cqw;
+      --z: 0cqw;
+      --rx: 4deg;
+      --ry: 20deg;
+      --rz: -3deg;
+      --shade: 0;
+    }
+
+    .phone-scene[data-scene='turn'] .phone_place_right {
+      --w: 27cqw;
+      --x: 34cqw;
+      --y: 0cqw;
+      --z: -6cqw;
+      --rx: 4deg;
+      --ry: 20deg;
+      --rz: -3deg;
+      --shade: 0.15;
+    }
+
+    /* E · «Escalera»: the home screen in front, the other two overlapping behind it, each a step further. */
+    .phone-scene[data-scene='steps'] .phone-scene__stage {
+      --scene-depth: 140cqw;
+    }
+
+    .phone-scene[data-scene='steps'] .phone_place_centre {
+      --w: 27cqw;
+      --x: -14cqw;
+      --y: 2cqw;
+      --z: 8cqw;
+      --rx: 3deg;
+      --ry: 16deg;
+      --rz: 0deg;
+      --shade: 0;
+    }
+
+    .phone-scene[data-scene='steps'] .phone_place_right {
+      --w: 27cqw;
+      --x: 12cqw;
+      --y: 0cqw;
+      --z: -14cqw;
+      --rx: 3deg;
+      --ry: 16deg;
+      --rz: 0deg;
+      --shade: 0.15;
+    }
+
+    .phone-scene[data-scene='steps'] .phone_place_left {
+      --w: 27cqw;
+      --x: 34cqw;
+      --y: -2cqw;
+      --z: -36cqw;
+      --rx: 3deg;
+      --ry: 16deg;
+      --rz: 0deg;
+      --shade: 0.3;
+      filter: blur(0.15cqw);
+    }
+
+    /* F · «Protagonista de frente»: the depth of C without its turn; the home screen faces the reader. */
+    .phone-scene[data-scene='lead-front'] .phone-scene__stage {
+      --scene-depth: 130cqw;
+    }
+
+    .phone-scene[data-scene='lead-front'] .phone_place_centre {
+      --w: 28cqw;
+      --x: 0cqw;
+      --y: 0cqw;
+      --z: 12cqw;
+      --rx: 0deg;
+      --ry: 0deg;
+      --rz: 0deg;
+      --shade: 0;
+    }
+
+    .phone-scene[data-scene='lead-front'] .phone_place_left {
+      --w: 25cqw;
+      --x: -31cqw;
+      --y: 0cqw;
+      --z: -34cqw;
+      --rx: 0deg;
+      --ry: 10deg;
+      --rz: 0deg;
+      --shade: 0.4;
+      filter: blur(0.4cqw);
+    }
+
+    .phone-scene[data-scene='lead-front'] .phone_place_right {
+      --w: 25cqw;
+      --x: 31cqw;
+      --y: 0cqw;
+      --z: -34cqw;
+      --rx: 0deg;
+      --ry: -10deg;
+      --rz: 0deg;
+      --shade: 0.4;
+      filter: blur(0.4cqw);
+    }
+
+    /* G · «Protagonista suave»: C with half the turn and the two behind closer and less blurred. */
+    .phone-scene[data-scene='lead-soft'] .phone-scene__stage {
+      --scene-depth: 140cqw;
+    }
+
+    .phone-scene[data-scene='lead-soft'] .phone_place_centre {
+      --w: 28cqw;
+      --x: 1cqw;
+      --y: 1cqw;
+      --z: 8cqw;
+      --rx: 5deg;
+      --ry: 14deg;
+      --rz: -3deg;
+      --shade: 0;
+    }
+
+    .phone-scene[data-scene='lead-soft'] .phone_place_left {
+      --w: 25cqw;
+      --x: -29cqw;
+      --y: -1cqw;
+      --z: -30cqw;
+      --rx: 5deg;
+      --ry: 14deg;
+      --rz: -3deg;
+      --shade: 0.3;
+      filter: blur(0.2cqw);
+    }
+
+    .phone-scene[data-scene='lead-soft'] .phone_place_right {
+      --w: 26cqw;
+      --x: 34cqw;
+      --y: -3cqw;
+      --z: -22cqw;
+      --rx: 5deg;
+      --ry: 14deg;
+      --rz: -3deg;
+      --shade: 0.2;
+      filter: blur(0.12cqw);
+    }
+
+    /* H · «Abanico»: the home screen upright in front, the other two fanned out behind like cards. */
+    .phone-scene[data-scene='fan'] .phone-scene__stage {
+      --scene-depth: 160cqw;
+    }
+
+    .phone-scene[data-scene='fan'] .phone_place_centre {
+      --w: 28cqw;
+      --x: 0cqw;
+      --y: -1cqw;
+      --z: 10cqw;
+      --rx: 0deg;
+      --ry: 0deg;
+      --rz: 0deg;
+      --shade: 0;
+    }
+
+    .phone-scene[data-scene='fan'] .phone_place_left {
+      --w: 25cqw;
+      --x: -22cqw;
+      --y: 2cqw;
+      --z: -8cqw;
+      --rx: 0deg;
+      --ry: 8deg;
+      --rz: -9deg;
+      --shade: 0.2;
+    }
+
+    .phone-scene[data-scene='fan'] .phone_place_right {
+      --w: 25cqw;
+      --x: 22cqw;
+      --y: 2cqw;
+      --z: -8cqw;
+      --rx: 0deg;
+      --ry: -8deg;
+      --rz: 9deg;
+      --shade: 0.2;
     }
   }
 </style>
