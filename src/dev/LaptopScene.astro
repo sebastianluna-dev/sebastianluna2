@@ -110,7 +110,7 @@ const TUNERS = [
 <script>
   /** Each range paints its custom property on the figure; the line below lists the values. */
   function startLaptopTuners() {
-    for (const panel of document.querySelectorAll<HTMLElement>(
+    for (const panel of document.querySelectorAll<HTMLDetailsElement>(
       '[data-laptop-tune]:not([data-ready])',
     )) {
       panel.dataset.ready = '';
