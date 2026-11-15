@@ -293,6 +293,10 @@ export function Player() {
 
   return (
     <div ref={rootRef} className={styles.demo} data-ground="light">
+      {/* The section's title, as on the site; the section itself carries the name. */}
+      <p className={styles.demo__title} aria-hidden="true">
+        {UI.programme}
+      </p>
       <section className={styles.demo__scene} aria-label={UI.programme}>
         <div className={cx(styles.now, playing && styles.now_playing)}>
           <div className={styles.now__disc}>

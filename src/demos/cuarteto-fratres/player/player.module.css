@@ -18,6 +18,9 @@
     --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
     /* Reserved height of the scene, the same in every state. */
     --scene-height: 584px;
+    /* The section is drawn smaller than life, as a page seen whole: the site's 1440 layout in the
+       720 column. The phone column keeps its real size. */
+    --scale: 0.74;
     --row-height: 64px;
     --mini-record: 152px;
 
@@ -56,13 +59,22 @@
     }
 
     /* The record's card and the programme side by side, as the site from the tablet up. */
+    /* The site's section title (`.section-title`): Italianno, centred. */
+    & .demo__title {
+      padding-top: 30px;
+      font: 400 108px / 1 var(--d-font-title);
+      text-align: center;
+      zoom: var(--scale);
+    }
+
     & .demo__scene {
       position: relative;
       display: flex;
       gap: 24px;
       height: var(--scene-height);
-      padding: 24px;
+      padding: 8px 40px 28px;
       overflow: hidden;
+      zoom: var(--scale);
     }
 
     /* Chips, programme and pager share the column right of the card. */
@@ -1010,12 +1022,18 @@
     /* ——— Phone column: the site's layout under 768 px ——— */
     @container demo (max-width: 480px) {
       --scene-height: 618px;
+      --scale: 1;
       --mini-record: 108px;
+
+      & .demo__title {
+        padding-top: 22px;
+        font-size: 58px;
+      }
 
       & .demo__scene {
         flex-direction: column;
         gap: 20px;
-        padding: 20px 16px 16px;
+        padding: 4px 16px 16px;
       }
 
       /* The record above the programme, the whole width, a little smaller. */
