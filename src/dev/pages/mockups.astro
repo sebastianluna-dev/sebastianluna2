@@ -5,6 +5,7 @@
  * options menu. The captures are real screens of the site (`src/assets/works/cuarteto-fratres/screens`).
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import LaptopScene from '../LaptopScene.astro';
 import Mockup from '../Mockup.astro';
 import PhoneScene from '../PhoneScene.astro';
 import cartelera from '@/assets/works/cuarteto-fratres/screens/cartelera.jpg';
@@ -165,6 +166,18 @@ const phoneScenes = [
         <PhoneScene ground={INK} screens={phoneScreens} scene={scene.id} label={scene.label} />
       ))}
     </div>
+    <h2 class="mockup-lab__kicker">Portátil: la semblanza con su mismo giro</h2>
+    <LaptopScene
+      src={semblanza}
+      label="Semblanza en portátil"
+      ground={INK}
+      rx={17}
+      ry={27}
+      rz={-16.5}
+      width={54}
+      x={-5}
+      y={-5}
+    />
     <h2 class="mockup-lab__kicker">Tamaño de portada (720)</h2>
     <div class="mockup-lab__column">
       {screens.slice(0, 3).map((screen) => (
