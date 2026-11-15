@@ -27,6 +27,7 @@ export const caseStudy = {
   previousLabel: 'Caso anterior: {name}',
   nextLabel: 'Caso siguiente: {name}',
   enlargeImage: 'Ampliar imagen: {alt}',
+  demoHint: 'Interactivo · pruébalo',
   lightbox: 'Imagen ampliada',
   close: 'Cerrar',
   figure: {
