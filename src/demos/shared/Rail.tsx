@@ -44,7 +44,7 @@ export function Rail<Id extends string>({
   }
 
   return (
-    <div className={styles.rail} data-demo-rail>
+    <div className={styles.rail}>
       <div
         ref={group}
         className={styles.rail__group}

@@ -20,8 +20,13 @@ interface Props {
   project: string;
   /** Key of the demo, the one the case lists in its frontmatter `demos`. */
   name: string;
-  /** One line under the demo, in the body style. */
+  /** One line beside the demo, in the body style. */
   caption?: string;
+  /**
+   * The caption goes over the demo, as the line that introduces it: for a demo that ends in its own
+   * text (the status under a rail of states), where a caption below would read as one paragraph.
+   */
+  captionAbove?: boolean;
   /** The reader is meant to use this demo: it carries the pointer. */
   interactive?: boolean;
   /** Where the pointer rests, as `left top` in % of the demo: its first thing to press. */
@@ -34,6 +39,7 @@ const {
   project,
   name,
   caption,
+  captionAbove = false,
   interactive = false,
   cue = '50% 50%',
   cueNarrow = cue,
@@ -49,6 +55,9 @@ const cueStyle = `--cue-x:${cueX};--cue-y:${cueY};--cue-narrow-x:${narrowX};--cu
   data-demo-frame={name}
   data-demo-interactive={interactive ? '' : undefined}
 >
+  {caption && captionAbove && (
+    <figcaption class="demo-frame__caption pf-prose">{caption}</figcaption>
+  )}
   <div class="demo-frame__stage">
     <div class="demo-root" data-demo={project}>
       <slot />
@@ -62,7 +71,9 @@ const cueStyle = `--cue-x:${cueX};--cue-y:${cueY};--cue-narrow-x:${narrowX};--cu
       </span>
     )}
   </div>
-  {caption && <figcaption class="demo-frame__caption pf-prose">{caption}</figcaption>}
+  {caption && !captionAbove && (
+    <figcaption class="demo-frame__caption pf-prose">{caption}</figcaption>
+  )}
 </figure>
 
 <script>
@@ -101,12 +112,6 @@ const cueStyle = `--cue-x:${cueX};--cue-y:${cueY};--cue-narrow-x:${narrowX};--cu
       & .demo-frame__caption {
         width: min(var(--pf-text-col), 100%);
         margin-inline: auto;
-      }
-
-      /* A demo with states ends in its own line of text (the rail's status), so the caption stands
-         further off than under a picture and the two never read as one paragraph. */
-      &:has([data-demo-rail]) {
-        gap: calc(var(--pf-case-text-gap) * 2.5);
       }
 
       /* The pointer: white with a dark edge, so it shows on any ground of a demo. */
