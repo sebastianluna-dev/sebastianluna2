@@ -25,6 +25,18 @@ interface Props {
 
 const { src, label, ground, rx, ry, rz, width = 60, x = 0, y = 0 } = Astro.props;
 const style = `--scene-ground:${ground};--rx:${rx}deg;--ry:${ry}deg;--rz:${rz}deg;--w:${width}cqw;--x:${x}cqw;--y:${y}cqw`;
+
+/** The live controls under the scene: custom property, unit, range and starting value. */
+const TUNERS = [
+  { name: 'rx', label: 'Giro X', unit: 'deg', min: -40, max: 40, value: rx },
+  { name: 'ry', label: 'Giro Y', unit: 'deg', min: -45, max: 45, value: ry },
+  { name: 'rz', label: 'Giro Z', unit: 'deg', min: -30, max: 30, value: rz },
+  { name: 'w', label: 'Ancho', unit: 'cqw', min: 40, max: 180, value: width },
+  { name: 'x', label: 'Mover X', unit: 'cqw', min: -50, max: 50, value: x },
+  { name: 'y', label: 'Mover Y', unit: 'cqw', min: -50, max: 50, value: y },
+  { name: 'depth', label: 'Perspectiva', unit: 'cqw', min: 50, max: 400, value: 150 },
+  { name: 'hinge', label: 'Teclado', unit: 'deg', min: 20, max: 90, value: 62 },
+];
 ---
 
 <figure class="laptop-scene" style={style}>
@@ -53,7 +65,60 @@ const style = `--scene-ground:${ground};--rx:${rx}deg;--ry:${ry}deg;--rz:${rz}de
     </div>
   </div>
   <figcaption class="laptop-scene__label">{label}</figcaption>
+  <details class="laptop-scene__tune" data-laptop-tune>
+    <summary>Ajustar</summary>
+    <div class="laptop-scene__tuners">
+      {TUNERS.map((tuner) => (
+        <label class="laptop-scene__tuner">
+          <span>{tuner.label}</span>
+          <input
+            type="range"
+            min={tuner.min}
+            max={tuner.max}
+            step="0.5"
+            value={tuner.value}
+            data-var={tuner.name}
+            data-unit={tuner.unit}
+          />
+          <output>{tuner.value}</output>
+        </label>
+      ))}
+    </div>
+    <button type="button" class="laptop-scene__copy" data-laptop-copy>
+      Copiar valores
+    </button>
+    <code class="laptop-scene__values" data-laptop-values></code>
+  </details>
 </figure>
+
+<script>
+  /** Each range paints its custom property on the figure; the line below lists the values. */
+  for (const panel of document.querySelectorAll<HTMLElement>('[data-laptop-tune]')) {
+    const figure = panel.closest<HTMLElement>('figure');
+    const values = panel.querySelector<HTMLElement>('[data-laptop-values]');
+    const inputs = [...panel.querySelectorAll<HTMLInputElement>('input[type="range"]')];
+    if (!figure || !values) continue;
+    const label = figure.querySelector('figcaption')?.textContent?.trim() ?? '';
+    const read = () =>
+      JSON.stringify({
+        mockup: label,
+        ...Object.fromEntries(inputs.map((i) => [i.dataset.var, Number(i.value)])),
+      });
+    const paint = () => {
+      for (const input of inputs) {
+        figure.style.setProperty(`--${input.dataset.var}`, `${input.value}${input.dataset.unit}`);
+        const output = input.nextElementSibling;
+        if (output) output.textContent = input.value;
+      }
+      values.textContent = read();
+    };
+    for (const input of inputs) input.addEventListener('input', paint);
+    panel.querySelector('[data-laptop-copy]')?.addEventListener('click', () => {
+      void navigator.clipboard.writeText(read());
+    });
+    values.textContent = read();
+  }
+</script>
 
 <style>
   @layer pf {
@@ -85,8 +150,45 @@ const style = `--scene-ground:${ground};--rx:${rx}deg;--ry:${ry}deg;--rz:${rz}de
       & .laptop-scene__stage {
         position: absolute;
         inset: 0;
-        perspective: 150cqw;
+        perspective: var(--depth, 150cqw);
         transform-style: preserve-3d;
+      }
+
+      & .laptop-scene__tune {
+        margin-top: 8px;
+        color: var(--pf-text-secondary);
+        font-family: var(--pf-font-sans);
+        font-size: 13px;
+      }
+
+      & .laptop-scene__tuners {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 6px 20px;
+        margin: 10px 0;
+      }
+
+      & .laptop-scene__tuner {
+        display: grid;
+        grid-template-columns: 84px 1fr 44px;
+        align-items: center;
+        gap: 8px;
+      }
+
+      & .laptop-scene__copy {
+        margin-right: 10px;
+        padding: 4px 10px;
+        border: 1px solid currentColor;
+        border-radius: 6px;
+        background: none;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      & .laptop-scene__values {
+        font-size: 12px;
+        overflow-wrap: anywhere;
       }
 
       & .laptop-scene__label {
@@ -177,7 +279,7 @@ const style = `--scene-ground:${ground};--rx:${rx}deg;--ry:${ry}deg;--rz:${rz}de
         width: 100%;
         height: calc(var(--lid-h) * 1.02);
         transform-origin: top;
-        transform: rotateX(62deg);
+        transform: rotateX(var(--hinge, 62deg));
         border-radius: calc(var(--w) * 0.006) calc(var(--w) * 0.006) calc(var(--w) * 0.03)
           calc(var(--w) * 0.03);
         background: linear-gradient(180deg, #1b1c1f 0%, #3a3b40 6%, #55575d 55%, #74767c 100%);
