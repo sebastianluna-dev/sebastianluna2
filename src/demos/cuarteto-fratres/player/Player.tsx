@@ -40,6 +40,8 @@ const TICK_MS = 250;
 const CARD_VISIBLE_SHARE = 0.5;
 /** How long the mini player stays after a pause before it leaves. */
 const MINI_GRACE_MS = 5000;
+/** Length of the mini player's exit (`player-mini-sink` in the styles). */
+const MINI_EXIT_MS = 350;
 /**
  * The mini player's root, portalled to the page: a strip along the bottom of the window, so the
  * record is pinned to the viewport and the demo's container queries read the window's width.
@@ -99,6 +101,8 @@ export function Player() {
   const [cardInView, setCardInView] = useState(true);
   // A pause keeps the mini player for a moment: the reader may press play again.
   const [grace, setGrace] = useState(false);
+  // The mini player stays mounted while it sinks away.
+  const [leaving, setLeaving] = useState(false);
   const [categoryId, setCategoryId] = useState<CategoryId | null>(null);
   const [page, setPage] = useState(0);
   const [listChanges, setListChanges] = useState(0);
@@ -246,6 +250,17 @@ export function Player() {
 
   const playing = state.status === 'playing';
   const mini = miniPlayerShown(playing, cardInView, grace);
+
+  // Leaving the corner takes a moment: the record sinks, then it is gone.
+  useEffect(() => {
+    if (!mini) return;
+    return () => setLeaving(true);
+  }, [mini]);
+  useEffect(() => {
+    if (!leaving) return;
+    const timer = setTimeout(() => setLeaving(false), MINI_EXIT_MS);
+    return () => clearTimeout(timer);
+  }, [leaving]);
   const chosen = state.status !== 'idle';
   const track = TRACKS[state.selected] ?? TRACKS[0]!;
   const duration = track.durationSeconds;
@@ -471,11 +486,16 @@ export function Player() {
 
       <audio ref={audioRef} preload="none" />
 
-      {mini &&
+      {(mini || leaving) &&
         createPortal(
           <div className="demo-root" data-demo="cuarteto-fratres" style={DOCK_ROOT}>
             <div className={styles.dock} data-ground="light">
-              <MiniPlayer title={track.title} composer={track.composer} {...transport} />
+              <MiniPlayer
+                title={track.title}
+                composer={track.composer}
+                leaving={!mini}
+                {...transport}
+              />
             </div>
           </div>,
           document.body,
@@ -571,6 +591,8 @@ function LineProgress({ fraction, onSeek, valueText }: LineProgressProps) {
 interface MiniPlayerProps {
   title: string;
   composer: string;
+  /** On its way out: it sinks and no longer takes the pointer. */
+  leaving: boolean;
   playing: boolean;
   elapsed: number;
   duration: number;
@@ -587,6 +609,7 @@ interface MiniPlayerProps {
 function MiniPlayer({
   title,
   composer,
+  leaving,
   playing,
   elapsed,
   duration,
@@ -599,7 +622,8 @@ function MiniPlayer({
 
   return (
     <div
-      className={cx(styles.mini, playing && styles.mini_playing)}
+      className={cx(styles.mini, playing && styles.mini_playing, leaving && styles.mini_leaving)}
+      inert={leaving}
       role="region"
       aria-label={UI.playingStatus}
     >

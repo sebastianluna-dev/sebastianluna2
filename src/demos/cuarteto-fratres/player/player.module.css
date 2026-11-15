@@ -704,6 +704,11 @@
       animation: player-mini-rise 0.35s var(--ease-out);
     }
 
+    & .mini_leaving {
+      animation: player-mini-sink 0.35s var(--ease-out) forwards;
+      pointer-events: none;
+    }
+
     & .mini__record {
       position: absolute;
       inset: 0;
@@ -1161,6 +1166,10 @@
         animation: none;
       }
 
+      & .mini_leaving {
+        opacity: 0;
+      }
+
       & .track_playing .track__bar {
         animation: none;
         transform: scaleY(0.6);
@@ -1264,6 +1273,18 @@
     background: none;
     overflow: visible;
     pointer-events: auto;
+  }
+
+  @keyframes player-mini-sink {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(40px);
+    }
   }
 
   @keyframes player-mini-rise {
