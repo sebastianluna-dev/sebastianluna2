@@ -9,13 +9,11 @@
  * The island renders on the server with its real controls and reserves its own height, so the page
  * neither jumps on hydration nor goes blank without JavaScript.
  *
- * `interactive` marks a demo the reader is meant to use, and adds the hint that says so. Its look
- * is under review (the `demo-hint` choice of the dev options menu): until one is picked the hint
- * stays hidden. The hint leaves for good at the reader's first press or key inside the demo.
+ * `interactive` marks a demo the reader is meant to use: a drawn pointer rests on its first thing to
+ * press (`cue`), with a ring that beats, and leaves for good at the reader's first press or key
+ * inside the demo. It is decoration (`aria-hidden`): the caption says what to do.
  */
 import '@demos/shared/demo-root.css';
-import { getMessages } from '@/i18n/t';
-import { splitLocale } from '@/lib/i18n-paths';
 
 interface Props {
   /** Folder of `src/demos`: scopes the project's tokens (`data-demo`). */
@@ -24,16 +22,25 @@ interface Props {
   name: string;
   /** One line under the demo, in the body style. */
   caption?: string;
-  /** The reader is meant to use this demo: it carries the hint. */
+  /** The reader is meant to use this demo: it carries the pointer. */
   interactive?: boolean;
-  /** Where the animated pointer rests, as `left top` in % of the demo: its first thing to press. */
+  /** Where the pointer rests, as `left top` in % of the demo: its first thing to press. */
   cue?: string;
+  /** The same on the phone column, where the demo is laid out differently. */
+  cueNarrow?: string;
 }
 
-const { project, name, caption, interactive = false, cue = '50% 50%' } = Astro.props;
-const { locale } = splitLocale(Astro.url.pathname);
-const hint = getMessages(locale).case.demoHint;
+const {
+  project,
+  name,
+  caption,
+  interactive = false,
+  cue = '50% 50%',
+  cueNarrow = cue,
+} = Astro.props;
 const [cueX = '50%', cueY = '50%'] = cue.split(' ');
+const [narrowX = cueX, narrowY = cueY] = cueNarrow.split(' ');
+const cueStyle = `--cue-x:${cueX};--cue-y:${cueY};--cue-narrow-x:${narrowX};--cue-narrow-y:${narrowY}`;
 ---
 
 <figure
@@ -47,32 +54,24 @@ const [cueX = '50%', cueY = '50%'] = cue.split(' ');
       <slot />
     </div>
     {interactive && (
-      <>
-        <p class="demo-frame__hint">
-          <svg class="demo-frame__icon" viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M5 2.8 15.2 11l-4.5.5 2.6 5-1.9 1-2.6-5.1-3.3 3.1Z" />
-          </svg>
-          <span class="demo-frame__pulse" aria-hidden="true" />
-          {hint}
-        </p>
-        <span class="demo-frame__cue" style={`--cue-x:${cueX};--cue-y:${cueY}`} aria-hidden="true">
-          <span class="demo-frame__ring" />
-          <svg class="demo-frame__pointer" viewBox="0 0 20 20">
-            <path d="M5 2.8 15.2 11l-4.5.5 2.6 5-1.9 1-2.6-5.1-3.3 3.1Z" />
-          </svg>
-        </span>
-      </>
+      <span class="demo-frame__cue" style={cueStyle} aria-hidden="true">
+        <span class="demo-frame__ring" />
+        <svg class="demo-frame__pointer" viewBox="0 0 20 20">
+          <path d="M5 2.8 15.2 11l-4.5.5 2.6 5-1.9 1-2.6-5.1-3.3 3.1Z" />
+        </svg>
+      </span>
     )}
   </div>
   {caption && <figcaption class="demo-frame__caption pf-prose">{caption}</figcaption>}
 </figure>
 
 <script>
-  // The hint has done its job once the reader presses or types inside the demo.
-  function watchDemoHints(): void {
+  // The pointer has done its job once the reader presses or types inside the demo.
+  function watchDemoCues(): void {
     for (const frame of document.querySelectorAll<HTMLElement>('[data-demo-interactive]')) {
       const root = frame.querySelector('.demo-root');
-      if (!root) continue;
+      if (!root || 'demoWatched' in frame.dataset) continue;
+      frame.dataset.demoWatched = '';
       const used = () => {
         frame.dataset.demoUsed = '';
         root.removeEventListener('pointerdown', used);
@@ -83,8 +82,8 @@ const [cueX = '50%', cueY = '50%'] = cue.split(' ');
     }
   }
 
-  watchDemoHints();
-  document.addEventListener('astro:page-load', watchDemoHints);
+  watchDemoCues();
+  document.addEventListener('astro:page-load', watchDemoCues);
 </script>
 
 <style>
@@ -104,102 +103,28 @@ const [cueX = '50%', cueY = '50%'] = cue.split(' ');
         margin-inline: auto;
       }
 
-      /* Hidden until a look is picked in the dev options (`data-opt-demo-hint` on <html>). */
-      & .demo-frame__hint,
+      /* The pointer: white with a dark edge, so it shows on any ground of a demo. */
       & .demo-frame__cue {
-        display: none;
-      }
-
-      & .demo-frame__hint {
-        align-items: center;
-        gap: 6px;
-        width: max-content;
-        margin: 0;
-        padding: 6px 12px 6px 9px;
-        border: 1px solid var(--pf-border);
-        border-radius: var(--pf-radius-pill);
-        background: var(--pf-surface-elevated);
-        color: var(--pf-text);
-        font: 500 13px / 1 var(--pf-font-sans);
-        transition: opacity 0.3s ease;
-      }
-
-      & .demo-frame__icon,
-      & .demo-frame__pointer {
-        width: 14px;
-        height: 14px;
-        fill: currentColor;
-      }
-
-      & .demo-frame__pulse {
-        display: none;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #2fbf71;
-      }
-
-      &[data-demo-used] .demo-frame__hint,
-      &[data-demo-used] .demo-frame__cue {
-        opacity: 0;
-        pointer-events: none;
-      }
-    }
-
-    /* A · «Etiqueta»: a tag above the demo, in the flow, always there. */
-    :global(html[data-opt-demo-hint='tag']) .demo-frame {
-      & .demo-frame__hint {
-        display: flex;
-        position: absolute;
-        right: 0;
-        bottom: calc(100% + 10px);
-      }
-
-      &[data-demo-used] .demo-frame__hint {
-        opacity: 1;
-      }
-    }
-
-    /* B · «Insignia»: a chip over the corner of the demo with a live dot; it leaves once used. */
-    :global(html[data-opt-demo-hint='badge']) .demo-frame {
-      & .demo-frame__hint {
-        display: flex;
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        z-index: 2;
-        box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
-        pointer-events: none;
-      }
-
-      & .demo-frame__icon {
-        display: none;
-      }
-
-      & .demo-frame__pulse {
-        display: block;
-        animation: demo-frame-blink 1.6s ease-in-out infinite;
-      }
-    }
-
-    /* C · «Cursor»: a pointer resting on the first thing to press, with a ring that beats. */
-    :global(html[data-opt-demo-hint='cursor']) .demo-frame {
-      & .demo-frame__cue {
-        display: block;
         position: absolute;
         left: var(--cue-x);
         top: var(--cue-y);
         z-index: 2;
-        color: #fff;
         filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.45));
         pointer-events: none;
         transition: opacity 0.3s ease;
+
+        @media (max-width: 809.98px) {
+          left: var(--cue-narrow-x);
+          top: var(--cue-narrow-y);
+        }
       }
 
       & .demo-frame__pointer {
         position: relative;
+        display: block;
         width: 26px;
         height: 26px;
+        fill: #fff;
         stroke: #0a0a0a;
         stroke-width: 1.2;
         stroke-linejoin: round;
@@ -218,19 +143,16 @@ const [cueX = '50%', cueY = '50%'] = cue.split(' ');
         box-shadow: 0 0 0 1px rgb(0 0 0 / 0.35);
         animation: demo-frame-ring 1.8s ease-out infinite;
       }
-    }
 
-    @media (prefers-reduced-motion: reduce) {
-      .demo-frame .demo-frame__pulse,
-      .demo-frame .demo-frame__pointer,
-      .demo-frame .demo-frame__ring {
-        animation: none;
+      &[data-demo-used] .demo-frame__cue {
+        opacity: 0;
       }
-    }
 
-    @keyframes demo-frame-blink {
-      50% {
-        opacity: 0.35;
+      @media (prefers-reduced-motion: reduce) {
+        & .demo-frame__pointer,
+        & .demo-frame__ring {
+          animation: none;
+        }
       }
     }
 

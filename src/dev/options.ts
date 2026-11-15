@@ -460,25 +460,6 @@ export const OPTION_GROUPS: readonly OptionGroup[] = [
       },
     ],
   },
-  {
-    id: 'demos',
-    label: 'Demos · indicador de clic',
-    where: '/works/cuarteto-fratres',
-    controls: [
-      {
-        kind: 'choice',
-        id: 'demo-hint',
-        label: 'Indicador',
-        initial: 'cursor',
-        options: [
-          { id: 'tag', label: 'A · Etiqueta arriba' },
-          { id: 'badge', label: 'B · Insignia en la esquina' },
-          { id: 'cursor', label: 'C · Cursor que late' },
-          { id: 'none', label: 'Sin indicador' },
-        ],
-      },
-    ],
-  },
 ];
 
 /** Where the menu keeps its state between reloads. */
