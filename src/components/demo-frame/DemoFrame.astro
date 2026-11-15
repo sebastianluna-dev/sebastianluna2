@@ -103,6 +103,12 @@ const cueStyle = `--cue-x:${cueX};--cue-y:${cueY};--cue-narrow-x:${narrowX};--cu
         margin-inline: auto;
       }
 
+      /* A demo with states ends in its own line of text (the rail's status), so the caption stands
+         further off than under a picture and the two never read as one paragraph. */
+      &:has([data-demo-rail]) {
+        gap: calc(var(--pf-case-text-gap) * 2.5);
+      }
+
       /* The pointer: white with a dark edge, so it shows on any ground of a demo. */
       & .demo-frame__cue {
         position: absolute;
