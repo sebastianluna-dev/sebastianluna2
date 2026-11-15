@@ -6,6 +6,7 @@
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Mockup from '../Mockup.astro';
+import PhoneScene from '../PhoneScene.astro';
 import cartelera from '@/assets/works/cuarteto-fratres/screens/cartelera.jpg';
 import contacto from '@/assets/works/cuarteto-fratres/screens/contacto.jpg';
 import cuarteto from '@/assets/works/cuarteto-fratres/screens/cuarteto.jpg';
@@ -13,6 +14,9 @@ import hero from '@/assets/works/cuarteto-fratres/screens/hero.jpg';
 import integrantes from '@/assets/works/cuarteto-fratres/screens/integrantes.jpg';
 import programa from '@/assets/works/cuarteto-fratres/screens/programa.jpg';
 import repertorio from '@/assets/works/cuarteto-fratres/screens/repertorio.jpg';
+import phoneCartelera from '@/assets/works/cuarteto-fratres/screens/phone-cartelera.jpg';
+import phoneHero from '@/assets/works/cuarteto-fratres/screens/phone-hero.jpg';
+import phoneIntegrantes from '@/assets/works/cuarteto-fratres/screens/phone-integrantes.jpg';
 import semblanza from '@/assets/works/cuarteto-fratres/screens/semblanza.jpg';
 
 const INK = '#0c0e10';
@@ -118,6 +122,15 @@ const screens = [
       Abre «Opciones» (abajo a la izquierda), elige un ángulo y afínalo con los controles. Todos los
       encuadres se mueven a la vez. Cuando tengas uno que te guste, pulsa «Copiar valores».
     </p>
+    <h2 class="mockup-lab__kicker">Teléfonos (elige la composición en «Mockups · teléfonos»)</h2>
+    <PhoneScene
+      ground={INK}
+      screens={[
+        { src: phoneIntegrantes },
+        { src: phoneHero },
+        { src: phoneCartelera, light: true },
+      ]}
+    />
     <h2 class="mockup-lab__kicker">Tamaño de portada (720)</h2>
     <div class="mockup-lab__column">
       {screens.slice(0, 3).map((screen) => (
